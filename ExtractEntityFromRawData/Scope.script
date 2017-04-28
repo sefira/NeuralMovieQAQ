@@ -1,0 +1,237 @@
+﻿//Script GUID:aa3aef45-7e5d-463a-8b85-f955387998f1
+//Used for tracking history
+
+RESOURCE @"/my/MovieDomain/ExtractEntityFromRawData/SplitChar.txt";
+
+#IF(LOCAL)
+    #DECLARE filename string = @"Entity.csv";
+    rs0 = 
+        EXTRACT 
+            Key: string,
+            KGId: string,
+            Generes: string,
+            Artists: string,
+            Directors: string,
+            Characters: string,
+            Performance: string,
+            Distributors: string,
+            Channels: string,
+            Albums: string,
+            Name: string,
+            Alias: string,
+            Description: string,
+            Segments: string,
+            Categories: string,
+            IntEmbeddedFilters: string,
+            Popularity: string,
+            Rating: string,
+            RatingCount: string,
+            ReviewCount: string,
+            VisitCount: string,
+            Rank: string,
+            PublishDate: string,
+            Length: string,
+            Geographies: string,
+            Filter: string,
+            SourceUrls: string,
+            ImageUrls: string,
+            OfficialSite: string,
+            EntityContainer: string,
+            Logo: string,
+            QueryRank: string
+        FROM
+            @filename
+        USING DefaultTextExtractor(delimiter: ',');
+
+    rs0 = 
+        SELECT
+            Name AS MovieName,
+            Generes AS Generes,
+            Artists AS Artists,
+            Directors AS Directors,
+            Performance AS Performance,
+            Popularity AS NumberOfWantToWatch,
+            Rating AS RatingOfDouban,
+            RatingCount AS RatingCount,
+            VisitCount AS NumberOfWatched,
+            Rank AS NumberOfReviewer,
+            PublishDate AS PublishDate,
+            Length AS Length,
+            Geographies AS Country,
+            Filter AS Language
+        FROM
+            rs0
+        HAVING 
+            !string.IsNullOrEmpty(NumberOfWatched) &&
+            Int32.Parse(Rating) > 0
+        ;
+
+    
+    #DECLARE output_junkmoviefilename string = @"junkmovie_name.csv";
+    #DECLARE output_robustmoviefilename string = @"robustmovie_name.csv";
+    #DECLARE output_moviefilename string = @"movie_name.tsv";
+    #DECLARE output_artistfilename string = @"artist_name.tsv";
+
+        
+#ELSE
+    #DECLARE filename string = @"users/qliiu/Entity.ss";
+    rs0 = SSTREAM @filename;
+
+    rs0 =
+        SELECT 
+            Name AS MovieName,                  //Movie Name
+            Generes AS Generes,                 //Moive Type
+            Artists AS Artists,                 //Actors
+            Performance AS Performance,         //Actors with order
+            Directors AS Directors,             //Directors
+            Rating AS Rating,                   //The Rating
+            Rank AS NumberOfReviewer,           //Number of Reviewer for the Rating
+            RatingCount AS NumberOfShortReview, //Number of Short Review
+            VisitCount AS NumberOfWatched,      //Number of People Who Watched
+            Popularity AS NumberOfWantToWatch,  //Number of People Who Want to watch
+            PublishDate AS PublishDate,         //Publish Date
+            Length AS Length,                   //How Long is the Movie
+            Geographies AS Country,             //Country
+            Filter AS Language                  //Language
+        FROM 
+            rs0
+        HAVING
+            !string.IsNullOrEmpty(NumberOfWatched) &&
+            Int32.Parse(Rating) > 0
+        ;
+      
+    #DECLARE output_junkmoviefilename string = @"/my/MovieDomain/ExtractEntityFromRawData/junkmovie_name.csv";
+    #DECLARE output_robustmoviefilename string = @"/my/MovieDomain/ExtractEntityFromRawData/robustmovie_name.csv";
+    #DECLARE output_moviefilename string = @"/my/MovieDomain/ExtractEntityFromRawData/movie_name.csv";
+    #DECLARE output_artistfilename string = @"/my/MovieDomain/ExtractEntityFromRawData/artist_name.csv";
+#ENDIF
+
+// after read data, we split movie into robust movie and junk movie 
+robust_movie =
+    PROCESS rs0
+    USING ExceptJunkMovieProcessor
+    ;
+
+junk_movie =
+    SELECT *
+    FROM rs0
+    EXCEPT ALL
+    SELECT *
+    FROM robust_movie
+    ;
+
+OUTPUT junk_movie
+    TO @output_junkmoviefilename
+    USING DefaultTextOutputter(delimiter: ',')
+    ;
+
+// extract movie name
+movie_name =
+    SELECT
+        SplitMovieName AS MovieName
+    FROM
+        robust_movie
+    CROSS APPLY
+        MovieName.Split('|') AS SplitMovieName
+    ;
+
+// replace all symbol with spaces, and split the name into several names
+movie_name =
+    PROCESS movie_name
+    USING MovieNameProcessor
+    ;
+
+// combine all movies which have the same name, meanwhile count 
+movie_name =
+    SELECT 
+        MovieName
+    FROM 
+        movie_name
+    GROUP BY 
+        MovieName
+    ;
+
+movie_name =
+    SELECT 
+        MovieName
+    FROM
+        movie_name
+    ORDER BY MovieName ASC
+    ;
+
+OUTPUT movie_name
+    TO @output_moviefilename
+    USING DefaultTextOutputter(delimiter: ',')
+    ;
+
+// extract artist name 
+artist_name =
+    SELECT 
+        SplitArtists AS ArtistName
+    FROM 
+        robust_movie
+    CROSS APPLY
+        Artists.Split('|') AS SplitArtists
+    ;
+
+// replace all symbol with spaces, and split the name into several names
+artist_name =
+    PROCESS artist_name
+    USING ArtistNameProcessor
+    ;
+
+// combine all artists which have the same name, meanwhile count 
+artist_name =
+    SELECT 
+        ArtistName,
+        COUNT() AS ArtistAppeareTimes
+    FROM 
+        artist_name
+    GROUP BY 
+        ArtistName
+    ;
+
+artist_name =
+    SELECT *
+    FROM
+        artist_name
+    ORDER BY ArtistName ASC
+    ;
+
+OUTPUT artist_name
+    TO @output_artistfilename
+    USING DefaultTextOutputter(delimiter: ',')
+    ;
+
+// extract director name 
+director_name =
+    SELECT 
+        SplitDirectors AS DirectorName
+    FROM 
+        robust_movie
+    CROSS APPLY
+        Directors.Split('|') AS SplitDirectors
+    ;
+
+// replace all symbol with spaces, and split the name into several names
+director_name =
+    PROCESS director_name
+    USING DirectorNameProcessor
+    ;
+
+// combine all artists which have the same name, meanwhile count 
+director_name =
+    SELECT 
+        DirectorName,
+        COUNT() AS DirectorAppeareTimes
+    FROM 
+        director_name
+    GROUP BY 
+        DirectorName
+    ORDER BY DirectorName ASC
+    ;
+    
+OUTPUT director_name
+    TO @output_artistfilename
+    USING DefaultTextOutputter(delimiter: ',')
+    ;

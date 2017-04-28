@@ -1,0 +1,16 @@
+.vs/
+ExtractEntityFromRawData/Entity.csv
+ExtractEntityFromRawData/ExtractEntityFromRawData.scopeproj
+ExtractEntityFromRawData/ExtractEntityFromRawData.scopeproj.user
+ExtractEntityFromRawData/artist_name.tsv
+ExtractEntityFromRawData/bin/
+ExtractEntityFromRawData/movie_name.tsv
+ExtractEntityFromRawData/obj/
+MovieDomain.sln
+QueryWordBreaker/App.config
+QueryWordBreaker/Properties/
+QueryWordBreaker/QueryWordBreaker.csproj
+QueryWordBreaker/Support/
+QueryWordBreaker/bin/
+QueryWordBreaker/obj/
+ScopeCompilerTrace.log
