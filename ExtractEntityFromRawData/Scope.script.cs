@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using ScopeRuntime;
 using System.Text.RegularExpressions;
+using ScopeRuntime.Diagnostics;
 
 public class ExceptJunkMovieProcessor : Processor
 {
@@ -32,7 +33,7 @@ public class ExceptJunkMovieProcessor : Processor
     {
         foreach (Row input_row in input_rowset.Rows)
         {
-            if(!string.IsNullOrEmpty(input_row["NumberOfReviewer"].String) && Int32.Parse(input_row["NumberOfReviewer"].String) > 1000)
+            if(!string.IsNullOrEmpty(input_row["NumberOfReviewer"].String) && Int32.Parse(input_row["NumberOfReviewer"].String) > 5000)
             {
                 input_row.CopyTo(output_row);
                 yield return output_row;
@@ -87,17 +88,10 @@ public class NameFilter
         }
     }
 
-    private static bool IsChinese(string input_string)
+    public static bool IsChinese(string input_string)
     {
-        if (string.IsNullOrEmpty(input_string))
-        {
-            return false;
-        }
-        else
-        {
-            string regExpression = "[\u4e00-\u9fa5]";
-            return Regex.IsMatch(input_string, regExpression);
-        }
+        Regex cjkCharRegex = new Regex(@"\p{IsCJKUnifiedIdeographs}");
+        return cjkCharRegex.IsMatch(input_string[0].ToString());
     }
 
     public static Boolean isAppropriateLanguage(string input_string, Markets market = Markets.zhCN)
@@ -147,7 +141,8 @@ public class MovieNameProcessor : Processor
                 {
                     // for debug
                     output_row["MovieName"].Set("000" + name);
-                    yield return output_row;
+                    //yield return output_row;
+                    DebugStream.WriteLine(output_row.ToString());
                 }
             }
         }
@@ -181,7 +176,8 @@ public class ArtistNameProcessor : Processor
                 {
                     // for debug
                     output_row["ArtistName"].Set("000" + name);
-                    yield return output_row;
+                    //yield return output_row;
+                    DebugStream.WriteLine(output_row.ToString());
                 }
             }
         }
@@ -202,21 +198,22 @@ public class DirectorNameProcessor : Processor
         NameFilter name_filter = new NameFilter();
         foreach (Row input_row in input_rowset.Rows)
         {
-            string input_string = input_row["Directors"].String;
+            string input_string = input_row["DirectorName"].String;
             string[] input_split = input_string.Split(name_filter.SplitChars);
             foreach (string item in input_split)
             {
                 string name = item.Trim();
                 if (NameFilter.isAppropriateLanguage(name) && NameFilter.isAppropriateLength(name, 1, 6))
                 {
-                    output_row["ArtistName"].Set(name);
+                    output_row["DirectorName"].Set(name);
                     yield return output_row;
                 }
                 else
                 {
                     // for debug
-                    output_row["ArtistName"].Set("000" + name);
-                    yield return output_row;
+                    output_row["DirectorName"].Set("000" + name);
+                    //yield return output_row;
+                    DebugStream.WriteLine(output_row.ToString());
                 }
             }
         }

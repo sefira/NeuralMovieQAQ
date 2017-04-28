@@ -3,6 +3,8 @@
 
 RESOURCE @"/my/MovieDomain/ExtractEntityFromRawData/SplitChar.txt";
 
+#DECLARE TimeNow string = DateTime.Now.ToString("yyyy-MM-dd-HH-mm");
+
 #IF(LOCAL)
     #DECLARE filename string = @"Entity.csv";
     rs0 = 
@@ -66,12 +68,11 @@ RESOURCE @"/my/MovieDomain/ExtractEntityFromRawData/SplitChar.txt";
             Int32.Parse(Rating) > 0
         ;
 
-    
-    #DECLARE output_junkmoviefilename string = @"junkmovie_name.csv";
-    #DECLARE output_robustmoviefilename string = @"robustmovie_name.csv";
-    #DECLARE output_moviefilename string = @"movie_name.tsv";
-    #DECLARE output_artistfilename string = @"artist_name.tsv";
-
+    #DECLARE output_junkmoviefilename string = @TimeNow + @"junkmovie_name.csv";
+    #DECLARE output_robustmoviefilename string = @TimeNow + @"robustmovie_name.csv";
+    #DECLARE output_moviefilename string = @TimeNow + @"movie_name.tsv";
+    #DECLARE output_artistfilename string = @TimeNow + @"artist_name.tsv";
+    #DECLARE output_directorfilename string = @TimeNow + @"director_name.csv";
         
 #ELSE
     #DECLARE filename string = @"users/qliiu/Entity.ss";
@@ -99,11 +100,12 @@ RESOURCE @"/my/MovieDomain/ExtractEntityFromRawData/SplitChar.txt";
             !string.IsNullOrEmpty(NumberOfWatched) &&
             Int32.Parse(Rating) > 0
         ;
-      
-    #DECLARE output_junkmoviefilename string = @"/my/MovieDomain/ExtractEntityFromRawData/junkmovie_name.csv";
-    #DECLARE output_robustmoviefilename string = @"/my/MovieDomain/ExtractEntityFromRawData/robustmovie_name.csv";
-    #DECLARE output_moviefilename string = @"/my/MovieDomain/ExtractEntityFromRawData/movie_name.csv";
-    #DECLARE output_artistfilename string = @"/my/MovieDomain/ExtractEntityFromRawData/artist_name.csv";
+    #DECLARE path_root string = @"/my/MovieDomain/ExtractEntityFromRawData/";
+    #DECLARE output_junkmoviefilename string = @path_root + @TimeNow + "junkmovie_name.csv";
+    #DECLARE output_robustmoviefilename string =  @path_root + @TimeNow + "robustmovie_name.csv";
+    #DECLARE output_moviefilename string =  @path_root + @TimeNow + "movie_name.csv";
+    #DECLARE output_artistfilename string =  @path_root + @TimeNow + "artist_name.csv";
+    #DECLARE output_directorfilename string =  @path_root + @TimeNow + "director_name.csv";
 #ENDIF
 
 // after read data, we split movie into robust movie and junk movie 
@@ -149,16 +151,9 @@ movie_name =
         movie_name
     GROUP BY 
         MovieName
-    ;
-
-movie_name =
-    SELECT 
-        MovieName
-    FROM
-        movie_name
     ORDER BY MovieName ASC
     ;
-
+    
 OUTPUT movie_name
     TO @output_moviefilename
     USING DefaultTextOutputter(delimiter: ',')
@@ -189,15 +184,9 @@ artist_name =
         artist_name
     GROUP BY 
         ArtistName
-    ;
-
-artist_name =
-    SELECT *
-    FROM
-        artist_name
     ORDER BY ArtistName ASC
     ;
-
+    
 OUTPUT artist_name
     TO @output_artistfilename
     USING DefaultTextOutputter(delimiter: ',')
@@ -232,6 +221,6 @@ director_name =
     ;
     
 OUTPUT director_name
-    TO @output_artistfilename
+    TO @output_directorfilename
     USING DefaultTextOutputter(delimiter: ',')
     ;
