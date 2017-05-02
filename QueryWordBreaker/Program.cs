@@ -17,7 +17,7 @@ namespace QueryWordBreaker
 
         static void Main(string[] args)
         {
-            string query = "明日帝国";
+            string query = "三傻大闹宝莱坞";
             Console.WriteLine(IsChinese(query));
             Console.WriteLine(IsChinese(('1' + query)));
             Console.WriteLine(query[0]);

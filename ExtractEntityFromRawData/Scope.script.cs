@@ -12,7 +12,7 @@ public class ExceptJunkMovieProcessor : Processor
     public override Schema Produces(string[] requested_columns, string[] args, Schema input_schema)
     {
         //Name AS MovieName,                  //Movie Name
-        //Generes AS Generes,                 //Moive Type
+        //Generes AS Genres,                  //Moive Type
         //Artists AS Artists,                 //Actors
         //Performance AS Performance,         //Actors with order
         //Directors AS Directors,             //Directors
@@ -140,7 +140,7 @@ public class MovieNameProcessor : Processor
                 else
                 {
                     // for debug
-                    output_row["MovieName"].Set("000" + name);
+                    output_row["MovieName"].Set("000MovieNameProcessor" + name);
                     //yield return output_row;
                     DebugStream.WriteLine(output_row.ToString());
                 }
@@ -175,7 +175,7 @@ public class ArtistNameProcessor : Processor
                 else
                 {
                     // for debug
-                    output_row["ArtistName"].Set("000" + name);
+                    output_row["ArtistName"].Set("000ArtistNameProcessor" + name);
                     //yield return output_row;
                     DebugStream.WriteLine(output_row.ToString());
                 }
@@ -211,7 +211,77 @@ public class DirectorNameProcessor : Processor
                 else
                 {
                     // for debug
-                    output_row["DirectorName"].Set("000" + name);
+                    output_row["DirectorName"].Set("000DirectorNameProcessor" + name);
+                    //yield return output_row;
+                    DebugStream.WriteLine(output_row.ToString());
+                }
+            }
+        }
+    }
+}
+
+public class GenereNameProcessor : Processor
+{
+    public override Schema Produces(string[] requested_columns, string[] args, Schema input_schema)
+    {
+        var output_schema = input_schema.Clone();
+        return output_schema;
+    }
+
+    public override IEnumerable<Row> Process(RowSet input_rowset, Row output_row, string[] args)
+    {
+        NameFilter name_filter = new NameFilter();
+        foreach (Row input_row in input_rowset.Rows)
+        {
+            string input_string = input_row["GenreName"].String;
+            string[] input_split = input_string.Split(name_filter.SplitChars);
+            foreach (string item in input_split)
+            {
+                string name = item.Trim();
+                if (NameFilter.isAppropriateLanguage(name) && NameFilter.isAppropriateLength(name, 1, 6))
+                {
+                    output_row["GenreName"].Set(name);
+                    yield return output_row;
+                }
+                else
+                {
+                    // for debug
+                    output_row["GenreName"].Set("000GenreNameProcessor" + name);
+                    //yield return output_row;
+                    DebugStream.WriteLine(output_row.ToString());
+                }
+            }
+        }
+    }
+}
+
+public class CountryNameProcessor : Processor
+{
+    public override Schema Produces(string[] requested_columns, string[] args, Schema input_schema)
+    {
+        var output_schema = input_schema.Clone();
+        return output_schema;
+    }
+
+    public override IEnumerable<Row> Process(RowSet input_rowset, Row output_row, string[] args)
+    {
+        NameFilter name_filter = new NameFilter();
+        foreach (Row input_row in input_rowset.Rows)
+        {
+            string input_string = input_row["CountryName"].String;
+            string[] input_split = input_string.Split(name_filter.SplitChars);
+            foreach (string item in input_split)
+            {
+                string name = item.Trim();
+                if (NameFilter.isAppropriateLanguage(name) && NameFilter.isAppropriateLength(name, 1, 6))
+                {
+                    output_row["CountryName"].Set(name);
+                    yield return output_row;
+                }
+                else
+                {
+                    // for debug
+                    output_row["CountryName"].Set("000CountryNameProcessor" + name);
                     //yield return output_row;
                     DebugStream.WriteLine(output_row.ToString());
                 }

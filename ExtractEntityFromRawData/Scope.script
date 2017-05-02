@@ -47,20 +47,22 @@ RESOURCE @"/my/MovieDomain/ExtractEntityFromRawData/SplitChar.txt";
 
     rs0 = 
         SELECT
-            Name AS MovieName,
-            Generes AS Generes,
-            Artists AS Artists,
-            Directors AS Directors,
-            Performance AS Performance,
-            Popularity AS NumberOfWantToWatch,
-            Rating AS RatingOfDouban,
-            RatingCount AS RatingCount,
-            VisitCount AS NumberOfWatched,
-            Rank AS NumberOfReviewer,
-            PublishDate AS PublishDate,
-            Length AS Length,
-            Geographies AS Country,
-            Filter AS Language
+            Name AS MovieName,                  //Movie Name
+            Generes AS Genres,                 //Moive Type
+            Artists AS Artists,                 //Actors
+            Performance AS Performance,         //Actors with order
+            Directors AS Directors,             //Directors
+
+            Rating AS Rating,                   //The Rating
+            Rank AS NumberOfReviewer,           //Number of Reviewer for the Rating
+            RatingCount AS NumberOfShortReview, //Number of Short Review
+            VisitCount AS NumberOfWatched,      //Number of People Who Watched
+            Popularity AS NumberOfWantToWatch,  //Number of People Who Want to watch
+
+            PublishDate AS PublishDate,         //Publish Date
+            Length AS Length,                   //How Long is the Movie
+            Geographies AS Country,             //Country
+            Filter AS Language                  //Language
         FROM
             rs0
         HAVING 
@@ -73,6 +75,8 @@ RESOURCE @"/my/MovieDomain/ExtractEntityFromRawData/SplitChar.txt";
     #DECLARE output_moviefilename string = @TimeNow + @"movie_name.tsv";
     #DECLARE output_artistfilename string = @TimeNow + @"artist_name.tsv";
     #DECLARE output_directorfilename string = @TimeNow + @"director_name.csv";
+    #DECLARE output_genrefilename string = @TimeNow + @"genre_name.csv";
+    #DECLARE output_countryfilename string = @TimeNow + @"country_name.csv";
         
 #ELSE
     #DECLARE filename string = @"users/qliiu/Entity.ss";
@@ -81,15 +85,17 @@ RESOURCE @"/my/MovieDomain/ExtractEntityFromRawData/SplitChar.txt";
     rs0 =
         SELECT 
             Name AS MovieName,                  //Movie Name
-            Generes AS Generes,                 //Moive Type
+            Generes AS Genres,                  //Moive Type
             Artists AS Artists,                 //Actors
             Performance AS Performance,         //Actors with order
             Directors AS Directors,             //Directors
+
             Rating AS Rating,                   //The Rating
             Rank AS NumberOfReviewer,           //Number of Reviewer for the Rating
             RatingCount AS NumberOfShortReview, //Number of Short Review
             VisitCount AS NumberOfWatched,      //Number of People Who Watched
             Popularity AS NumberOfWantToWatch,  //Number of People Who Want to watch
+
             PublishDate AS PublishDate,         //Publish Date
             Length AS Length,                   //How Long is the Movie
             Geographies AS Country,             //Country
@@ -101,11 +107,13 @@ RESOURCE @"/my/MovieDomain/ExtractEntityFromRawData/SplitChar.txt";
             Int32.Parse(Rating) > 0
         ;
     #DECLARE path_root string = @"/my/MovieDomain/ExtractEntityFromRawData/";
-    #DECLARE output_junkmoviefilename string = @path_root + @TimeNow + "junkmovie_name.csv";
-    #DECLARE output_robustmoviefilename string =  @path_root + @TimeNow + "robustmovie_name.csv";
-    #DECLARE output_moviefilename string =  @path_root + @TimeNow + "movie_name.csv";
-    #DECLARE output_artistfilename string =  @path_root + @TimeNow + "artist_name.csv";
-    #DECLARE output_directorfilename string =  @path_root + @TimeNow + "director_name.csv";
+    #DECLARE output_junkmoviefilename string = @path_root + @TimeNow + @"junkmovie_name.csv";
+    #DECLARE output_robustmoviefilename string = @path_root + @TimeNow + @"robustmovie_name.csv";
+    #DECLARE output_moviefilename string = @path_root + @TimeNow + @"movie_name.csv";
+    #DECLARE output_artistfilename string = @path_root + @TimeNow + @"artist_name.csv";
+    #DECLARE output_directorfilename string = @path_root + @TimeNow + @"director_name.csv";
+    #DECLARE output_genrefilename string = @path_root + @TimeNow + @"genre_name.csv";
+    #DECLARE output_countryfilename string = @path_root + @TimeNow + @"country_name.csv";
 #ENDIF
 
 // after read data, we split movie into robust movie and junk movie 
@@ -127,7 +135,9 @@ OUTPUT junk_movie
     USING DefaultTextOutputter(delimiter: ',')
     ;
 
+////////////////////////////////////
 // extract movie name
+////////////////////////////////////
 movie_name =
     SELECT
         SplitMovieName AS MovieName
@@ -159,7 +169,9 @@ OUTPUT movie_name
     USING DefaultTextOutputter(delimiter: ',')
     ;
 
+////////////////////////////////////
 // extract artist name 
+////////////////////////////////////
 artist_name =
     SELECT 
         SplitArtists AS ArtistName
@@ -192,7 +204,9 @@ OUTPUT artist_name
     USING DefaultTextOutputter(delimiter: ',')
     ;
 
+////////////////////////////////////
 // extract director name 
+////////////////////////////////////
 director_name =
     SELECT 
         SplitDirectors AS DirectorName
@@ -222,5 +236,73 @@ director_name =
     
 OUTPUT director_name
     TO @output_directorfilename
+    USING DefaultTextOutputter(delimiter: ',')
+    ;
+
+////////////////////////////////////
+// extract genre name 
+////////////////////////////////////
+genre_name =
+    SELECT 
+        SplitGenres AS GenreName
+    FROM 
+        robust_movie
+    CROSS APPLY
+        Genres.Split('|') AS SplitGenres
+    ;
+
+// replace all symbol with spaces, and split the name into several names
+genre_name =
+    PROCESS genre_name
+    USING GenreNameProcessor
+    ;
+
+// combine all artists which have the same name, meanwhile count 
+genre_name =
+    SELECT 
+        GenreName
+    FROM 
+        genre_name
+    GROUP BY 
+        GenreName
+    ORDER BY GenreName ASC
+    ;
+    
+OUTPUT genre_name
+    TO @output_genrefilename
+    USING DefaultTextOutputter(delimiter: ',')
+    ;
+
+////////////////////////////////////
+// extract country name 
+////////////////////////////////////
+country_name =
+    SELECT 
+        SplitCountry AS CountryName
+    FROM 
+        robust_movie
+    CROSS APPLY
+        Country.Split('|') AS SplitCountry
+    ;
+
+// replace all symbol with spaces, and split the name into several names
+country_name =
+    PROCESS country_name
+    USING CountryNameProcessor
+    ;
+
+// combine all artists which have the same name, meanwhile count 
+country_name =
+    SELECT 
+        CountryName
+    FROM 
+        country_name
+    GROUP BY 
+        CountryName
+    ORDER BY CountryName ASC
+    ;
+    
+OUTPUT country_name
+    TO @output_countryfilename
     USING DefaultTextOutputter(delimiter: ',')
     ;
