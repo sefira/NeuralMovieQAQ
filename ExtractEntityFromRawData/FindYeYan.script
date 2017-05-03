@@ -1,0 +1,22 @@
+﻿//Script GUID:74501202-94b5-4693-9101-3a2f07cb34b2
+//Used for tracking history
+
+#DECLARE TimeNow string = DateTime.Now.ToString("yyyy-MM-dd-HH-mm");
+
+#DECLARE filename string = @"users/qliiu/Entity.ss";
+rs0 = SSTREAM @filename;
+
+#DECLARE path_root string = @"/my/MovieDomain/ExtractEntityFromRawData/";
+#DECLARE output_yeyan_moviefilename string = @path_root + @TimeNow + @"yeyan_movie_name.ss";
+
+
+// after read data, we are going to find the movie: YeYan 
+yeyan_name =
+    SELECT
+        *
+    FROM
+        rs0
+    WHERE
+        Name.Contains("夜宴")
+    ;
+OUTPUT yeyan_name TO SSTREAM @output_yeyan_moviefilename ;

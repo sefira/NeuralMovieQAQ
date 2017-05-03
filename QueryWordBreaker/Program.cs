@@ -5,25 +5,25 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace QueryWordBreaker
+using JiebaNet.Segmenter;
+using System;
+
+namespace C_sharp
 {
     class Program
     {
-        public static bool IsChinese(string input_string)
-        {
-            Regex cjkCharRegex = new Regex(@"\p{IsCJKUnifiedIdeographs}");
-            return cjkCharRegex.IsMatch(input_string[0].ToString());
-        }
-
         static void Main(string[] args)
         {
-            string query = "三傻大闹宝莱坞";
-            Console.WriteLine(IsChinese(query));
-            Console.WriteLine(IsChinese(('1' + query)));
-            Console.WriteLine(query[0]);
-            string brokenquery = WordBreaker.GetInstance().DoBreakOnString(query);
-            Console.WriteLine(brokenquery);
-            //WordBreaker.GetInstance().DoBreakOnFile(args[0], args[1], Markets.zhCN);
+
+            JiebaSegmenter segmenter = new JiebaSegmenter();
+            segmenter.AddWord("學系");
+
+            String[] sets = new String[] { "資訊工程學系", "資訊管理學系", "應用化學學系", "土木工程學系", "外國語言學系" };
+
+            foreach (string s in sets)
+                Console.WriteLine(string.Join(" ", segmenter.Cut(s)));
+
+            Console.ReadKey();
         }
     }
 }
