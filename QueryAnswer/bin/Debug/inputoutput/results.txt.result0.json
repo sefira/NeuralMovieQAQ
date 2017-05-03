@@ -1,0 +1,210 @@
+<SnappsEntity xmlns="http://schemas.datacontract.org/2004/07/ChinaOpalSearch" xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+<Alias xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+<a:string>天下 无 贼</a:string>
+<a:string>天下无贼</a:string>
+<a:string>a world without thieves</a:string>
+<a:string>电影 天下 无 贼</a:string>
+<a:string>aworldwithoutthieve 电影</a:string>
+<a:string>天下 无 贼 电影</a:string>
+<a:string>电影 aworldwithoutthieve</a:string>
+<a:string>aworldwithoutthieve</a:string>
+</Alias>
+<AnswerFeedName>QuickBingWikiCard.SnappMovieForPartner</AnswerFeedName>
+<AnswerScenario>ModuleList</AnswerScenario>
+<AnswerServiceName>MsnJVDataAnswerV2</AnswerServiceName>
+<AnswerVSName/>
+<Categories xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+<a:string>电影</a:string>
+</Categories>
+<Clients xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+<CustomData xmlns:a="http://schemas.datacontract.org/2004/07/Microsoft.Bond"/>
+<Description>王薄（刘德华 饰）和王丽（刘若英 饰）本是一对最佳贼拍档，但因怀了王薄的孩子，王丽决定收手赎罪，两人产生分歧。在火车站遇到刚刚从城市里挣了一笔钱准备回老家用它盖房子娶媳妇的农村娃子傻根（王宝强 饰）后，王丽被他的单纯打动，决定暗中保护不使他的辛苦钱失窃，王薄却寻思找合适机会下手，但 最终因为“夫妻情深”归入了王丽的阵营。 不料傻根的钱早被以黎叔（葛优 饰）为头目的另一著名扒窃团伙盯上，于是一系列围绕傻根书包里的钞票、在王薄、王丽和黎叔团伙之间展开的强强斗争上演。</Description>
+<EndDate>0</EndDate>
+<Entment>
+<Albums xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+<Artists xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+<a:string>范伟</a:string>
+<a:string>刘德华</a:string>
+<a:string>冯远征</a:string>
+<a:string>刘若英</a:string>
+<a:string>李冰冰</a:string>
+<a:string>张涵予</a:string>
+<a:string>王宝强</a:string>
+<a:string>尤勇</a:string>
+<a:string>傅彪</a:string>
+<a:string>林家栋</a:string>
+<a:string>葛优</a:string>
+<a:string>徐帆</a:string>
+<a:string>钟萍</a:string>
+</Artists>
+<Channels xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+<Characters xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+<Directors xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+<a:string>冯小刚</a:string>
+</Directors>
+<Distributors xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+<Genres xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+<a:string>剧情片</a:string>
+<a:string>动作片</a:string>
+<a:string>犯罪片</a:string>
+<a:string>爱情片</a:string>
+<a:string>经典片</a:string>
+</Genres>
+<Performance xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+<a:KeyValueOfstringstring>
+<a:Key>葛优</a:Key>
+<a:Value>3</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>王宝强</a:Key>
+<a:Value>4</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>张涵予</a:Key>
+<a:Value>6</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>李冰冰</a:Key>
+<a:Value>5</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>冯远征</a:Key>
+<a:Value>11</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>刘若英</a:Key>
+<a:Value>2</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>范伟</a:Key>
+<a:Value>10</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>林家栋</a:Key>
+<a:Value>12</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>徐帆</a:Key>
+<a:Value>8</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>刘德华</a:Key>
+<a:Value>1</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>傅彪</a:Key>
+<a:Value>9</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>尤勇</a:Key>
+<a:Value>7</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>钟萍</a:Key>
+<a:Value>9</a:Value>
+</a:KeyValueOfstringstring>
+</Performance>
+</Entment>
+<Excludes xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+<Filters xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+<a:KeyValueOfstringstring>
+<a:Key>Language</a:Key>
+<a:Value>汉语普通话</a:Value>
+</a:KeyValueOfstringstring>
+</Filters>
+<Geographies xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+<a:string>中国</a:string>
+<a:string>香港</a:string>
+<a:string>中国香港</a:string>
+</Geographies>
+<ImageUrls xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+<a:KeyValueOfstringstring>
+<a:Key>douban</a:Key>
+<a:Value>https://img1.doubanio.com/view/movie_poster_cover/lpst/public/p1910825177.jpg</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>iqiyi</a:Key>
+<a:Value>http://pic2.qiyipic.com/image/20140509/ea/02/34/li_20914_li_601_m1.jpg</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>letv</a:Key>
+<a:Value>http://i2.letvimg.com/vrs/201301/23/8d986899c7f0495587f42780dc941e4f.jpg</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>mtime</a:Key>
+<a:Value>http://img31.mtime.cn/mt/2014/02/23/005730.50529133_270X405X4.jpg</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>m1905</a:Key>
+<a:Value>http://image11.m1905.cn/uploadfile/2009/1114/thumb_1_176_237_20091114084335417.jpg</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>sohu</a:Key>
+<a:Value>http://photocdn.sohu.com/kis/fengmian/0/7/7_ver_big.jpg</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>tencent</a:Key>
+<a:Value>http://puui.qpic.cn/vcover_vt_pic/0/diorbzscv6iur2ut1444816663.jpg/220</a:Value>
+</a:KeyValueOfstringstring>
+</ImageUrls>
+<IntEmbeddedFilters xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+<IntFilters xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+<KgId>http://kg.microsoft.com/625fad52-e9e5-d76a-630e-e5cbec4ef45e</KgId>
+<Length>113</Length>
+<Logo/>
+<MetaTags xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+<Name>天下无贼</Name>
+<OfficialSite/>
+<Popularity>3537</Popularity>
+<PublishDate>20041209</PublishDate>
+<QueryRank>286229</QueryRank>
+<Rank>208435</Rank>
+<Rating>76</Rating>
+<RatingCount>22303</RatingCount>
+<ReviewCount>0</ReviewCount>
+<Segments xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+<a:string>film</a:string>
+</Segments>
+<SourceUrls xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+<a:KeyValueOfstringstring>
+<a:Key>douban</a:Key>
+<a:Value>http://movie.douban.com/subject/1291550/</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>iqiyi</a:Key>
+<a:Value>http://www.iqiyi.com/lib/m_201199614.html</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>letv</a:Key>
+<a:Value>http://www.letv.com/movie/32023.html</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>youku</a:Key>
+<a:Value>http://www.youku.com/show_page/id_zcc047448962411de83b1.html</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>mtime</a:Key>
+<a:Value>http://movie.mtime.com/21211/</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>m1905</a:Key>
+<a:Value>http://www.1905.com/mdb/film/55764/</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>sohu</a:Key>
+<a:Value>http://tv.sohu.com/item/Nw==.html</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>baidu_baike</a:Key>
+<a:Value>http://baike.baidu.com/subview/39918/6272046.htm</a:Value>
+</a:KeyValueOfstringstring>
+<a:KeyValueOfstringstring>
+<a:Key>tencent</a:Key>
+<a:Value>http://v.qq.com/detail/d/diorbzscv6iur2u.html</a:Value>
+</a:KeyValueOfstringstring>
+</SourceUrls>
+<UpdateDate>20170502</UpdateDate>
+<UxHit>GenericKif</UxHit>
+<UxSchema>GenericKif</UxSchema>
+<VisitCount>286229</VisitCount>
+</SnappsEntity>

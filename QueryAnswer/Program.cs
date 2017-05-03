@@ -6,7 +6,7 @@ using System.Linq;
 using QueryAnswer;
 using System.Collections.Generic;
 
-namespace C_sharp
+namespace QueryAnswer
 {
     class Program
     {
@@ -19,6 +19,8 @@ namespace C_sharp
             Parser m_Parser = new Parser();
             m_Parser.ParseAll(ref q);
             var a = q;
+            oSearchClient o = new oSearchClient();
+            o.TestQuery();
         }
     }
 }

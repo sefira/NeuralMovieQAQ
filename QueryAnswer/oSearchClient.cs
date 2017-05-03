@@ -1,12 +1,23 @@
-﻿using Microsoft.Bond;
-using ObjectStoreWireProtocol;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.IO;
+using Microsoft.Bond;
 using System.Threading;
-using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Runtime.Serialization;
+
+// HTTP Interface - see HttpManagedClient project
+using Microsoft.ObjectStore.HTTPInterface;
+using Microsoft.ObjectStore.OneBox;
+using ObjectStoreClient;
+using ObjectStoreWireProtocol;
+
+// See Project Properties => Pre-Build Event script
+using ChinaOpalSearch;
+using Microsoft.ObjectStore.OSearchClient;
 
 namespace QueryAnswer
 {
@@ -53,8 +64,22 @@ namespace QueryAnswer
             return bondObject;
         }
         
+        static string ClassToJason(ChinaOpalSearch.SnappsEntity entity)
+        {
+            DataContractSerializer serializer = new DataContractSerializer(typeof(ChinaOpalSearch.SnappsEntity));
 
-        private static void DoHttpIndexQuery(string indexQueryType, string tlaQuery, uint offSet, uint resultsCount, string outputFilePath)
+            System.IO.MemoryStream ms = new MemoryStream();
+            serializer.WriteObject(ms, entity);
+            System.IO.StreamReader reader = new StreamReader(ms);
+            ms.Position = 0;
+            string strRes = reader.ReadToEnd();
+            reader.Close();
+            ms.Close();
+
+            return strRes;
+        }
+
+        private static IEnumerable<ChinaOpalSearch.SnappsEntity> DoHttpIndexQuery(string indexQueryType, string tlaQuery, uint offSet, uint resultsCount)
         {
             //
             // use http query to get data through index
@@ -90,7 +115,7 @@ namespace QueryAnswer
                 {
                     Console.WriteLine("IndexResponse query status is not success in {0} ms. IndexQueryStatus:{1}",
                         timeElapsed, indexResponse.m_IndexQueryStatus.ToString());
-                    return;
+                    return results;
                 }
                 else
                 {
@@ -102,7 +127,6 @@ namespace QueryAnswer
                 timeElapsed += 2000;
             } while (true);
 
-            StreamWriter output = new StreamWriter(outputFilePath);
             // Collect index response
             List<string> allKeys = new List<string>();
             ObjectStorePredefinedOperations predefinedOperations = new ObjectStorePredefinedOperations();
@@ -113,74 +137,47 @@ namespace QueryAnswer
                 //PaperId key = DecodeBondObject<PaperId>(indexSubResponse.m_Key.Data.Array);
                 allKeys.Add(key.Id + ",");
             }
-
-            output.WriteLine(string.Format("backendlatency : {0}ms, totalestimatematchresults: {1}", latencyBackend.ToString(), indexResponse.m_TotalEstimatedMatches.ToString()));
-            output.WriteLine(string.Format("output {0} results. traceid is: {1}", allKeys.Count.ToString(), indexResponse.m_TraceID.ToString()));
-            output.WriteLine(string.Concat(allKeys));
-
-            output.WriteLine("============================================results=================================================");
-
-            int i = 0;
-            foreach (var result in results)
-            {
-                string resultPage = outputFilePath + "." + "result" + i.ToString() + ".json";
-                StreamWriter sw = new StreamWriter(resultPage);
-
-                string json = ClassToJason(result);
-
-                json = json.Replace("\r", "");
-                json = json.Replace("\n", "");
-                json = json.Replace("><", ">\r\n<");
-
-                sw.Write(json);
-                sw.Close();
-
-                output.Write(json);
-                output.Flush();
-
-                output.WriteLine("------------------------------------------------------------------------------------------------");
-                i++;
-            }
+            return results;
         }
 
-        static void Main(string[] args)
+        public void TestQuery()
         {
-            if (args.Length != 2)
-            {
-                Console.WriteLine("usage is like: .exe inputqueryaugmentationfile outputfolder");
-                return;
-            }
+            string query_head = @"#:"" _DocType_ChinaEntity"" #:""filmSegments "" ";
+            string query_filter = @" AND #:""刘德华Artists "" AND #:""王宝强Artists """;
+            string queryAndaug = query_head + query_filter;
 
-            string queryAndaug = "";
-
-            StreamReader sr = new StreamReader(args[0]);
-            if (!sr.EndOfStream)
-            {
-                queryAndaug = sr.ReadLine();
-            }
-            sr.Close();
-
-            if (string.IsNullOrEmpty(queryAndaug))
-            {
-                Console.WriteLine("query is empty");
-                return;
-            }
-
-            string[] tokens = queryAndaug.Split(new string[] { "@@@" }, StringSplitOptions.RemoveEmptyEntries);
-            if (tokens.Length != 3)
-            {
-                Console.WriteLine("input is wrong!");
-                return;
-            }
-
-            uint offSet = uint.Parse(tokens[0]);
-            uint resultsCount = uint.Parse(tokens[1]);
+            uint offSet = 0;
+            uint resultsCount = 10;
 
             Console.WriteLine("Get oSearch results for queryandaug: {0}", queryAndaug);
 
-            string tlaQuery = GetTLAQuery(Namespace, IndexTable, tokens[2]);
+            string tlaQuery = GetTLAQuery(Namespace, IndexTable, queryAndaug);
             ObjectStorePredefinedOperations predefinedOperations = new ObjectStorePredefinedOperations();
-            DoHttpIndexQuery(predefinedOperations.INDEX_QUERY_WITH_VALUE, tlaQuery, offSet, resultsCount, args[1]);
+            var results = DoHttpIndexQuery(predefinedOperations.INDEX_QUERY_WITH_VALUE, tlaQuery, offSet, resultsCount);
+
+            foreach (var result in results)
+            {
+                Console.WriteLine(result.Name);
+            }
+        }
+        public void Query(string query_filter)
+        {
+            string query_head = @"#:"" _DocType_ChinaEntity"" #:""filmSegments "" ";
+            string queryAndaug = query_head + query_filter;
+
+            uint offSet = 0;
+            uint resultsCount = 10;
+
+            Console.WriteLine("Get oSearch results for queryandaug: {0}", queryAndaug);
+
+            string tlaQuery = GetTLAQuery(Namespace, IndexTable, queryAndaug);
+            ObjectStorePredefinedOperations predefinedOperations = new ObjectStorePredefinedOperations();
+            var results = DoHttpIndexQuery(predefinedOperations.INDEX_QUERY_WITH_VALUE, tlaQuery, offSet, resultsCount);
+
+            foreach (var result in results)
+            {
+                Console.WriteLine(result.Name);
+            }
         }
     }
 }

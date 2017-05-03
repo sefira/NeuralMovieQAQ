@@ -1,0 +1,58 @@
+0@@@10@@@#:" _DocType_ChinaEntity" (#:"filmSegments " AND (#:"刘德华Artists " AND #:"王宝强Artists "))
+0@@@10@@@#:" _DocType_DictionaryEntity" #:" _Rank" adjust:100rankmul:#:" _Rank" [metastream=Lang1 metastream=Lang2 metastream=Phrase] adjust:870feature:#:" _Source_BingDictionary_WebReference" adjust:860feature:#:" _TranslationScore" adjust:850feature:#:" _ReadLevel" adjust:840feature:#:" _WebReference" adjust:890feature:#:" _Lang1AlignmentsRatio" adjust:891feature:#:" _Lang2AlignmentsRatio" adjust:892feature:#:" _Lang1AlignmentLengthRatio" adjust:893feature:#:" _Lang2AlignmentLengthRatio" adjust:894feature:#:" _Lang1Lang2LengthRatio" adjust:895feature:#:" _ShortLongLengthRation" [gini=objectstore\academic\SentenceRanker_MartV5_9_4.ini ranker=nn] "professional accountant"
+0@@@10@@@#:" _DocType_DictionaryEntity" [metastream=Lang1 metastream=Lang2 metastream=Phrase] "professional accountant" #:" _Rank" adjust:100rankmul:#:" _Rank"
+0@@@10@@@#:" _DocType_ChinaEntity" #:"刘涛Name " OR #:"刘涛Alias " [dbg:DRL1Features]
+0@@@10@@@#:" _DocType_Paper" #:" _PaperId_2588810619"
+0@@@10@@@#:" _DocType_ChinaEntity" #:"刘涛Name " OR #:"刘涛Alias "
+0@@@10@@@#:" _DocType_ChinaEntity" #:"filmSegments " #:"刘德华Artists " instreamset:(Genres):"喜剧" #:" _PublishDate" adjust:-1rankmul:#:" _PublishDate"
+0@@@100@@@#:" _DocType_Paper" #:"data miningFosnameen " [qlf$1966:1] [metastream=NormTitle metastream=AuthName metastream=AffiName metastream=NormVenue metastream=FOSName] [ini=objectstore\academic\L1-EntityMatch-20161025.ini ranker=te] [gini$granker:te=objectstore\academic\L2-EntityMatch-20161103.ini] [minbla=50] data mining
+0@@@10@@@#:" _DocType_ChinaEntity" #:"filmSegments " [qlf$1965:20161030] [qlf$1966:1] [ini=objectstore\academic\L1-SnappsSearch-20161031-2.ini ranker=te]
+0@@@10@@@#:" _DocType_Paper" #:" _PaperId_2125284466"
+0@@@10@@@#:" _DocType_Paper" #:"jiawei hanAuthnameen " rangeconstraint:eq:2:#:"jiawei hanAuthnameen "
+0@@@10@@@#:" _DocType_ChinaEntity" #:"attractionSegments " AND #:"Entityfilters " 
+0@@@10@@@#:" _DocType_Paper" (#:"kddFosnameen " OR #:"kddNormvenueen " OR #:"kddNormtitleen ") [qlf$1966:1] [metastream=NormTitle metastream=AuthName metastream=AffiName metastream=NormVenue metastream=FOSName] [ini=objectstore\academic\L1-EntityMatch-20161018.ini ranker=te] [gini$granker:te=objectstore\academic\L2-EntityMatch-20161018.ini] kdd
+0@@@10@@@#:" _DocType_Paper" #:"窄 谱 中波 紫外 线 联合 消 银 颗粒 治疗 银屑 病 临床 观察Normtitleen "
+0@@@10@@@#:" _DocType_ChinaEntity" (#:"filmSegments " AND (#:"刘德华Artists " AND #:"王宝强Artists "))
+0@@@20@@@#:" _DocType_Paper" #:"严磊Authnameen "
+0@@@10@@@#:" _DocType_Paper" (#:"natureFosnameen " OR #:"natureNormvenueen ")
+0@@@10@@@#:" _DocType_ChinaEntity" #:"filmSegments " #:"刘德华Artists " instreamset:(Genres):"喜剧" #:" _PublishDate" adjust:-1rankmul:#:" _PublishDate"
+0@@@10@@@#:" _DocType_Paper" (#:"natureFosnameen " OR #:"natureNormvenueen ")
+0@@@10@@@#:" _DocType_Paper" (#:"natureNormvenueen ")
+0@@@10@@@#:" _DocType_ChinaEntity" #:"filmSegments " #:"刘德华Artists " instreamset:(Genres):"喜剧" #:" _PublishDate" adjust:-1rankmul:#:" _PublishDate"
+0@@@10@@@#:" _DocType_ChinaEntity" (#:"filmSegments " AND #:"阿甘正传Name ")
+0@@@10@@@#:" _DocType_Paper" (#:"natureFosnameen " OR #:"natureNormvenueen " OR #:"natureAuthnameen " OR #:"published online october natureAuthnameen " OR #:"published online june natureAuthnameen ") [qlf$1966:1] [ini=objectstore\academic\L1-EntityMatch-20160815.ini ranker=te] nature
+0@@@10@@@#:" _DocType_Paper" (#:"natureNormvenueen ")
+0@@@10@@@#:" _DocType_ChinaEntity" #:""
+0@@@10@@@#:" _DocType_Paper" (#:"natureNormvenueen ")
+0@@@10@@@#:" _DocType_Paper" (#:"natureFosnameen " OR #:"natureNormvenueen ") [qlf$1966:1] [ini=objectstore\academic\L1-EntityMatch-20160830.ini ranker=te] nature
+0@@@10@@@#:" _DocType_Paper" (#:"data miningNormtitleen " OR #:"data miningFosnameen " OR (#:"dataFosnameen " AND #:"miningFosnameen ")) [metastream=NormTitle metastream=AuthName metastream=AffiName metastream=NormVenue metastream=FOSName] [qlf$1966:1] [ini=objectstore\academic\L1-EntityMatch-20160826_Neil.ini ranker=te]
+
+
+0@@@50@@@#:" _DocType_Paper" (#:"data miningNormtitleen " OR #:"data miningFosnameen " OR (#:"dataFosnameen " AND #:"miningFosnameen ")) [ini=objectstore\academic\L1-EntityMatch-20160815.ini ranker=te] [qlf$1966:1] #:" _PublishYear" adjust:-1featuremul_0:#:" _PublishYear" #:" _Citation" adjust:1featuremul_1:#:" _Citation"
+0@@@50@@@#:" _DocType_Paper" (#:"data miningNormtitleen " OR #:"data miningFosnameen " OR (#:"dataFosnameen " AND #:"miningFosnameen "))  data mining
+0@@@50@@@#:" _DocType_Paper" (#:"data miningNormtitleen " OR #:"data miningFosnameen " OR (#:"dataFosnameen " AND #:"miningFosnameen ")) #:" _Citation" adjust:1rankmul:#:" _Citation" [ini=objectstore\academic\L1-EntityMatch-20160815.ini ranker=te] [qlf$1966:4] data mining
+0@@@100@@@#:" _DocType_Paper" #:"data miningFosnameen " OR (#:"dataFosnameen " AND #:"miningFosnameen ") OR #:"data miningNormtitleen " #:" _Citation" adjust:1rankmul:#:" _Citation" [ranker=sort]
+0@@@100@@@[ranker=sort] #:" _DocType_Paper" #:" _Citation" adjust:1rankmul:#:" _Citation" (#:"data miningFosnameen " OR (#:"dataFosnameen " AND #:"miningFosnameen ") OR #:"data miningNormtitleen ")
+0@@@100@@@#:" _DocType_Paper" #:"data miningNormtitleen " #:" _Citation" adjust:1rankmul:#:" _Citation" [ranker=sort]
+0@@@100@@@#:" _DocType_Paper" #:"data miningFosnameen " OR (#:"dataFosnameen " AND #:"miningFosnameen ") OR #:"data miningNormtitleen " #:" _Citation" adjust:1rankmul:#:" _Citation" [ranker=sort]
+100@@@50@@@#:" _DocType_Paper" #:"data miningFosnameen " #:"jiawei hanAuthnameen " rangeconstraint:bt:2000:2015:#:" _PublishYear" #:" _Citation" adjust:1rankmul:#:" _Citation" [ranker=sort]
+0@@@10@@@#:" _DocType_Paper" (#:"data miningFosnameen " OR #:"machine learningFosnameen ") #:" _Citation" adjust:1rankmul:#:" _Citation" [ranker=sort]
+
+#:" _DocType_Paper" #:"data miningFosnameen " #:" _Citation" adjust:1rankmul:#:" _Citation" [ranker=sort]
+#:" _DocType_Paper" #:"iterative adaptive spatial filtering for noise suppression in functional magnetic resonance imaging time seriesNormtitleen "
+#:" _DocType_Paper" #:"jiawei hanAuthnameen " rangeconstraint:bt:2009:2016:#:" _PublishYear" adjust:0mark:#:" _Citation" [FilterSetMarkerStats:hist:bucketsize:60] [dbg:FilterSetMarkerStatistics] [dbg:ResultSetMarkerHistogram]
+#:" _DocType_Paper" #:"jiawei hanAuthnameen " rangeconstraint:bt:2009:2016:#:" _PublishYear" adjust:0mark:#:" _Citation" [filtersetmarkerstats:hist:0:maxaggregateddatacount:60 adjustfiltersetmarkerstats]
+[dbg:FilterSetMarkerStatistics] []
+ [opt:]
+#:" _DocType_Paper" #:"jiawei hanAuthnameen " #:"data miningFosnameen " rangeconstraint:bt:2009:2016:#:" _PublishYear" adjust:1rankmul:#:" _Citation" rangeconstraint:eq:1:#:" _AuthSeq"
+#:" _DocType_Paper" #:"jiawei hanAuthnameen " #:"data miningFosnameen " #:"icdmNormvenueen " rangeconstraint:bt:2000:2017:#:" _PublishYear"
+#:" _DocType_Paper" #:"jiawei hanAuthnameen " #:"data miningFosnameen " rangeconstraint:eq:2:#:" _AuthSeq"
+#:" _DocType_Paper" #:"jiawei hanAuthnameen " #:"data miningFosnameen "
+#:" _DocType_Paper" #:"wang xinAuthnameen " rangeconstraint:eq:1:#:" _AuthSeq"
+#:" _DocType_Paper" #:"wang xinAuthnameen "
+
+
+
+0@@@50@@@#:" _DocType_Paper" (#:"data miningNormtitleen " OR #:"data miningFosnameen " OR (#:"dataFosnameen " AND #:"miningFosnameen ")) #:" _Citation" adjust:1featuremul_0:#:" _Citation" #:" _PublishYear" adjust:-1featuremul_1:#:" _PublishYear" [ini=objectstore\academic\L1-EntityMatch-20160815.ini ranker=te] [qlf$1966:4] data mining
+
+tlaQuery = [tla:mermaidtesthook:msnjvfeeds.snappsentityindex opt] #:" _DocType_ChinaEntity" #:"hptopnewsSegments "
