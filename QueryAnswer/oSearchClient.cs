@@ -142,35 +142,38 @@ namespace QueryAnswer
 
         public void TestQuery()
         {
-            string query_head = @"#:"" _DocType_ChinaEntity"" #:""filmSegments "" ";
-            string query_filter = @" AND #:""刘德华Artists "" AND #:""王宝强Artists """;
-            string queryAndaug = query_head + query_filter;
+            //string query_head = @"#:"" _DocType_ChinaEntity"" #:""filmSegments "" ";
+
+            string query_format = @"#:"" _DocType_ChinaEntity"" #:""filmSegments "" AND ({0})";
+            string query_filter = @" #:""刘德华Artists "" AND #:""王宝强Artists "" AND #:""战争Genres """;
+            string query = string.Format(query_format, query_filter);
 
             uint offSet = 0;
             uint resultsCount = 10;
 
-            Console.WriteLine("Get oSearch results for queryandaug: {0}", queryAndaug);
+            Console.WriteLine("Get oSearch results for query: {0}", query);
 
-            string tlaQuery = GetTLAQuery(Namespace, IndexTable, queryAndaug);
+            string tlaQuery = GetTLAQuery(Namespace, IndexTable, query);
             ObjectStorePredefinedOperations predefinedOperations = new ObjectStorePredefinedOperations();
             var results = DoHttpIndexQuery(predefinedOperations.INDEX_QUERY_WITH_VALUE, tlaQuery, offSet, resultsCount);
 
             foreach (var result in results)
             {
                 Console.WriteLine(result.Name);
+                Console.WriteLine(result.Entment.Genres[1]);
             }
         }
         public void Query(string query_filter)
         {
-            string query_head = @"#:"" _DocType_ChinaEntity"" #:""filmSegments "" ";
-            string queryAndaug = query_head + query_filter;
+            string query_format = @"#:"" _DocType_ChinaEntity"" #:""filmSegments "" AND ({0})";
+            string query = string.Format(query_format, query_filter);
 
             uint offSet = 0;
             uint resultsCount = 10;
 
-            Console.WriteLine("Get oSearch results for queryandaug: {0}", queryAndaug);
+            Console.WriteLine("Get oSearch results for query: {0}", query);
 
-            string tlaQuery = GetTLAQuery(Namespace, IndexTable, queryAndaug);
+            string tlaQuery = GetTLAQuery(Namespace, IndexTable, query);
             ObjectStorePredefinedOperations predefinedOperations = new ObjectStorePredefinedOperations();
             var results = DoHttpIndexQuery(predefinedOperations.INDEX_QUERY_WITH_VALUE, tlaQuery, offSet, resultsCount);
 

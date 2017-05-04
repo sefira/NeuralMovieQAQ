@@ -102,6 +102,7 @@
     <Compile Include="chinaopalsearch_proxies.cs" />
     <Compile Include="chinaopalsearch_services.cs" />
     <Compile Include="chinaopalsearch_types.cs" />
+    <Compile Include="DialogManager.cs" />
     <Compile Include="oSearchClient.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="Program.cs" />

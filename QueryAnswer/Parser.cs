@@ -9,22 +9,39 @@ using System.Threading.Tasks;
 
 namespace QueryAnswer
 {
-    class EntitySegmenter
+    class Entity
     {
-        private Dictionary<string, string> entity_tag = new Dictionary<string, string>()
+        private static List<string> entity_list = new List<string>()
+        {
+            "movie",
+            "artist",
+            "director",
+            "country",
+            "genre"
+        };
+
+        public static List<string> EntityList
+        {
+            get { return entity_list; }
+        }
+
+        private static Dictionary<string, string> entity_tag = new Dictionary<string, string>()
         {
             { "movie","nmovie" } ,
-            { "artist", "nrartist"},
-            { "director", "nrdirector"},
+            { "artist", "nrartist" },
+            { "director", "nrdirector" },
             { "country", "ncountry" },
             { "genre", "ngenre" }
         };
 
-        public Dictionary<string, string> EntityTag
+        public static Dictionary<string, string> EntityTag
         {
             get { return entity_tag; }
         }
+    }
 
+    class EntitySegmenter
+    {
         private static readonly string data_path = @"D:\MovieDomain\QueryAnswer\resource\";
         private static readonly string movie_filename = @"movie_name.csv";
         private static readonly string artist_filename = @"artist_name.csv";
@@ -175,9 +192,9 @@ namespace QueryAnswer
             var pos_tags = entity_seg.PosSegers["movie"].Cut(query.RawQuery);
             foreach (var item in pos_tags)
             {
-                if (entity_seg.EntityTag["movie"].Equals(item.Flag))
+                if (Entity.EntityTag["movie"].Equals(item.Flag))
                 {
-                    query.is_movie_considerd = true;
+                    query.is_considerd["movie"] = true;
                     query.carried_movie.Add(item.Word);
                 }
             }
@@ -189,9 +206,9 @@ namespace QueryAnswer
             var pos_tags = entity_seg.PosSegers["artist"].Cut(query.RawQuery);
             foreach (var item in pos_tags)
             {
-                if (entity_seg.EntityTag["artist"].Equals(item.Flag))
+                if (Entity.EntityTag["artist"].Equals(item.Flag))
                 {
-                    query.is_artist_considerd = true;
+                    query.is_considerd["artist"] = true;
                     query.carried_artist.Add(item.Word);
                 }
             }
@@ -203,9 +220,9 @@ namespace QueryAnswer
             var pos_tags = entity_seg.PosSegers["director"].Cut(query.RawQuery);
             foreach (var item in pos_tags)
             {
-                if (entity_seg.EntityTag["director"].Equals(item.Flag))
+                if (Entity.EntityTag["director"].Equals(item.Flag))
                 {
-                    query.is_director_considerd = true;
+                    query.is_considerd["director"] = true;
                     query.carried_director.Add(item.Word);
                 }
             }
@@ -217,9 +234,9 @@ namespace QueryAnswer
             var pos_tags = entity_seg.PosSegers["country"].Cut(query.RawQuery);
             foreach (var item in pos_tags)
             {
-                if (entity_seg.EntityTag["country"].Equals(item.Flag))
+                if (Entity.EntityTag["country"].Equals(item.Flag))
                 {
-                    query.is_countrye_considerd = true;
+                    query.is_considerd["country"] = true;
                     query.carried_country.Add(item.Word);
                 }
             }
@@ -231,9 +248,9 @@ namespace QueryAnswer
             var pos_tags = entity_seg.PosSegers["genre"].Cut(query.RawQuery);
             foreach (var item in pos_tags)
             {
-                if (entity_seg.EntityTag["genre"].Equals(item.Flag))
+                if (Entity.EntityTag["genre"].Equals(item.Flag))
                 {
-                    query.is_genre_considerd = true;
+                    query.is_considerd["genre"] = true;
                     query.carried_genre.Add(item.Word);
                 }
             }
@@ -290,16 +307,16 @@ namespace QueryAnswer
             {
                 if (old_date_tag.Contains(word_list[i]))
                 {
-                    query.carried_publishdate[0] = "2010";
-                    query.carried_publishdate[1] = "before";
-                    query.is_publishdate_considerd = true;
+                    query.carried_publishdate.year = 2010;
+                    query.carried_publishdate.type = DateType.before;
+                    query.is_considerd["publishdate"] = true;
                     return;
                 }
                 if (new_date_tag.Contains(word_list[i]))
                 {
-                    query.carried_publishdate[0] = DateTime.Today.Year.ToString();
-                    query.carried_publishdate[1] = "round";
-                    query.is_publishdate_considerd = true;
+                    query.carried_publishdate.year = DateTime.Now.Year;
+                    query.carried_publishdate.type = DateType.exact;
+                    query.is_considerd["publishdate"] = true;
                     return;
                 }
                 // if there is an exact time, then parse it and return
@@ -308,9 +325,9 @@ namespace QueryAnswer
                     date = ParseDate(query, i);
                     if (!string.IsNullOrEmpty(date))
                     {
-                        query.carried_publishdate[0] = date;
-                        query.carried_publishdate[1] = "round";
-                        query.is_publishdate_considerd = true;
+                        query.carried_publishdate.year = int.Parse(date);
+                        query.carried_publishdate.type = DateType.exact;
+                        query.is_considerd["publishdate"] = true;
                         return ;
                     }
                 }
