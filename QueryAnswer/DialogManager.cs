@@ -31,6 +31,9 @@ namespace QueryAnswer
                     considerd_score += considerd_weight[entity];
                 }
             }
+            // number of results < 10 then end
+            // TODO
+            //
             if (considerd_score >= 100)
             {
                 return true;
@@ -44,8 +47,8 @@ namespace QueryAnswer
         public void DialogFlow()
         {
             // begin
-            Session m_session = new Session();
-            Parser m_parser = new Parser();
+            Session session = new Session();
+            Parser parser = new Parser();
             string parse_status = "all";
 
             while (true)
@@ -53,36 +56,36 @@ namespace QueryAnswer
                 // get query
                 string query_str = Console.ReadLine();
                 Query query = new Query(query_str);
-                
+
                 // query parse according to parse status
                 switch (parse_status)
                 {
                     case "all":
-                        m_parser.ParseAll(ref query);
+                        parser.ParseAll(ref query);
                         break;
                     case "movie":
-                        m_parser.ParseMovieName(ref query);
+                        parser.ParseMovieName(ref query);
                         break;
                     case "artist":
-                        m_parser.ParseArtistName(ref query);
+                        parser.ParseArtistName(ref query);
                         break;
                     case "director":
-                        m_parser.ParseDirectorName(ref query);
+                        parser.ParseDirectorName(ref query);
                         break;
                     case "country":
-                        m_parser.ParseCountryName(ref query);
+                        parser.ParseCountryName(ref query);
                         break;
                     case "genre":
-                        m_parser.ParseGenreName(ref query);
+                        parser.ParseGenreName(ref query);
                         break;
                     case "publishdate":
-                        m_parser.ParsePublishDate(ref query);
+                        parser.ParsePublishDate(ref query);
                         break;
                     case "rating":
-                        m_parser.ParseRating(ref query);
+                        parser.ParseRating(ref query);
                         break;
                     case "duration":
-                        m_parser.ParseDuration(ref query);
+                        parser.ParseDuration(ref query);
                         break;
                     default:
                         Console.WriteLine("error parse status!");
@@ -90,17 +93,14 @@ namespace QueryAnswer
                 }
 
                 // refresh session status
-                m_session.RefreshSessionStatus(query);
-
+                session.RefreshSessionStatus(query);
+                DealArtistDirectorDuplicate(ref session);
                 // is end
-                if (isDialogEnd(m_session))
+                if (isDialogEnd(session))
                 {
                     // if it is end, then get and show the final query result
-                    List<string> movie_names = GetFinalResult(m_session);
-                    foreach (string movie_name in movie_names)
-                    {
-                        Console.WriteLine(movie_name);
-                    }
+                    List<string> movies = GetAllResult(session);
+                    Console.WriteLine(String.Join(", ", movies.ToArray()));
                     break;
                 }
                 else
@@ -110,48 +110,110 @@ namespace QueryAnswer
             }
         }
 
-        private string GenerateFinalOsearchQuery(Session session)
+        //wangbaoqiang as artist and director
+        private void DealArtistDirectorDuplicate(ref Session session)
+        {
+            List<string> duplicate_name = new List<string>();
+            foreach (string art in session.carried_artist)
+            {
+                foreach (string dir in session.carried_director)
+                {
+                    if (art.Equals(dir))
+                    {
+                        duplicate_name.Add(art);
+                    }
+                }
+            }
+            if (duplicate_name.Count != 0)
+            {
+                foreach (string name in duplicate_name)
+                {
+                    List<string> osearch_query = OsearchQueryGenerator.GenerateSingleArtDirQuery(name);
+                    var as_an_art = oSearchClient.Query(osearch_query[0]);
+                    var as_a_dir = oSearchClient.Query(osearch_query[1]);
+                    bool is_an_art = (as_an_art.Count() > as_a_dir.Count()) ? true : false;
+                    if (is_an_art)
+                    {
+                        session.carried_director.Remove(name);
+                    }
+                    else
+                    {
+                        session.carried_artist.Remove(name);
+                    }
+                }
+                if (session.carried_artist.Count == 0)
+                {
+                    session.is_considerd["artist"] = false;
+                }
+                if (session.carried_director.Count == 0)
+                {
+                    session.is_considerd["director"] = false;
+                }
+            }
+        }
+
+        // for final result show, when session is end
+        private string GenerateAllOsearchQuery(Session session)
         {
             // if considerd movie name, then it is no necessary to conside the others
             if (session.is_considerd["movie"])
             {
+                string movie_query = string.Format("({0})", OsearchQueryGenerator.GenerateMovieNameQuery(session));
+                return movie_query;
             }
 
-            // con
-            List<string> total_filters = new List<string>();
+            // conside the other filters
+            List<string> osearch_query_list = new List<string>();
             if (session.is_considerd["artist"])
             {
-                List<string> filters_list = new List<string>();
-                foreach (string item in session.carried_movie)
-                {
-                    filters_list.Add(string.Format(@"#:""{0}Name """, item));
-                }
-                string[] filters_arr = filters_list.ToArray();
-                total_filters.Add(string.Format("({0})", String.Join(" OR ", filters_arr)));
+                string artist_query = string.Format("({0})", OsearchQueryGenerator.GenerateTypeQuery(session, "artist"));
+                osearch_query_list.Add(artist_query);
             }
             if (session.is_considerd["director"])
             {
+                string director_query = string.Format("({0})", OsearchQueryGenerator.GenerateTypeQuery(session, "director"));
+                osearch_query_list.Add(director_query);
             }
             if (session.is_considerd["country"])
             {
+                string country_query = string.Format("({0})", OsearchQueryGenerator.GenerateTypeQuery(session, "country"));
+                osearch_query_list.Add(country_query);
             }
             if (session.is_considerd["genre"])
             {
+                string genre_query = string.Format("({0})", OsearchQueryGenerator.GenerateTypeQuery(session, "genre"));
+                osearch_query_list.Add(genre_query);
             }
             if (session.is_considerd["publishdate"])
             {
+                string publishdate_query = string.Format("({0})", OsearchQueryGenerator.GeneratePublishDateQuery(session));
+                osearch_query_list.Add(publishdate_query);
             }
             if (session.is_considerd["rating"])
             {
+                string rating_query = string.Format("({0})", OsearchQueryGenerator.GenerateRatingQuery(session));
+                osearch_query_list.Add(rating_query);
             }
             if (session.is_considerd["duration"])
             {
+                string duration_query = string.Format("({0})", OsearchQueryGenerator.GenerateDurationQuery(session));
+                osearch_query_list.Add(duration_query);
             }
+            string[] osearch_query_arr = osearch_query_list.ToArray();
+            string osearch_query = string.Join(" AND ", osearch_query_arr);
+            return osearch_query;
         }
-        private List<string> GetFinalResult(Session session)
+
+        private List<string> GetAllResult(Session session)
         {
-            string final_query = GenerateFinalOsearchQuery(session);
-                return null;
+            string final_query = GenerateAllOsearchQuery(session);
+            var results = oSearchClient.Query(final_query);
+            List<string> format_results = new List<string>();
+            foreach (var item in results)
+            {
+                format_results.Add(item.Name);
+            }
+            return format_results;
         }
     }
 
@@ -169,6 +231,15 @@ namespace QueryAnswer
             { "duration", "Length" }
         };
 
+        // query for single artist and director
+        public static List<string> GenerateSingleArtDirQuery(string people_name)
+        {
+            List<string> ret = new List<string>();
+            ret.Add(string.Format(@"#:""{0}Artists """, people_name));
+            ret.Add(string.Format(@"#:""{0}Directors """, people_name));
+            return ret;
+        }
+
         // movie is different from the others, due to OR
         public static string GenerateMovieNameQuery(Session session)
         {
@@ -178,7 +249,7 @@ namespace QueryAnswer
                 filters_list.Add(string.Format(@"#:""{0}{1} """, item, type_osearchIndex["movie"]));
             }
             string[] filters_arr = filters_list.ToArray();
-            return string.Format("({0})", String.Join(" OR ", filters_arr));
+            return string.Format("{0}", String.Join(" OR ", filters_arr));
         }
 
         // those type that can be concated by AND
@@ -193,13 +264,13 @@ namespace QueryAnswer
                     carried_info = session.carried_artist;
                     break;
                 case "director":
-                    carried_info = session.carried_artist;
+                    carried_info = session.carried_director;
                     break;
                 case "country":
-                    carried_info = session.carried_artist;
+                    carried_info = session.carried_country;
                     break;
                 case "genre":
-                    carried_info = session.carried_artist;
+                    carried_info = session.carried_genre;
                     break;
                 default:
                     Console.WriteLine("error type status!");
@@ -210,7 +281,7 @@ namespace QueryAnswer
                 filters_list.Add(string.Format(@"#:""{0}{1} """, item, type_osearchIndex[type]));
             }
             string[] filters_arr = filters_list.ToArray();
-            return string.Format("({0})", String.Join(" AND ", filters_arr));
+            return string.Format("{0}", String.Join(" AND ", filters_arr));
         }
 
         // for publishdate
@@ -252,7 +323,7 @@ namespace QueryAnswer
         {
             int low = session.carried_rating - 10;
             int high = session.carried_rating + 10;
-            string query = string.Format(@"rangeconstraint:bt:{0}:{1}:#:\"" {3}\""",low,high,type_osearchIndex["rating"]);
+            string query = string.Format(@"rangeconstraint:bt:{0}:{1}:#:\"" {2}\""",low,high,type_osearchIndex["rating"]);
             return query;
         }
 
@@ -261,7 +332,7 @@ namespace QueryAnswer
         {
             int low = session.carried_rating - 30;
             int high = session.carried_rating + 10;
-            string query = string.Format(@"rangeconstraint:bt:{0}:{1}:#:\"" {3}\""", low, high, type_osearchIndex["duration"]);
+            string query = string.Format(@"rangeconstraint:bt:{0}:{1}:#:\"" {2}\""", low, high, type_osearchIndex["duration"]);
             return query;
         }
     }

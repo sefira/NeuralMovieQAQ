@@ -140,10 +140,8 @@ namespace QueryAnswer
             return results;
         }
 
-        public void TestQuery()
+        public static void TestQuery()
         {
-            //string query_head = @"#:"" _DocType_ChinaEntity"" #:""filmSegments "" ";
-
             string query_format = @"#:"" _DocType_ChinaEntity"" #:""filmSegments "" AND ({0})";
             string query_filter = @" #:""刘德华Artists "" AND #:""王宝强Artists "" AND #:""战争Genres """;
             string query = string.Format(query_format, query_filter);
@@ -163,7 +161,7 @@ namespace QueryAnswer
                 Console.WriteLine(result.Entment.Genres[1]);
             }
         }
-        public void Query(string query_filter)
+        public static IEnumerable<ChinaOpalSearch.SnappsEntity> Query(string query_filter)
         {
             string query_format = @"#:"" _DocType_ChinaEntity"" #:""filmSegments "" AND ({0})";
             string query = string.Format(query_format, query_filter);
@@ -177,10 +175,7 @@ namespace QueryAnswer
             ObjectStorePredefinedOperations predefinedOperations = new ObjectStorePredefinedOperations();
             var results = DoHttpIndexQuery(predefinedOperations.INDEX_QUERY_WITH_VALUE, tlaQuery, offSet, resultsCount);
 
-            foreach (var result in results)
-            {
-                Console.WriteLine(result.Name);
-            }
+            return results;
         }
     }
 }

@@ -224,6 +224,7 @@ namespace QueryAnswer
                 {
                     query.is_considerd["director"] = true;
                     query.carried_director.Add(item.Word);
+                    Console.WriteLine(string.Format("{0}   {1}", item.Word, item.Flag));
                 }
             }
         }

@@ -26,7 +26,7 @@ namespace QueryAnswer
             { "country", false },
             { "genre", false },
             { "publishdate", false },
-            { "rating", true },
+            { "rating", false },
             { "duration", false }
         };
 
@@ -67,7 +67,7 @@ namespace QueryAnswer
 
     class Session : InformationSentence
     {
-        private List<Query> query_history;
+        private List<Query> query_history = new List<Query>();
 
         // using a query and its carried status to update session status
         public void RefreshSessionStatus(Query query)
@@ -114,6 +114,7 @@ namespace QueryAnswer
                 is_considerd["duration"] = query.is_considerd["duration"];
             }
         }
+
     }
 }
 
