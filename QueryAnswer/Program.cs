@@ -4,6 +4,7 @@ using JiebaNet.Segmenter.PosSeg;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.IO;
 
 namespace QueryAnswer
 {
@@ -17,8 +18,24 @@ namespace QueryAnswer
             //m_Parser.ParseAll(ref q);
             //var a = q;
             //oSearchClient.TestQuery();
-            DialogManager movie_dialog = new DialogManager();
-            movie_dialog.DialogFlow();
+
+            //DialogManager movie_dialog = new DialogManager();
+            //movie_dialog.DialogFlow();
+            TestQueryFile(@"D:\MovieDomain\QueryAnswer\resource\userquery.txt");
+        }
+        private static void TestQueryFile(string filename)
+        {
+            StreamReader sr = new StreamReader(filename);
+            DialogManager test_dialog = new DialogManager();
+            while (!sr.EndOfStream)
+            {
+                string query = sr.ReadLine();
+                if (!string.IsNullOrEmpty(query))
+                {
+                    Console.WriteLine(query);
+                    test_dialog.DialogFlow(query);
+                }
+            }
         }
     }
 }

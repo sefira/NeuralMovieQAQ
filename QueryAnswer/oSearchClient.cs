@@ -143,7 +143,9 @@ namespace QueryAnswer
         public static void TestQuery()
         {
             string query_format = @"#:"" _DocType_ChinaEntity"" #:""filmSegments "" AND ({0})";
-            string query_filter = @" #:""刘德华Artists "" AND #:""王宝强Artists "" AND #:""战争Genres """;
+            //string query_filter = @" #:""刘德华Artists "" AND #:""王宝强Artists "" AND #:""战争Genres """;
+            //string query_filter = @"rangeconstraint:bt:20160504:20170604:#:"" _PublishDate"" #:"" _PublishDate"" adjust:1rankmul:#:"" _PublishDate";
+            string query_filter = @"rangeconstraint:bt:20160504:20170604:#:"" _PublishDate""";
             string query = string.Format(query_format, query_filter);
 
             uint offSet = 0;
@@ -161,6 +163,7 @@ namespace QueryAnswer
                 Console.WriteLine(result.Entment.Genres[1]);
             }
         }
+        
         public static IEnumerable<ChinaOpalSearch.SnappsEntity> Query(string query_filter)
         {
             string query_format = @"#:"" _DocType_ChinaEntity"" #:""filmSegments "" AND ({0})";

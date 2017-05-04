@@ -17,7 +17,10 @@ namespace QueryAnswer
             "artist",
             "director",
             "country",
-            "genre"
+            "genre",
+            "publishdate",
+            "rating",
+            "duration"
         };
 
         public static List<string> EntityList
@@ -100,11 +103,11 @@ namespace QueryAnswer
             return new HashSet<string>(lines);
         }
 
-        private static PosSegmenter pos_seg_movie;
-        private static PosSegmenter pos_seg_artist;
-        private static PosSegmenter pos_seg_director;
-        private static PosSegmenter pos_seg_country;
-        private static PosSegmenter pos_seg_genre;
+        private PosSegmenter pos_seg_movie;
+        private PosSegmenter pos_seg_artist;
+        private PosSegmenter pos_seg_director;
+        private PosSegmenter pos_seg_country;
+        private PosSegmenter pos_seg_genre;
 
         private Dictionary<string, PosSegmenter> pos_segers = new Dictionary<string, PosSegmenter>();
 
@@ -115,7 +118,7 @@ namespace QueryAnswer
 
         public EntitySegmenter()
         {
-            if (pos_seg_movie == null)
+            if (pos_segers == null || pos_segers.Count == 0)
             {
                 movie_name = ReadEntityFromFile(data_path + movie_filename);
                 artist_name = ReadEntityFromFile(data_path + artist_filename);
@@ -258,7 +261,7 @@ namespace QueryAnswer
         }
 
         // for PublishDate
-        private string ParseDate(Query query, int position)
+        private string ParseYear(Query query, int position)
         {
             if (position > 0)
             {
@@ -308,26 +311,32 @@ namespace QueryAnswer
             {
                 if (old_date_tag.Contains(word_list[i]))
                 {
-                    query.carried_publishdate.year = 2010;
-                    query.carried_publishdate.type = DateType.before;
+                    date = DateTime.Now.AddYears(-70).ToString("yyyyMMdd");
+                    query.carried_publishdate.from = int.Parse(date);
+                    date = DateTime.Now.AddMonths(-15).ToString("yyyyMMdd");
+                    query.carried_publishdate.to = int.Parse(date);
                     query.is_considerd["publishdate"] = true;
                     return;
                 }
                 if (new_date_tag.Contains(word_list[i]))
                 {
-                    query.carried_publishdate.year = DateTime.Now.Year;
-                    query.carried_publishdate.type = DateType.exact;
+                    date = DateTime.Now.AddYears(-1).ToString("yyyyMMdd");
+                    query.carried_publishdate.from = int.Parse(date);
+                    date = DateTime.Now.AddMonths(1).ToString("yyyyMMdd");
+                    query.carried_publishdate.to = int.Parse(date);
                     query.is_considerd["publishdate"] = true;
                     return;
                 }
                 // if there is an exact time, then parse it and return
                 if (date_tag.Contains(word_list[i]))
                 {
-                    date = ParseDate(query, i);
-                    if (!string.IsNullOrEmpty(date))
+                    string year = ParseYear(query, i);
+                    if (!string.IsNullOrEmpty(year))
                     {
-                        query.carried_publishdate.year = int.Parse(date);
-                        query.carried_publishdate.type = DateType.exact;
+                        date = new DateTime(int.Parse(year), 1, 1).ToString("yyyyMMdd");
+                        query.carried_publishdate.from = int.Parse(date);
+                        date = new DateTime(int.Parse(year), 12, 31).ToString("yyyyMMdd");
+                        query.carried_publishdate.to = int.Parse(date);
                         query.is_considerd["publishdate"] = true;
                         return ;
                     }

@@ -101,6 +101,7 @@ namespace QueryAnswer
                     // if it is end, then get and show the final query result
                     List<string> movies = GetAllResult(session);
                     Console.WriteLine(String.Join(", ", movies.ToArray()));
+                    Console.WriteLine("\n");
                     break;
                 }
                 else
@@ -110,8 +111,30 @@ namespace QueryAnswer
             }
         }
 
+        public void DialogFlow(string query_str)
+        {
+            // begin
+            Parser parser = new Parser();
+            
+            // get query
+            Query query = new Query(query_str);
+            Session session = new Session();
+
+            // query parse 
+            parser.ParseAll(ref query);
+
+            // refresh session status
+            session.RefreshSessionStatus(query);
+            DealArtistDirectorDuplicate(ref session);
+                
+            // end
+            List<string> movies = GetAllResult(session);
+            Console.WriteLine(String.Join(", ", movies.ToArray()));
+            Console.WriteLine("\n");
+        }
+
         //wangbaoqiang as artist and director
-        private void DealArtistDirectorDuplicate(ref Session session)
+        private static void DealArtistDirectorDuplicate(ref Session session)
         {
             List<string> duplicate_name = new List<string>();
             foreach (string art in session.carried_artist)
@@ -226,7 +249,7 @@ namespace QueryAnswer
             { "director", "Directors" },
             { "country", "Geographies" },
             { "genre", "Genres" },
-            { "publishdate", "PublishDate" },
+            { "publishdate", "_PublishDate" },
             { "rating", "Rating" },
             { "duration", "Length" }
         };
@@ -287,35 +310,11 @@ namespace QueryAnswer
         // for publishdate
         public static string GeneratePublishDateQuery(Session session)
         {
-            int year = session.carried_publishdate.year;
-            DateType type = session.carried_publishdate.type;
-            int low = 0;
-            int high = 0;
+            int from = session.carried_publishdate.from;
+            int to = session.carried_publishdate.to;
             string query = "";
-            switch (type)
-            {
-                case DateType.round:
-                    low = session.carried_publishdate.year * 10000;
-                    high = (session.carried_publishdate.year + 10) * 10000;
-                    query = string.Format(@"rangeconstraint:bt:{0}:{1}:#:\"" {2}\""", low, high, type_osearchIndex["publishdate"]);
-                    return query;
-                case DateType.before:
-                    low = session.carried_publishdate.year * 10000;
-                    query = string.Format(@"rangeconstraint:lt:{0}:#:\"" {1}\""", low, type_osearchIndex["publishdate"]);
-                    return query;
-                case DateType.after:
-                    high = session.carried_publishdate.year * 10000;
-                    query = string.Format(@"rangeconstraint:gt:{0}:#:\"" {1}\""", high, type_osearchIndex["publishdate"]);
-                    return query;
-                case DateType.exact:
-                    low = session.carried_publishdate.year * 10000;
-                    high = (session.carried_publishdate.year + 1) * 10000;
-                    query = string.Format(@"rangeconstraint:bt:{0}:{1}:#:\"" {2}\""", low, high, type_osearchIndex["publishdate"]);
-                    return query;
-                default:
-                    Console.WriteLine("date type error!");
-                    return "";
-            }
+            query = string.Format(@"rangeconstraint:bt:{0}:{1}:#:"" {2}""", from, to, type_osearchIndex["publishdate"]);
+            return query;
         }
 
         // for rating
@@ -323,7 +322,7 @@ namespace QueryAnswer
         {
             int low = session.carried_rating - 10;
             int high = session.carried_rating + 10;
-            string query = string.Format(@"rangeconstraint:bt:{0}:{1}:#:\"" {2}\""",low,high,type_osearchIndex["rating"]);
+            string query = string.Format(@"rangeconstraint:bt:{0}:{1}:#:"" {2}""",low,high,type_osearchIndex["rating"]);
             return query;
         }
 
@@ -332,7 +331,7 @@ namespace QueryAnswer
         {
             int low = session.carried_rating - 30;
             int high = session.carried_rating + 10;
-            string query = string.Format(@"rangeconstraint:bt:{0}:{1}:#:\"" {2}\""", low, high, type_osearchIndex["duration"]);
+            string query = string.Format(@"rangeconstraint:bt:{0}:{1}:#:"" {2}""", low, high, type_osearchIndex["duration"]);
             return query;
         }
     }

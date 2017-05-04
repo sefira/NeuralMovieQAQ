@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace QueryAnswer
 {
-    enum DateType { exact, round, before, after };
+    //enum DateType { exact, round, before, after };
 
     class PublishDateType
     {
-        public int year;
-        public DateType type;
-        public PublishDateType(int y, DateType type) { }
+        public int from;
+        public int to;
+        public PublishDateType(int from, int to) { }
     }
 
     class InformationSentence
@@ -35,7 +35,7 @@ namespace QueryAnswer
         public List<string> carried_director = new List<string>();
         public List<string> carried_country = new List<string>();
         public List<string> carried_genre = new List<string>();
-        public PublishDateType carried_publishdate = new PublishDateType (DateTime.Now.Year, DateType.round);
+        public PublishDateType carried_publishdate = new PublishDateType (DateTime.Now.Year, DateTime.Now.Year);
         public int carried_rating = 90;
         public int carried_duration = 120;
 
