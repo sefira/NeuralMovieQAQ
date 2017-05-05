@@ -10,7 +10,7 @@ namespace QueryAnswer
 
     class DialogManager
     {
-        public Dictionary<string, int> considerd_weight = new Dictionary<string, int>()
+        public static Dictionary<string, int> considerd_weight = new Dictionary<string, int>()
         {
             { "movie", 100 },
             { "artist", 50 },
@@ -63,6 +63,14 @@ namespace QueryAnswer
                 string query_str = Console.ReadLine();
                 Query query = new Query(query_str);
 
+                // movie recommendation trigger
+                if (!parser.isAboutMovie(query))
+                {
+                    Console.WriteLine(new string('=', 24));
+                    Console.WriteLine("\n");
+                    continue;
+                }
+
                 // query parse according to parse status
                 switch (parse_status)
                 {
@@ -110,8 +118,13 @@ namespace QueryAnswer
                 {
                     // if it is end, then get and show the final query result
                     List<string> movies = new List<string>();
+                    int i = 0;
                     foreach (var item in session.candidate_movies)
                     {
+                        if (i++ == 5)
+                        {
+                            break;
+                        }
                         movies.Add(item.name);
                     }
                     Console.WriteLine(String.Join(", ", movies.ToArray()));
@@ -134,6 +147,13 @@ namespace QueryAnswer
             Query query = new Query(query_str);
             Session session = new Session();
 
+            // movie recommendation trigger
+            if (!parser.isAboutMovie(query))
+            {
+                Console.WriteLine(new string('=', 24));
+                Console.WriteLine("\n");
+                return;
+            }
             // query parse 
             parser.ParseAll(ref query);
 
@@ -146,8 +166,13 @@ namespace QueryAnswer
 
             // end
             List<string> movies = new List<string>();
+            int i = 0;
             foreach (var item in session.candidate_movies)
             {
+                if (i++ == 5)
+                {
+                    break;
+                }
                 movies.Add(item.name);
             }
             Console.WriteLine(String.Join(", ", movies.ToArray()));
@@ -258,6 +283,7 @@ namespace QueryAnswer
                 format_results.Add(new MovieEntity(item));
             }
             session.candidate_movies = format_results.Distinct().ToList();
+            session.candidate_movies.Sort();
         }
     }
 

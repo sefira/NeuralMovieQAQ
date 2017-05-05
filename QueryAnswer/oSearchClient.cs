@@ -171,7 +171,7 @@ namespace QueryAnswer
             string query = string.Format(query_format, query_filter);
 
             uint offSet = 0;
-            uint resultsCount = 12;
+            uint resultsCount = 24;
 
             Console.WriteLine("Get oSearch results for query: {0}", query);
 

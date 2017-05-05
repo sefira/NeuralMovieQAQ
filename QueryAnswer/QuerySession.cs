@@ -16,7 +16,7 @@ namespace QueryAnswer
         public PublishDateType(int from, int to) { }
     }
 
-    class MovieEntity : IEquatable<MovieEntity>
+    class MovieEntity : IEquatable<MovieEntity>, IComparable<MovieEntity>
     {
         public MovieEntity(SnappsEntity item)
         {
@@ -28,7 +28,6 @@ namespace QueryAnswer
             publishdate = item.PublishDate;
             rating = item.Rating;
             duration = item.Length;
-
         }
 
         public string name = "";
@@ -58,6 +57,15 @@ namespace QueryAnswer
             int hashProductName = name == null ? 0 : name.GetHashCode();
             //Calculate the hash code for the MovieEntity. 
             return hashProductName;
+        }
+
+        public int CompareTo(MovieEntity other)
+        {
+            if (other == null)
+                return 0;
+
+            else
+                return other.rating.CompareTo(this.rating);
         }
     }
 

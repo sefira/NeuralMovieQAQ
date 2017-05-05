@@ -21,8 +21,10 @@ namespace QueryAnswer
 
             //DialogManager movie_dialog = new DialogManager();
             //movie_dialog.DialogFlow();
+
             TestQueryFile(@"D:\MovieDomain\QueryAnswer\resource\userquery.txt");
         }
+
         private static void TestQueryFile(string filename)
         {
             StreamReader sr = new StreamReader(filename);

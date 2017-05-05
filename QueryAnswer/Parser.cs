@@ -174,8 +174,15 @@ namespace QueryAnswer
         private static HashSet<string> high_rating_tag;
         private static HashSet<string> low_rating_tag;
 
+        // for isAboutMovie
+        private static string _intent = "想看,推荐,有什么,来一部,来部";
+        private static string _must = "电影,影片,片子";
+        private static HashSet<string> intent_word_tag;
+        private static HashSet<string> must_word_tag;
+
         public Parser()
         {
+            // for PublishDate
             string[] tmp = _old_date.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             old_date_tag = new HashSet<string>(tmp);
             tmp = _new_date.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
@@ -183,10 +190,17 @@ namespace QueryAnswer
             tmp = _date.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             date_tag = new HashSet<string>(tmp);
 
+            // for Rating 
             tmp = _high_rating.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             high_rating_tag = new HashSet<string>(tmp);
             tmp = _low_rating.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             low_rating_tag = new HashSet<string>(tmp);
+
+            // for isAboutMovie
+            tmp = _intent.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            intent_word_tag = new HashSet<string>(tmp);
+            tmp = _must.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            must_word_tag = new HashSet<string>(tmp);
         }
 
         // for movie name
@@ -372,6 +386,35 @@ namespace QueryAnswer
             ParsePublishDate(ref query);
             ParseRating(ref query);
             ParseDuration(ref query);
+        }
+
+        public bool isAboutMovie(Query query)
+        {
+            // I want to watch an excat movie
+            ParseMovieName(ref query);
+            if (query.carried_movie.Count != 0)
+            {
+                foreach (string intent_item in intent_word_tag)
+                {
+                    if (query.RawQuery.Contains(intent_item))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            // I want to watch a movie / film / etc.
+            foreach (string intent_item in intent_word_tag)
+            {
+                foreach (string must_item in must_word_tag)
+                {
+                    if (query.RawQuery.Contains(intent_item) && query.RawQuery.Contains(must_item))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }
