@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ChinaOpalSearch;
 
 namespace QueryAnswer
 {
+
     class DialogManager
     {
         public Dictionary<string, int> considerd_weight = new Dictionary<string, int>()
@@ -31,9 +33,13 @@ namespace QueryAnswer
                     considerd_score += considerd_weight[entity];
                 }
             }
-            // number of results < 10 then end
-            // TODO
-            //
+
+            // too few movies to go on, so end
+            if (session.candidate_movies.Count <= 5)
+            {
+                return true;
+            }
+            // enough information, so end
             if (considerd_score >= 100)
             {
                 return true;
@@ -92,14 +98,22 @@ namespace QueryAnswer
                         break;
                 }
 
-                // refresh session status
+                // refresh session status using user query
                 session.RefreshSessionStatus(query);
                 DealArtistDirectorDuplicate(ref session);
+
+                // refresh session movie candidate status 
+                GetAllResult(ref session);
+
                 // is end
                 if (isDialogEnd(session))
                 {
                     // if it is end, then get and show the final query result
-                    List<string> movies = GetAllResult(session);
+                    List<string> movies = new List<string>();
+                    foreach (var item in session.candidate_movies)
+                    {
+                        movies.Add(item.name);
+                    }
                     Console.WriteLine(String.Join(", ", movies.ToArray()));
                     Console.WriteLine("\n");
                     break;
@@ -123,12 +137,19 @@ namespace QueryAnswer
             // query parse 
             parser.ParseAll(ref query);
 
-            // refresh session status
+            // refresh session status using user query
             session.RefreshSessionStatus(query);
             DealArtistDirectorDuplicate(ref session);
-                
+
+            // refresh session movie candidate status 
+            GetAllResult(ref session);
+
             // end
-            List<string> movies = GetAllResult(session);
+            List<string> movies = new List<string>();
+            foreach (var item in session.candidate_movies)
+            {
+                movies.Add(item.name);
+            }
             Console.WriteLine(String.Join(", ", movies.ToArray()));
             Console.WriteLine("\n");
         }
@@ -227,16 +248,16 @@ namespace QueryAnswer
             return osearch_query;
         }
 
-        private List<string> GetAllResult(Session session)
+        private void GetAllResult(ref Session session)
         {
             string final_query = GenerateAllOsearchQuery(session);
             var results = oSearchClient.Query(final_query);
-            List<string> format_results = new List<string>();
+            List<MovieEntity> format_results = new List<MovieEntity>();
             foreach (var item in results)
             {
-                format_results.Add(item.Name);
+                format_results.Add(new MovieEntity(item));
             }
-            return format_results;
+            session.candidate_movies = format_results.Distinct().ToList();
         }
     }
 

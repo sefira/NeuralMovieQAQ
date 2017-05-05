@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ChinaOpalSearch;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,51 @@ namespace QueryAnswer
         public int from;
         public int to;
         public PublishDateType(int from, int to) { }
+    }
+
+    class MovieEntity : IEquatable<MovieEntity>
+    {
+        public MovieEntity(SnappsEntity item)
+        {
+            name = item.Name;
+            artist = item.Entment.Artists;
+            director = item.Entment.Directors;
+            country = item.Geographies;
+            genre = item.Entment.Genres;
+            publishdate = item.PublishDate;
+            rating = item.Rating;
+            duration = item.Length;
+
+        }
+
+        public string name = "";
+        public List<string> artist = new List<string>();
+        public List<string> director = new List<string>();
+        public List<string> country = new List<string>();
+        public List<string> genre = new List<string>();
+        public uint publishdate = 0;
+        public uint rating = 0;
+        public uint duration = 0;
+
+        public bool Equals(MovieEntity other)
+        {
+            //Check whether the compared object is null. 
+            if (Object.ReferenceEquals(other, null)) return false;
+
+            //Check whether the compared object references the same data. 
+            if (Object.ReferenceEquals(this, other)) return true;
+
+            //Check whether the products' properties are equal. 
+            return name.Equals(other.name);
+        }
+
+        public override int GetHashCode()
+        {
+            //Get hash code for the Name field if it is not null. 
+            int hashProductName = name == null ? 0 : name.GetHashCode();
+            //Calculate the hash code for the MovieEntity. 
+            return hashProductName;
+        }
     }
 
     class InformationSentence
@@ -67,7 +113,8 @@ namespace QueryAnswer
 
     class Session : InformationSentence
     {
-        private List<Query> query_history = new List<Query>();
+        public List<Query> query_history = new List<Query>();
+        public List<MovieEntity> candidate_movies = new List<MovieEntity>();
 
         // using a query and its carried status to update session status
         public void RefreshSessionStatus(Query query)

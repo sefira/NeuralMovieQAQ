@@ -161,15 +161,15 @@ namespace QueryAnswer
         private JiebaSegmenter segmenter = new JiebaSegmenter();
 
         // for PublishDate
-        private static readonly string _old_date = "怀旧,旧,经典,老,复古";
-        private static readonly string _new_date = "最近,最新,新,最热,热门";
+        private static readonly string _old_date = "怀旧,旧,经典,老,复古,旧电影,经典电影,老电影";
+        private static readonly string _new_date = "最近,最新,新,最,热,热门";
         private static readonly string _date = "年,年代";
         private static HashSet<string> old_date_tag;
         private static HashSet<string> new_date_tag;
         private static HashSet<string> date_tag;
 
         // for Rating 
-        private static string _high_rating = "最好,有名,好,好看,精彩,最热,热门";
+        private static string _high_rating = "最好,有名,好,好看,精彩,最,热,热门";
         private static string _low_rating = "";
         private static HashSet<string> high_rating_tag;
         private static HashSet<string> low_rating_tag;
