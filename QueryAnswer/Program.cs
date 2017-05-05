@@ -12,17 +12,29 @@ namespace QueryAnswer
     {
         static void Main(string[] args)
         {
-            //string query = @"上世纪香港的刘德华出演了张艺谋和冯小刚2001年的天下无贼一部喜剧片";
-            //Query q = new Query(query);
-            //Parser m_Parser = new Parser();
-            //m_Parser.ParseAll(ref q);
-            //var a = q;
-            //oSearchClient.TestQuery();
-
+            // start a dialog
             //DialogManager movie_dialog = new DialogManager();
             //movie_dialog.DialogFlow();
 
-            TestQueryFile(@"D:\MovieDomain\QueryAnswer\resource\userquery.txt");
+            // test
+            //TestParser();
+            //TestoSearchAPI();
+            //TestQueryFile(@"D:\MovieDomain\QueryAnswer\resource\userquery.txt");
+            TestTranstionStatus();
+        }
+
+        private static void TestParser()
+        {
+            string query_str = @"上世纪香港的刘德华出演了张艺谋和冯小刚2001年的天下无贼一部喜剧片";
+            Query query = new Query(query_str);
+            Parser m_Parser = new Parser();
+            m_Parser.ParseAll(ref query);
+            var a = query;
+        }
+
+        private static void TestoSearchAPI()
+        {
+            oSearchClient.TestQuery();
         }
 
         private static void TestQueryFile(string filename)
@@ -38,6 +50,16 @@ namespace QueryAnswer
                     test_dialog.DialogFlow(query);
                 }
             }
+        }
+
+        private static void TestTranstionStatus()
+        {
+            Session session = new Session();
+            session.is_considerd["publishdate"] = true;
+
+            DialogManager dm = new DialogManager();
+            string res = DialogManager.TestTranstionStatus(session);
+            Console.WriteLine(res);
         }
     }
 }

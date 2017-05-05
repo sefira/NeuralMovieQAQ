@@ -22,25 +22,114 @@ namespace QueryAnswer
             { "duration", 20 }
         };
 
+        private static int end_movie_count = 5;
+        private static int end_considerd_count = 100;
+
+        private static string[,] relation_matrix = new string[5, 5]
+        {
+            ///////////// artist director country      genre   publishdate
+            /* artist */  { "合作", "合作", "X",       "类型", "什么时候拍摄"}, 
+            /* director */{ "合作", "X",    "X",       "类型", "什么时候拍摄"}, 
+            /* country */ { "艺人", "导演", "X",       "类型", "什么时候拍摄"}, 
+            /* genre */   { "艺人", "导演", "哪里拍摄","X",    "什么时候拍摄"}, 
+            /* publish */ { "艺人", "导演", "哪里拍摄","类型", "X"}
+        };
+
+        private static double[,] transition_matrix = new double[5, 5] 
+        { 
+            ///////////// artist director country      genre   publishdate
+            /* artist */  { 0.2,    0.2,   0.01,       0.3,    0.3},
+            /* director */{ 0.3,    0.01,  0.01,       0.4,    0.3},
+            /* country */ { 0.3,    0.3,   0.01,       0.2,    0.2},
+            /* genre */   { 0.4,    0.3,   0.2,        0.01,   0.1},
+            /* publish */ { 0.1,    0.2,   0.3,        0.4,    0.01}
+        };
+
+        private static List<List<double>> roulette_matrix = new List<List<double>>();
+        //private Dictionary<string, List<double>> roulette_matrix = new Dictionary<string, List<double>>()
+        //{
+        //    { "artist", new List<double>() },
+        //    { "director", new List<double>() },
+        //    { "country", new List<double>() },
+        //    { "genre", new List<double>() },
+        //    { "publishdate", new List<double>() },
+        //};
+
+        public static Dictionary<string, int> type2transmat = new Dictionary<string, int>()
+        {
+            { "artist", 0 },
+            { "director", 1 },
+            { "country", 2 },
+            { "genre", 3 },
+            { "publishdate", 4 }
+        };
+        public static Dictionary<int, string> transmat2type = new Dictionary<int, string>()
+        {
+            { 0, "artist" },
+            { 1, "director" },
+            { 2, "country" },
+            { 3, "genre" },
+            { 4, "publishdate" }
+        };
+
+        private static Random rand = new Random();
+
+        public DialogManager()
+        {
+            // to build the roulette matrix
+            for (int i = 0; i < transition_matrix.GetLength(0); i++)
+            {
+                double sum = 0;
+                for (int j = 0; j < transition_matrix.GetLength(1); j++)
+                {
+                    sum += transition_matrix[i, j];
+                }
+                roulette_matrix.Add(new List<double>());
+                roulette_matrix[i].Add(transition_matrix[i, 0] / sum);
+                for (int j = 1; j < transition_matrix.GetLength(1); j++)
+                {
+                    roulette_matrix[i].Add(roulette_matrix[i][j - 1] + (transition_matrix[i, j] / sum));
+                }
+            }
+            // print for sure
+            //for (int i = 0; i < transition_matrix.GetLength(0); i++)
+            //{
+            //    for (int j = 0; j < transition_matrix.GetLength(1); j++)
+            //    {
+            //        Console.WriteLine(roulette_matrix[i][j]);
+            //    }
+            //}
+        }
+
         // judge is this dialog should be ended
         public bool isDialogEnd(Session session)
         {
             int considerd_score = 0;
-            foreach (string entity in Entity.EntityList)
-            {
-                if (session.is_considerd[entity])
-                {
-                    considerd_score += considerd_weight[entity];
-                }
-            }
+            considerd_score += (session.is_considerd["movie"] ? considerd_weight["movie"] : 0);
+            considerd_score += (session.is_considerd["artist"] ? considerd_weight["artist"] * session.carried_artist.Count : 0);
+            considerd_score += (session.is_considerd["director"] ? considerd_weight["director"] *
+                session.carried_director.Count: 0);
+            considerd_score += (session.is_considerd["country"] ? considerd_weight["country"] * session.carried_country.Count: 0);
+            considerd_score += (session.is_considerd["genre"] ? considerd_weight["genre"] * session.carried_genre.Count: 0);
+            considerd_score += (session.is_considerd["publishdate"] ? considerd_weight["publishdate"] : 0);
+            considerd_score += (session.is_considerd["rating"] ? considerd_weight["rating"] : 0);
+            considerd_score += (session.is_considerd["duration"] ? considerd_weight["duration"] : 0);
+            //foreach (string entity in Entity.EntityList)
+            //{
+            //    if (session.is_considerd[entity])
+            //    {
+            //        considerd_score += considerd_weight[entity];
+            //    }
+            //}
 
             // too few movies to go on, so end
-            if (session.candidate_movies.Count <= 5)
+            if (session.candidate_movies.Count <= end_movie_count)
             {
                 return true;
             }
+
             // enough information, so end
-            if (considerd_score >= 100)
+            if (considerd_score >= end_considerd_count)
             {
                 return true;
             }
@@ -133,7 +222,30 @@ namespace QueryAnswer
                 }
                 else
                 {
-
+                    // using current status to compute the next status, a transtion matrix requeried.
+                    string nextturn_status = GetTranstionStatus(session);
+                    // response according to the nextturn_status we just chosen.
+                    switch (nextturn_status)
+                    {
+                        case "artist":
+                            parser.ParseArtistName(ref query);
+                            break;
+                        case "director":
+                            parser.ParseDirectorName(ref query);
+                            break;
+                        case "country":
+                            parser.ParseCountryName(ref query);
+                            break;
+                        case "genre":
+                            parser.ParseGenreName(ref query);
+                            break;
+                        case "publishdate":
+                            parser.ParsePublishDate(ref query);
+                            break;
+                        default:
+                            Console.WriteLine("error turn status!");
+                            break;
+                    }
                 }
             }
         }
@@ -177,6 +289,57 @@ namespace QueryAnswer
             }
             Console.WriteLine(String.Join(", ", movies.ToArray()));
             Console.WriteLine("\n");
+        }
+
+        // using current status to compute the next status, a transtion matrix requeried.
+        private string GetTranstionStatus(Session session)
+        {
+            string current_type = "";
+            foreach (var item in session.is_considerd)
+            {
+                if (item.Value)
+                {
+                    current_type = item.Key;
+                    break;
+                }
+            }
+            double selecter = rand.NextDouble();
+            List<double> current_type_trans = roulette_matrix[type2transmat[current_type]];
+            int lower_bound = 0;
+            foreach(double item in current_type_trans)
+            {
+                if (item > selecter)
+                {
+                    return transmat2type[lower_bound];
+                }
+                lower_bound++;
+            }
+            return "";
+        }
+
+        public static string TestTranstionStatus(Session session)
+        {
+            string current_type = "";
+            foreach (var item in session.is_considerd)
+            {
+                if (item.Value)
+                {
+                    current_type = item.Key;
+                    break;
+                }
+            }
+            double selecter = rand.NextDouble();
+            List<double> current_type_trans = roulette_matrix[type2transmat[current_type]];
+            int lower_bound = 0;
+            foreach (double item in current_type_trans)
+            {
+                if (item > selecter)
+                {
+                    return transmat2type[lower_bound];
+                }
+                lower_bound++;
+            }
+            return "";
         }
 
         //wangbaoqiang as artist and director
