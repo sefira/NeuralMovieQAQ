@@ -11,33 +11,16 @@ namespace QueryAnswer
 {
     class Entity
     {
-        private static List<string> entity_list = new List<string>()
+        private static Dictionary<ParseStatus, string> entity_tag = new Dictionary<ParseStatus, string>()
         {
-            "movie",
-            "artist",
-            "director",
-            "country",
-            "genre",
-            "publishdate",
-            "rating",
-            "duration"
+            { ParseStatus.Movie,"nmovie" } ,
+            { ParseStatus.Artist, "nrartist" },
+            { ParseStatus.Director, "nrdirector" },
+            { ParseStatus.Country, "ncountry" },
+            { ParseStatus.Genre, "ngenre" }
         };
 
-        public static List<string> EntityList
-        {
-            get { return entity_list; }
-        }
-
-        private static Dictionary<string, string> entity_tag = new Dictionary<string, string>()
-        {
-            { "movie","nmovie" } ,
-            { "artist", "nrartist" },
-            { "director", "nrdirector" },
-            { "country", "ncountry" },
-            { "genre", "ngenre" }
-        };
-
-        public static Dictionary<string, string> EntityTag
+        public static Dictionary<ParseStatus, string> EntityTag
         {
             get { return entity_tag; }
         }
@@ -109,9 +92,9 @@ namespace QueryAnswer
         private PosSegmenter pos_seg_country;
         private PosSegmenter pos_seg_genre;
 
-        private Dictionary<string, PosSegmenter> pos_segers = new Dictionary<string, PosSegmenter>();
+        private Dictionary<ParseStatus, PosSegmenter> pos_segers = new Dictionary<ParseStatus, PosSegmenter>();
 
-        public Dictionary<string, PosSegmenter> PosSegers
+        public Dictionary<ParseStatus, PosSegmenter> PosSegers
         {
             get { return pos_segers; }
         }
@@ -130,27 +113,27 @@ namespace QueryAnswer
                 segmenter = new JiebaSegmenter();
                 segmenter.LoadUserDict(data_path + movie_filename);
                 pos_seg_movie = new PosSegmenter(segmenter);
-                pos_segers.Add("movie", pos_seg_movie);
+                pos_segers.Add(ParseStatus.Movie, pos_seg_movie);
 
                 segmenter = new JiebaSegmenter();
                 segmenter.LoadUserDict(data_path + artist_filename);
                 pos_seg_artist = new PosSegmenter(segmenter);
-                pos_segers.Add("artist", pos_seg_artist);
+                pos_segers.Add(ParseStatus.Artist, pos_seg_artist);
 
                 segmenter = new JiebaSegmenter();
                 segmenter.LoadUserDict(data_path + director_filename);
                 pos_seg_director = new PosSegmenter(segmenter);
-                pos_segers.Add("director", pos_seg_director);
+                pos_segers.Add(ParseStatus.Director, pos_seg_director);
 
                 segmenter = new JiebaSegmenter();
                 segmenter.LoadUserDict(data_path + country_filename);
                 pos_seg_country = new PosSegmenter(segmenter);
-                pos_segers.Add("country", pos_seg_country);
+                pos_segers.Add(ParseStatus.Country, pos_seg_country);
 
                 segmenter = new JiebaSegmenter();
                 segmenter.LoadUserDict(data_path + genre_filename);
                 pos_seg_genre = new PosSegmenter(segmenter);
-                pos_segers.Add("genre", pos_seg_genre);
+                pos_segers.Add(ParseStatus.Genre, pos_seg_genre);
             }
         }
     }
@@ -203,15 +186,16 @@ namespace QueryAnswer
             must_word_tag = new HashSet<string>(tmp);
         }
 
+        #region Parse Entity, such as Movie, Artist, Director, Country, Genre, PublishDate, Rating and Duration
         // for movie name
         public void ParseMovieName(ref Query query)
         {
-            var pos_tags = entity_seg.PosSegers["movie"].Cut(query.RawQuery);
+            var pos_tags = entity_seg.PosSegers[ParseStatus.Movie].Cut(query.RawQuery);
             foreach (var item in pos_tags)
             {
-                if (Entity.EntityTag["movie"].Equals(item.Flag))
+                if (Entity.EntityTag[ParseStatus.Movie].Equals(item.Flag))
                 {
-                    query.is_considerd["movie"] = true;
+                    query.is_considerd[ParseStatus.Movie] = true;
                     query.carried_movie.Add(item.Word);
                 }
             }
@@ -220,12 +204,12 @@ namespace QueryAnswer
         // for artist
         public void ParseArtistName(ref Query query)
         {
-            var pos_tags = entity_seg.PosSegers["artist"].Cut(query.RawQuery);
+            var pos_tags = entity_seg.PosSegers[ParseStatus.Artist].Cut(query.RawQuery);
             foreach (var item in pos_tags)
             {
-                if (Entity.EntityTag["artist"].Equals(item.Flag))
+                if (Entity.EntityTag[ParseStatus.Artist].Equals(item.Flag))
                 {
-                    query.is_considerd["artist"] = true;
+                    query.is_considerd[ParseStatus.Artist] = true;
                     query.carried_artist.Add(item.Word);
                 }
             }
@@ -234,12 +218,12 @@ namespace QueryAnswer
         // for Director
         public void ParseDirectorName(ref Query query)
         {
-            var pos_tags = entity_seg.PosSegers["director"].Cut(query.RawQuery);
+            var pos_tags = entity_seg.PosSegers[ParseStatus.Director].Cut(query.RawQuery);
             foreach (var item in pos_tags)
             {
-                if (Entity.EntityTag["director"].Equals(item.Flag))
+                if (Entity.EntityTag[ParseStatus.Director].Equals(item.Flag))
                 {
-                    query.is_considerd["director"] = true;
+                    query.is_considerd[ParseStatus.Director] = true;
                     query.carried_director.Add(item.Word);
                     Console.WriteLine(string.Format("{0}   {1}", item.Word, item.Flag));
                 }
@@ -249,12 +233,12 @@ namespace QueryAnswer
         // for Country
         public void ParseCountryName(ref Query query)
         {
-            var pos_tags = entity_seg.PosSegers["country"].Cut(query.RawQuery);
+            var pos_tags = entity_seg.PosSegers[ParseStatus.Country].Cut(query.RawQuery);
             foreach (var item in pos_tags)
             {
-                if (Entity.EntityTag["country"].Equals(item.Flag))
+                if (Entity.EntityTag[ParseStatus.Country].Equals(item.Flag))
                 {
-                    query.is_considerd["country"] = true;
+                    query.is_considerd[ParseStatus.Country] = true;
                     query.carried_country.Add(item.Word);
                 }
             }
@@ -263,12 +247,12 @@ namespace QueryAnswer
         // for Genre
         public void ParseGenreName(ref Query query)
         {
-            var pos_tags = entity_seg.PosSegers["genre"].Cut(query.RawQuery);
+            var pos_tags = entity_seg.PosSegers[ParseStatus.Genre].Cut(query.RawQuery);
             foreach (var item in pos_tags)
             {
-                if (Entity.EntityTag["genre"].Equals(item.Flag))
+                if (Entity.EntityTag[ParseStatus.Genre].Equals(item.Flag))
                 {
-                    query.is_considerd["genre"] = true;
+                    query.is_considerd[ParseStatus.Genre] = true;
                     query.carried_genre.Add(item.Word);
                 }
             }
@@ -329,7 +313,7 @@ namespace QueryAnswer
                     query.carried_publishdate.from = int.Parse(date);
                     date = DateTime.Now.AddMonths(-15).ToString("yyyyMMdd");
                     query.carried_publishdate.to = int.Parse(date);
-                    query.is_considerd["publishdate"] = true;
+                    query.is_considerd[ParseStatus.PublishDate] = true;
                     return;
                 }
                 if (new_date_tag.Contains(word_list[i]))
@@ -338,7 +322,7 @@ namespace QueryAnswer
                     query.carried_publishdate.from = int.Parse(date);
                     date = DateTime.Now.AddMonths(1).ToString("yyyyMMdd");
                     query.carried_publishdate.to = int.Parse(date);
-                    query.is_considerd["publishdate"] = true;
+                    query.is_considerd[ParseStatus.PublishDate] = true;
                     return;
                 }
                 // if there is an exact time, then parse it and return
@@ -351,7 +335,7 @@ namespace QueryAnswer
                         query.carried_publishdate.from = int.Parse(date);
                         date = new DateTime(int.Parse(year), 12, 31).ToString("yyyyMMdd");
                         query.carried_publishdate.to = int.Parse(date);
-                        query.is_considerd["publishdate"] = true;
+                        query.is_considerd[ParseStatus.PublishDate] = true;
                         return ;
                     }
                 }
@@ -387,12 +371,15 @@ namespace QueryAnswer
             ParseRating(ref query);
             ParseDuration(ref query);
         }
+        #endregion
 
-        public bool isAboutMovie(Query query)
+        public bool isAboutMovie(Query query_origin)
         {
-            // I want to watch an excat movie
+            Query query = new Query(query_origin.RawQuery);
+            // I want to watch an excat movie or an exact genre type movie
             ParseMovieName(ref query);
-            if (query.carried_movie.Count != 0)
+            ParseGenreName(ref query);
+            if (query.carried_movie.Count != 0 || query.carried_genre.Count != 0)
             {
                 foreach (string intent_item in intent_word_tag)
                 {

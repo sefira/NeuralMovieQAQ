@@ -19,10 +19,10 @@ namespace QueryAnswer
             // test
             //TestParser();
             //TestoSearchAPI();
-            //TestQueryFile(@"D:\MovieDomain\QueryAnswer\resource\userquery.txt");
-            TestTranstionStatus();
+            TestQueryFile(@"D:\MovieDomain\QueryAnswer\resource\userquery.txt");
+            //TestTranstionStatus();
         }
-
+        
         private static void TestParser()
         {
             string query_str = @"上世纪香港的刘德华出演了张艺谋和冯小刚2001年的天下无贼一部喜剧片";
@@ -47,7 +47,7 @@ namespace QueryAnswer
                 if (!string.IsNullOrEmpty(query))
                 {
                     Console.WriteLine(query);
-                    test_dialog.DialogFlow(query);
+                    test_dialog.TestDialogFlow(query);
                 }
             }
         }
@@ -55,11 +55,17 @@ namespace QueryAnswer
         private static void TestTranstionStatus()
         {
             Session session = new Session();
-            session.is_considerd["publishdate"] = true;
+            session.is_considerd[ParseStatus.Artist] = true;
 
             DialogManager dm = new DialogManager();
-            string res = DialogManager.TestTranstionStatus(session);
-            Console.WriteLine(res);
+            ParseStatus res = DialogManager.TestTranstionStatus(session);
+            Console.WriteLine(res.ToString());
+
+            session = new Session();
+            session.is_considerd[ParseStatus.PublishDate] = true;
+            
+            res = DialogManager.TestTranstionStatus(session);
+            Console.WriteLine(res.ToString());
         }
     }
 }

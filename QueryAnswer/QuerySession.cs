@@ -16,6 +16,8 @@ namespace QueryAnswer
         public PublishDateType(int from, int to) { }
     }
 
+    enum ParseStatus { All, Movie, Artist, Director, Country, Genre, PublishDate, Rating, Duration };
+
     class MovieEntity : IEquatable<MovieEntity>, IComparable<MovieEntity>
     {
         public MovieEntity(SnappsEntity item)
@@ -72,16 +74,16 @@ namespace QueryAnswer
     class InformationSentence
     {
         // the filters for movie recommendation
-        public Dictionary<string, bool> is_considerd = new Dictionary<string, bool>()
+        public Dictionary<ParseStatus, bool> is_considerd = new Dictionary<ParseStatus, bool>()
         {
-            { "movie", false },
-            { "artist", false },
-            { "director", false },
-            { "country", false },
-            { "genre", false },
-            { "publishdate", false },
-            { "rating", false },
-            { "duration", false }
+            { ParseStatus.Movie, false },
+            { ParseStatus.Artist, false },
+            { ParseStatus.Director, false },
+            { ParseStatus.Country, false },
+            { ParseStatus.Genre, false },
+            { ParseStatus.PublishDate, false },
+            { ParseStatus.Rating, false },
+            { ParseStatus.Duration, false }
         };
 
         public List<string> carried_movie = new List<string>();
@@ -123,50 +125,51 @@ namespace QueryAnswer
     {
         public List<Query> query_history = new List<Query>();
         public List<MovieEntity> candidate_movies = new List<MovieEntity>();
+        public ParseStatus parse_status = ParseStatus.All;
 
         // using a query and its carried status to update session status
         public void RefreshSessionStatus(Query query)
         {
             query_history.Add(query);
-            if (query.is_considerd["movie"])
+            if (query.is_considerd[ParseStatus.Movie])
             {
                 carried_movie = query.carried_movie;
-                is_considerd["movie"] = query.is_considerd["movie"];
+                is_considerd[ParseStatus.Movie] = query.is_considerd[ParseStatus.Movie];
             }
-            if (query.is_considerd["artist"])
+            if (query.is_considerd[ParseStatus.Artist])
             {
                 carried_artist = query.carried_artist;
-                is_considerd["artist"] = query.is_considerd["artist"];
+                is_considerd[ParseStatus.Artist] = query.is_considerd[ParseStatus.Artist];
             }
-            if (query.is_considerd["director"])
+            if (query.is_considerd[ParseStatus.Director])
             {
                 carried_director = query.carried_director;
-                is_considerd["director"] = query.is_considerd["director"];
+                is_considerd[ParseStatus.Director] = query.is_considerd[ParseStatus.Director];
             }
-            if (query.is_considerd["country"])
+            if (query.is_considerd[ParseStatus.Country])
             {
                 carried_country = query.carried_country;
-                is_considerd["country"] = query.is_considerd["country"];
+                is_considerd[ParseStatus.Country] = query.is_considerd[ParseStatus.Country];
             }
-            if (query.is_considerd["genre"])
+            if (query.is_considerd[ParseStatus.Genre])
             {
                 carried_genre = query.carried_genre;
-                is_considerd["genre"] = query.is_considerd["genre"];
+                is_considerd[ParseStatus.Genre] = query.is_considerd[ParseStatus.Genre];
             }
-            if (query.is_considerd["publishdate"])
+            if (query.is_considerd[ParseStatus.PublishDate])
             {
                 carried_publishdate = query.carried_publishdate;
-                is_considerd["publishdate"] = query.is_considerd["publishdate"];
+                is_considerd[ParseStatus.PublishDate] = query.is_considerd[ParseStatus.PublishDate];
             }
-            if (query.is_considerd["rating"])
+            if (query.is_considerd[ParseStatus.Rating])
             {
                 carried_rating = query.carried_rating;
-                is_considerd["rating"] = query.is_considerd["rating"];
+                is_considerd[ParseStatus.Rating] = query.is_considerd[ParseStatus.Rating];
             }
-            if (query.is_considerd["duration"])
+            if (query.is_considerd[ParseStatus.Duration])
             {
                 carried_duration = query.carried_duration;
-                is_considerd["duration"] = query.is_considerd["duration"];
+                is_considerd[ParseStatus.Duration] = query.is_considerd[ParseStatus.Duration];
             }
         }
 

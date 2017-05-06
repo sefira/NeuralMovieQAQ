@@ -167,11 +167,11 @@ namespace QueryAnswer
         
         public static IEnumerable<ChinaOpalSearch.SnappsEntity> Query(string query_filter)
         {
-            string query_format = @"#:"" _DocType_ChinaEntity"" #:""filmSegments "" AND ({0})";
+            string query_format = @"#:"" _DocType_ChinaEntity"" #:""filmSegments "" AND ({0})" + " AND #:\" _RatingCount\" adjust:1rankmul:#:\" _RatingCount\"";
             string query = string.Format(query_format, query_filter);
 
             uint offSet = 0;
-            uint resultsCount = 24;
+            uint resultsCount = 64;
 
             Console.WriteLine("Get oSearch results for query: {0}", query);
 
