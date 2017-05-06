@@ -7,7 +7,6 @@ using ChinaOpalSearch;
 
 namespace QueryAnswer
 {
-
     class DialogManager
     {
         public static Dictionary<ParseStatus, int> considerd_weight = new Dictionary<ParseStatus, int>()
@@ -15,7 +14,7 @@ namespace QueryAnswer
             { ParseStatus.Movie, 100 },
             { ParseStatus.Artist, 50 },
             { ParseStatus.Director, 50 },
-            { ParseStatus.Country, 30 },
+            { ParseStatus.Country, 50 },
             { ParseStatus.Genre, 50 },
             { ParseStatus.PublishDate, 100 },
             { ParseStatus.Rating, 10 },
@@ -24,18 +23,9 @@ namespace QueryAnswer
 
         private static int end_movie_count = 5;
         private static int end_considerd_count = 100;
+        private static int condidate_show_number = 3;
 
-        private static string[,] relation_matrix = new string[5, 5]
-        {
-            ///////////// artist                            director                  country       genre                       publishdate
-            /* artist */  { "{0}和{1}有很多合作，想看谁的", "{0}和{1}有很多合作，想看谁的", "X",   "{0}演了很多{1}，想看哪种",   "什么时候拍摄"}, 
-            /* director */{ "{0}和{1}有很多合作，想看谁的", "X",                           "X",   "{0}拍了很多{1}，想看哪种", "什么时候拍摄"}, 
-            /* country */ { "{0}有一些著名艺人：{1}",       "{0}有一些著名导演：{1}",       "X",    "这个地区的{0}比有名，想看哪种", "什么时候拍摄"}, 
-            /* genre */   { "{0}类型有很多著名演员：{1}，想看谁的", "{0}类型有很多著名导演：{1}，想看谁的", "{1}出产了很多{0}类型的电影，想看哪里的","X",    "什么时候拍摄"}, 
-            /* publish */ { "X", "X", "X","X", "X"}
-        };
-
-        private static double[,] transition_matrix = new double[5, 5] 
+        private static double[,] transition_matrix = new double[5, 5]
         { 
             ///////////// artist director country      genre   publishdate
             /* artist */  { 0.2,    0.2,   0.01,       0.3,    0.3},
@@ -46,16 +36,8 @@ namespace QueryAnswer
         };
 
         private static List<List<double>> roulette_matrix = new List<List<double>>();
-        //private Dictionary<string, List<double>> roulette_matrix = new Dictionary<string, List<double>>()
-        //{
-        //    { "artist", new List<double>() },
-        //    { "director", new List<double>() },
-        //    { "country", new List<double>() },
-        //    { "genre", new List<double>() },
-        //    { "publishdate", new List<double>() },
-        //};
 
-        public static Dictionary<ParseStatus, int> parsestatus2transmat = new Dictionary<ParseStatus, int>()
+        public static Dictionary<ParseStatus, int> parsestatus2int = new Dictionary<ParseStatus, int>()
         {
             { ParseStatus.Artist, 0 },
             { ParseStatus.Director, 1 },
@@ -63,7 +45,7 @@ namespace QueryAnswer
             { ParseStatus.Genre, 3 },
             { ParseStatus.PublishDate, 4 }
         };
-        public static Dictionary<int, ParseStatus> transmat2parsestatus = new Dictionary<int, ParseStatus>()
+        public static Dictionary<int, ParseStatus> int2parsestatus = new Dictionary<int, ParseStatus>()
         {
             { 0, ParseStatus.Artist },
             { 1, ParseStatus.Director },
@@ -74,6 +56,17 @@ namespace QueryAnswer
 
         private static Random rand = new Random();
 
+        // for MakeClearParseStatus, this field records those status that allowed to be refined further(ask the user). The score it carried will be subtracted some value from considerd_weight when information came. When score <= 0, this status is not allowed to be refine(ask the user) anymore.
+        // it is very useful for ParseStatus.All at the beginning of dialog.
+        //private static Dictionary<ParseStatus, int> allow_refine = new Dictionary<ParseStatus, int>()
+        //{
+        //    { ParseStatus.Artist, 101 },
+        //    { ParseStatus.Director, 101 },
+        //    { ParseStatus.Country, 30 },
+        //    { ParseStatus.Genre, 50 },
+        //    { ParseStatus.PublishDate, 100 }
+        //};
+        
         public DialogManager()
         {
             // to build the roulette matrix
@@ -108,10 +101,9 @@ namespace QueryAnswer
             int considerd_score = 0;
             considerd_score += (session.is_considerd[ParseStatus.Movie] ? considerd_weight[ParseStatus.Movie] : 0);
             considerd_score += (session.is_considerd[ParseStatus.Artist] ? considerd_weight[ParseStatus.Artist] * session.carried_artist.Count : 0);
-            considerd_score += (session.is_considerd[ParseStatus.Director] ? considerd_weight[ParseStatus.Director] *
-                session.carried_director.Count: 0);
-            considerd_score += (session.is_considerd[ParseStatus.Country] ? considerd_weight[ParseStatus.Country] * session.carried_country.Count: 0);
-            considerd_score += (session.is_considerd[ParseStatus.Genre] ? considerd_weight[ParseStatus.Genre] * session.carried_genre.Count: 0);
+            considerd_score += (session.is_considerd[ParseStatus.Director] ? considerd_weight[ParseStatus.Director] * session.carried_director.Count : 0);
+            considerd_score += (session.is_considerd[ParseStatus.Country] ? considerd_weight[ParseStatus.Country] * session.carried_country.Count : 0);
+            considerd_score += (session.is_considerd[ParseStatus.Genre] ? considerd_weight[ParseStatus.Genre] * session.carried_genre.Count : 0);
             considerd_score += (session.is_considerd[ParseStatus.PublishDate] ? considerd_weight[ParseStatus.PublishDate] : 0);
             considerd_score += (session.is_considerd[ParseStatus.Rating] ? considerd_weight[ParseStatus.Rating] : 0);
             considerd_score += (session.is_considerd[ParseStatus.Duration] ? considerd_weight[ParseStatus.Duration] : 0);
@@ -140,7 +132,7 @@ namespace QueryAnswer
             }
         }
 
-        public void DialogFlow()
+        public void TestDialogFlow(string query_str)
         {
             // begin
             Session session = new Session();
@@ -149,8 +141,11 @@ namespace QueryAnswer
 
             while (true)
             {
-                // get query
-                string query_str = Console.ReadLine();
+                // get query. if it is not the very beginning, then wait for the user input
+                if (!(session.parse_status == ParseStatus.All))
+                {
+                    query_str = Console.ReadLine();
+                }
                 Query query = new Query(query_str);
 
                 // movie recommendation trigger
@@ -158,9 +153,10 @@ namespace QueryAnswer
                 {
                     Console.WriteLine(new string('=', 24));
                     Console.WriteLine("\n");
-                    continue;
+                    return;
                 }
 
+                List<string> question_entity = new List<string>();
                 // query parse according to parse status
                 switch (session.parse_status)
                 {
@@ -217,45 +213,56 @@ namespace QueryAnswer
                         }
                         movies.Add(item.name);
                     }
-                    Console.WriteLine(String.Join(", ", movies.ToArray()));
+                    Utils.WriteStatus(String.Join(", ", movies.ToArray()));
                     Console.WriteLine("\n");
                     break;
                 }
                 else
                 {
-                    // using current status to compute the next status, a transtion matrix requeried.
-                    ParseStatus nextturn_status = GetTranstionStatus(session);
+                    if (session.parse_status == ParseStatus.All)
+                    {
+                        session.parse_status = MakeClearParseStatus(session);
+                    }
+                    // using current turn status(session.parse_status) to compute the Transition(next turn) status, a transition matrix requeried.
+                    ParseStatus nextturn_status = GetTransitionStatus(session);
+                    List<string> answer_entity_candidate = new List<string>();
                     // response according to the nextturn_status we just chosen.
                     switch (nextturn_status)
                     {
                         case ParseStatus.Artist:
-                            AnalyseArtistName(session);
+                            answer_entity_candidate = AnalyseArtistName(session);
                             break;
                         case ParseStatus.Director:
-                            AnalyseDirectorName(session);
+                            answer_entity_candidate = AnalyseDirectorName(session);
                             break;
                         case ParseStatus.Country:
-                            AnalyseCountryName(session);
+                            answer_entity_candidate = AnalyseCountryName(session);
                             break;
                         case ParseStatus.Genre:
-                            AnalyseGenreName(session);
+                            answer_entity_candidate = AnalyseGenreName(session);
                             break;
                         case ParseStatus.PublishDate:
-                            AnalysePublishDate(session);
+                            // TODO
+                            answer_entity_candidate = AnalysePublishDate(session);
                             break;
                         default:
                             Console.WriteLine("error turn status!");
                             break;
                     }
+                    // answer and go to the next turn
+                    Console.WriteLine("transite to {0}", nextturn_status.ToString());
+                    string answer = AnswerGenerator.AnswerIt(answer_entity_candidate, session, nextturn_status);
+                    Utils.WriteAnswer(answer);
+                    session.parse_status = nextturn_status;
                 }
             }
         }
 
-        public void TestDialogFlow(string query_str)
+        public void TestOneTurnDialog(string query_str)
         {
             // begin
             Parser parser = new Parser();
-            
+
             // get query
             Query query = new Query(query_str);
             Session session = new Session();
@@ -288,14 +295,27 @@ namespace QueryAnswer
                 }
                 movies.Add(item.name);
             }
-            Console.WriteLine(String.Join(", ", movies.ToArray()));
+            Utils.WriteStatus(String.Join(", ", movies.ToArray()));
             Console.WriteLine("\n");
         }
         #endregion
 
-        #region Make Transtion Status Decision 
-        // using current status to compute the next status, a transtion matrix requeried.
-        private ParseStatus GetTranstionStatus(Session session)
+        private ParseStatus MakeClearParseStatus(Session session)
+        {
+            foreach (var item in session.is_considerd)
+            {
+                if (item.Value)
+                {
+                    return item.Key;
+                }
+            }
+            Console.WriteLine("there is no an clear status!");
+            return ParseStatus.All;
+        }
+
+        #region Make Transition Status Decision 
+        // using current status to compute the next status, a transition matrix requeried.
+        private ParseStatus GetTransitionStatus(Session session)
         {
             ParseStatus current_parsestatus = ParseStatus.All;
             foreach (var item in session.is_considerd)
@@ -311,20 +331,20 @@ namespace QueryAnswer
                 return ParseStatus.All;
             }
             double selecter = rand.NextDouble();
-            List<double> current_type_trans = roulette_matrix[parsestatus2transmat[current_parsestatus]];
+            List<double> current_type_trans = roulette_matrix[parsestatus2int[current_parsestatus]];
             int lower_bound = 0;
             foreach (double item in current_type_trans)
             {
                 if (item > selecter)
                 {
-                    return transmat2parsestatus[lower_bound];
+                    return int2parsestatus[lower_bound];
                 }
                 lower_bound++;
             }
             return ParseStatus.All;
         }
 
-        public static ParseStatus TestTranstionStatus(Session session)
+        public static ParseStatus TestTransitionStatus(Session session)
         {
             ParseStatus current_parsestatus = ParseStatus.All;
             foreach (var item in session.is_considerd)
@@ -340,14 +360,14 @@ namespace QueryAnswer
                 return ParseStatus.All;
             }
             double selecter = rand.NextDouble();
-            List<double> current_type_trans = roulette_matrix[parsestatus2transmat[current_parsestatus]];
+            List<double> current_type_trans = roulette_matrix[parsestatus2int[current_parsestatus]];
             Console.WriteLine(string.Join(", ", current_type_trans.ToArray()));
             int lower_bound = 0;
             foreach (double item in current_type_trans)
             {
                 if (item > selecter)
                 {
-                    return transmat2parsestatus[lower_bound];
+                    return int2parsestatus[lower_bound];
                 }
                 lower_bound++;
             }
@@ -399,8 +419,20 @@ namespace QueryAnswer
         }
         #endregion
 
-        #region Analyse Candidate Movies to Decide How We Show Machine's Answer
-        private void AnalyseArtistName(Session session)
+        #region Analyse Candidate Movies to Decide How We Show Machine's Next Answer
+        private List<string> TopNResult(Dictionary<string, int> type_appear)
+        {
+            List<KeyValuePair<string, int>> type_appear_list = type_appear.ToList();
+            type_appear_list.Sort((first, second) => second.Value.CompareTo(first.Value));
+            List<string> res = new List<string>();
+            for (int i = 0; i < condidate_show_number; i++)
+            {
+                res.Add(type_appear_list[i].Key);
+            }
+            return res;
+        }
+
+        private List<string> AnalyseArtistName(Session session)
         {
             Dictionary<string, int> artist_appear = new Dictionary<string, int>();
             foreach (var movie in session.candidate_movies)
@@ -417,12 +449,18 @@ namespace QueryAnswer
                     }
                 }
             }
-            var m_list = artist_appear.ToList();
-            m_list.Sort((first, second) => second.Value.CompareTo(first.Value));
-
+            // need to remove duplicate artist within carried_artist
+            foreach (string item in session.carried_artist)
+            {
+                if (artist_appear.ContainsKey(item))
+                {
+                    artist_appear.Remove(item);
+                }
+            }
+            return TopNResult(artist_appear);
         }
 
-        private void AnalyseDirectorName(Session session)
+        private List<string> AnalyseDirectorName(Session session)
         {
             Dictionary<string, int> director_appear = new Dictionary<string, int>();
             foreach (var movie in session.candidate_movies)
@@ -439,11 +477,10 @@ namespace QueryAnswer
                     }
                 }
             }
-            var m_list = director_appear.ToList();
-            m_list.Sort((first, second) => second.Value.CompareTo(first.Value));
+            return TopNResult(director_appear);
         }
 
-        private void AnalyseCountryName(Session session)
+        private List<string> AnalyseCountryName(Session session)
         {
             Dictionary<string, int> country_appear = new Dictionary<string, int>();
             foreach (var movie in session.candidate_movies)
@@ -460,11 +497,10 @@ namespace QueryAnswer
                     }
                 }
             }
-            var m_list = country_appear.ToList();
-            m_list.Sort((first, second) => second.Value.CompareTo(first.Value));
+            return TopNResult(country_appear);
         }
 
-        private void AnalyseGenreName(Session session)
+        private List<string> AnalyseGenreName(Session session)
         {
             Dictionary<string, int> genre_appear = new Dictionary<string, int>();
             foreach (var movie in session.candidate_movies)
@@ -481,17 +517,18 @@ namespace QueryAnswer
                     }
                 }
             }
-            var m_list = genre_appear.ToList();
-            m_list.Sort((first, second) => second.Value.CompareTo(first.Value));
+            return TopNResult(genre_appear);
         }
 
-        private void AnalysePublishDate(Session session)
+        private List<string> AnalysePublishDate(Session session)
         {
+            // TODO
             Dictionary<string, int> publishDate_appear = new Dictionary<string, int>();
             foreach (var movie in session.candidate_movies)
             {
 
             }
+            return null;
         }
         #endregion
 
@@ -561,6 +598,54 @@ namespace QueryAnswer
             session.candidate_movies.Sort();
         }
         #endregion
+    }
+
+    class AnswerGenerator
+    {
+        private static string[,] relation_matrix = new string[5, 5]
+        {
+            ///////////// artist                            director                       country                         genre                          publishdate
+            /* artist */  { "{0}和{1}有很多合作，想看谁的",   "{0}和{1}有很多合作，想看谁的",  "X",                           "{0}演了很多{1}，想看哪种",       "什么时候拍摄"}, 
+
+            /* director */{ "{0}和{1}有很多合作，想看谁的",   "X",                           "X",                           "{0}拍了很多{1}，想看哪种",       "什么时候拍摄"}, 
+
+            /* country */ { "{0}有一些著名艺人：{1}",        "{0}有一些著名导演：{1}",        "X",                           "这个地区的{0}比有名，想看哪种",   "什么时候拍摄"}, 
+              
+            /* genre */   { "{1}拍了很多{0}电影，想看谁的",  "{1}拍了很多{0}电影，想看谁的",  "{1}拍了很多{0}电影，想看哪里的",  "X",                            "什么时候拍摄"}, 
+
+            /* publish */ { "X",                           "X",                            "X",                            "X",                            "X"}
+        };
+
+        public static string AnswerIt(List<string> answer_entity, Session session, ParseStatus to)
+        {
+            int from_status = DialogManager.parsestatus2int[session.parse_status];
+            int to_status = DialogManager.parsestatus2int[to];
+            string entity_in_question = "";
+            switch (session.parse_status)
+            {
+                case ParseStatus.Artist:
+                    entity_in_question = string.Join("、 ", session.carried_artist.ToArray());
+                    break;
+                case ParseStatus.Director:
+                    entity_in_question = string.Join("、 ", session.carried_director.ToArray());
+                    break;
+                case ParseStatus.Country:
+                    entity_in_question = string.Join("、 ", session.carried_country.ToArray());
+                    break;
+                case ParseStatus.Genre:
+                    entity_in_question = string.Join("、 ", session.carried_genre.ToArray());
+                    break;
+                case ParseStatus.PublishDate:
+                    // TODO
+                    entity_in_question = "";
+                    break;
+                default:
+                    Console.WriteLine("error turn status!");
+                    break;
+            }
+            string answer = string.Format(relation_matrix[from_status,to_status], entity_in_question, string.Join("、 ", answer_entity.ToArray()));
+            return answer;
+        }
     }
 
     class OsearchQueryGenerator

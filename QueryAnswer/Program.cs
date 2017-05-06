@@ -19,8 +19,9 @@ namespace QueryAnswer
             // test
             //TestParser();
             //TestoSearchAPI();
-            TestQueryFile(@"D:\MovieDomain\QueryAnswer\resource\userquery.txt");
+            //TestQueryFile(@"D:\MovieDomain\QueryAnswer\resource\userquery.txt");
             //TestTranstionStatus();
+            TestSessionFile(@"D:\MovieDomain\QueryAnswer\resource\usersession.txt");
         }
         
         private static void TestParser()
@@ -46,8 +47,8 @@ namespace QueryAnswer
                 string query = sr.ReadLine();
                 if (!string.IsNullOrEmpty(query))
                 {
-                    Console.WriteLine(query);
-                    test_dialog.TestDialogFlow(query);
+                    Utils.WriteQuery(query);
+                    test_dialog.TestOneTurnDialog(query);
                 }
             }
         }
@@ -58,14 +59,29 @@ namespace QueryAnswer
             session.is_considerd[ParseStatus.Artist] = true;
 
             DialogManager dm = new DialogManager();
-            ParseStatus res = DialogManager.TestTranstionStatus(session);
+            ParseStatus res = DialogManager.TestTransitionStatus(session);
             Console.WriteLine(res.ToString());
 
             session = new Session();
             session.is_considerd[ParseStatus.PublishDate] = true;
             
-            res = DialogManager.TestTranstionStatus(session);
+            res = DialogManager.TestTransitionStatus(session);
             Console.WriteLine(res.ToString());
+        }
+
+        private static void TestSessionFile(string filename)
+        {
+            StreamReader sr = new StreamReader(filename);
+            DialogManager test_dialog = new DialogManager();
+            while (!sr.EndOfStream)
+            {
+                string query = sr.ReadLine();
+                if (!string.IsNullOrEmpty(query))
+                {
+                    Utils.WriteQuery(query);
+                    test_dialog.TestDialogFlow(query);
+                }
+            }
         }
     }
 }
