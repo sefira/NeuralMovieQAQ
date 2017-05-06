@@ -133,27 +133,27 @@ namespace QueryAnswer
             query_history.Add(query);
             if (query.is_considerd[ParseStatus.Movie])
             {
-                carried_movie = query.carried_movie;
+                carried_movie.AddRange(query.carried_movie);
                 is_considerd[ParseStatus.Movie] = query.is_considerd[ParseStatus.Movie];
             }
             if (query.is_considerd[ParseStatus.Artist])
             {
-                carried_artist = query.carried_artist;
+                carried_artist.AddRange(query.carried_artist);
                 is_considerd[ParseStatus.Artist] = query.is_considerd[ParseStatus.Artist];
             }
             if (query.is_considerd[ParseStatus.Director])
             {
-                carried_director = query.carried_director;
+                carried_director.AddRange(query.carried_director);
                 is_considerd[ParseStatus.Director] = query.is_considerd[ParseStatus.Director];
             }
             if (query.is_considerd[ParseStatus.Country])
             {
-                carried_country = query.carried_country;
+                carried_country.AddRange(query.carried_country);
                 is_considerd[ParseStatus.Country] = query.is_considerd[ParseStatus.Country];
             }
             if (query.is_considerd[ParseStatus.Genre])
             {
-                carried_genre = query.carried_genre;
+                carried_genre.AddRange(query.carried_genre);
                 is_considerd[ParseStatus.Genre] = query.is_considerd[ParseStatus.Genre];
             }
             if (query.is_considerd[ParseStatus.PublishDate])

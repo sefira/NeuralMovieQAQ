@@ -158,7 +158,7 @@ namespace QueryAnswer
         private static HashSet<string> low_rating_tag;
 
         // for isAboutMovie
-        private static string _intent = "想看,推荐,有什么,来一部,来部";
+        private static string _intent = "想看,推荐,有什么,有没有,来一部,来部";
         private static string _must = "电影,影片,片子";
         private static HashSet<string> intent_word_tag;
         private static HashSet<string> must_word_tag;

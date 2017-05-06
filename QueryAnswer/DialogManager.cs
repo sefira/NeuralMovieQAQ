@@ -25,33 +25,36 @@ namespace QueryAnswer
         private static int end_considerd_count = 100;
         private static int condidate_show_number = 3;
 
-        private static double[,] transition_matrix = new double[5, 5]
+        private static double[,] transition_matrix = new double[6, 6]
         { 
-            ///////////// artist director country      genre   publishdate
-            /* artist */  { 0.2,    0.2,   0.01,       0.3,    0.3},
-            /* director */{ 0.3,    0.01,  0.01,       0.4,    0.3},
-            /* country */ { 0.3,    0.3,   0.01,       0.2,    0.2},
-            /* genre */   { 0.4,    0.3,   0.2,        0.01,   0.1},
-            /* publish */ { 0.1,    0.2,   0.3,        0.4,    0.01}
+            ///////////// all       artist director  country      genre   publishdate
+            /* all */     { 0.001,   0.2,    0.2,    0.001,       0.3,    0.3},
+            /* artist */  { 0.001,   0.2,    0.2,    0.001,       0.3,    0.3},
+            /* director */{ 0.001,   0.3,    0.001,  0.001,       0.4,    0.3},
+            /* country */ { 0.001,   0.3,    0.3,    0.001,       0.2,    0.2},
+            /* genre */   { 0.001,   0.4,    0.3,    0.2,         0.001,  0.1},
+            /* publish */ { 0.001,   0.1,    0.2,    0.3,         0.4,    0.001}
         };
 
         private static List<List<double>> roulette_matrix = new List<List<double>>();
 
         public static Dictionary<ParseStatus, int> parsestatus2int = new Dictionary<ParseStatus, int>()
         {
-            { ParseStatus.Artist, 0 },
-            { ParseStatus.Director, 1 },
-            { ParseStatus.Country, 2 },
-            { ParseStatus.Genre, 3 },
-            { ParseStatus.PublishDate, 4 }
+            { ParseStatus.All, 0 },
+            { ParseStatus.Artist, 1 },
+            { ParseStatus.Director, 2 },
+            { ParseStatus.Country, 3 },
+            { ParseStatus.Genre, 4 },
+            { ParseStatus.PublishDate, 5 }
         };
         public static Dictionary<int, ParseStatus> int2parsestatus = new Dictionary<int, ParseStatus>()
         {
-            { 0, ParseStatus.Artist },
-            { 1, ParseStatus.Director },
-            { 2, ParseStatus.Country },
-            { 3, ParseStatus.Genre },
-            { 4, ParseStatus.PublishDate }
+            { 0, ParseStatus.All },
+            { 1, ParseStatus.Artist },
+            { 2, ParseStatus.Director },
+            { 3, ParseStatus.Country },
+            { 4, ParseStatus.Genre },
+            { 5, ParseStatus.PublishDate }
         };
 
         private static Random rand = new Random();
@@ -135,25 +138,29 @@ namespace QueryAnswer
         public void TestDialogFlow(string query_str)
         {
             // begin
-            Session session = new Session();
             Parser parser = new Parser();
+            Session session = new Session();
             session.parse_status = ParseStatus.All;
 
             while (true)
             {
-                // get query. if it is not the very beginning, then wait for the user input
-                if (!(session.parse_status == ParseStatus.All))
+                Query query;
+                // get query. if it is the very beginning, then taking the parameter as input
+                if (session.parse_status == ParseStatus.All)
+                {
+                    query = new Query(query_str);
+                    // movie recommendation trigger
+                    if (!parser.isAboutMovie(query))
+                    {
+                        Console.WriteLine(new string('=', 24));
+                        Console.WriteLine("\n");
+                        return;
+                    }
+                }
+                else
                 {
                     query_str = Console.ReadLine();
-                }
-                Query query = new Query(query_str);
-
-                // movie recommendation trigger
-                if (!parser.isAboutMovie(query))
-                {
-                    Console.WriteLine(new string('=', 24));
-                    Console.WriteLine("\n");
-                    return;
+                    query = new Query(query_str);
                 }
 
                 List<string> question_entity = new List<string>();
@@ -229,6 +236,9 @@ namespace QueryAnswer
                     // response according to the nextturn_status we just chosen.
                     switch (nextturn_status)
                     {
+                        case ParseStatus.All:
+                            answer_entity_candidate = AnalyseAll(session);
+                            break;
                         case ParseStatus.Artist:
                             answer_entity_candidate = AnalyseArtistName(session);
                             break;
@@ -242,7 +252,6 @@ namespace QueryAnswer
                             answer_entity_candidate = AnalyseGenreName(session);
                             break;
                         case ParseStatus.PublishDate:
-                            // TODO
                             answer_entity_candidate = AnalysePublishDate(session);
                             break;
                         default:
@@ -302,14 +311,15 @@ namespace QueryAnswer
 
         private ParseStatus MakeClearParseStatus(Session session)
         {
-            foreach (var item in session.is_considerd)
+            int start = (int)ParseStatus.Artist;
+            int end = (int)ParseStatus.Rating;
+            for (int i = start; i < end; i++)
             {
-                if (item.Value)
+                if (session.is_considerd[(ParseStatus)i])
                 {
-                    return item.Key;
+                    return (ParseStatus)i;
                 }
             }
-            Console.WriteLine("there is no an clear status!");
             return ParseStatus.All;
         }
 
@@ -325,10 +335,6 @@ namespace QueryAnswer
                     current_parsestatus = item.Key;
                     break;
                 }
-            }
-            if (current_parsestatus == ParseStatus.All)
-            {
-                return ParseStatus.All;
             }
             double selecter = rand.NextDouble();
             List<double> current_type_trans = roulette_matrix[parsestatus2int[current_parsestatus]];
@@ -429,7 +435,13 @@ namespace QueryAnswer
             {
                 res.Add(type_appear_list[i].Key);
             }
+            Console.WriteLine(string.Join(", ", res.ToArray()));
             return res;
+        }
+
+        private List<string> AnalyseAll(Session session)
+        {
+            return new List<string>() { "" };
         }
 
         private List<string> AnalyseArtistName(Session session)
@@ -522,13 +534,7 @@ namespace QueryAnswer
 
         private List<string> AnalysePublishDate(Session session)
         {
-            // TODO
-            Dictionary<string, int> publishDate_appear = new Dictionary<string, int>();
-            foreach (var movie in session.candidate_movies)
-            {
-
-            }
-            return null;
+            return new List<string>() { "" };
         }
         #endregion
 
@@ -602,18 +608,20 @@ namespace QueryAnswer
 
     class AnswerGenerator
     {
-        private static string[,] relation_matrix = new string[5, 5]
+        private static string[,] relation_matrix = new string[6, 6]
         {
-            ///////////// artist                            director                       country                         genre                          publishdate
-            /* artist */  { "{0}和{1}有很多合作，想看谁的",   "{0}和{1}有很多合作，想看谁的",  "X",                           "{0}演了很多{1}，想看哪种",       "什么时候拍摄"}, 
+            ///////////// all   artist                            director                       country                         genre                          publishdate
+            /* all */     {"X", "想看哪个演员的电影呢？",          "想看哪个导演的电影呢？",         "想看哪个国家的电影呢？",       "想看哪个类型的电影呢？",       "想看经典的还是最近的电影呢？"}, 
+            
+            /* artist */  {"X", "{0}和{1}有很多合作，想看谁的呢？",   "{0}和{1}有很多合作，想看谁的呢？",  "X",                    "{0}演了很多{1}，想看哪种呢？",       "他演了很多电影呢，想看经典的还是最近的呢？"}, 
 
-            /* director */{ "{0}和{1}有很多合作，想看谁的",   "X",                           "X",                           "{0}拍了很多{1}，想看哪种",       "什么时候拍摄"}, 
+            /* director */{"X", "{0}和{1}有很多合作，想看谁的呢？",   "X",                           "X",                           "{0}拍了很多{1}，想看哪种呢？",       "他拍了很多电影呢，想看经典的还是最近的呢？"}, 
 
-            /* country */ { "{0}有一些著名艺人：{1}",        "{0}有一些著名导演：{1}",        "X",                           "这个地区的{0}比有名，想看哪种",   "什么时候拍摄"}, 
+            /* country */ {"X", "{0}有一些著名艺人：{1}，想看谁的呢？","{0}有一些著名导演：{1}，想看谁的呢？","X",                         "这个地区的{1}比较有名，想看哪种呢？",   "这个地区的电影有很多啦，想看经典的还是最近的呢？"}, 
               
-            /* genre */   { "{1}拍了很多{0}电影，想看谁的",  "{1}拍了很多{0}电影，想看谁的",  "{1}拍了很多{0}电影，想看哪里的",  "X",                            "什么时候拍摄"}, 
+            /* genre */   {"X", "{1}拍了很多{0}电影，想看谁的呢？",  "{1}拍了很多{0}电影，想看谁的呢？",  "{1}拍了很多{0}电影，想看哪里的呢？",  "X",                           "这种类型的电影有很多啦，想看经典的还是最近的呢？"}, 
 
-            /* publish */ { "X",                           "X",                            "X",                            "X",                            "X"}
+            /* publish */ {"X", "X",                           "X",                            "X",                            "X",                            "X"}
         };
 
         public static string AnswerIt(List<string> answer_entity, Session session, ParseStatus to)
