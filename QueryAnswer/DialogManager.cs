@@ -135,6 +135,140 @@ namespace QueryAnswer
             }
         }
 
+        public void DialogFlow()
+        {
+
+            // begin
+            Parser parser = new Parser();
+            Session session = new Session();
+            session.parse_status = ParseStatus.All;
+            string query_str = "";
+            while (true)
+            {
+                Query query;
+                // get query. if it is the very beginning, then taking the parameter as input
+                if (session.parse_status == ParseStatus.All)
+                {
+                    query_str = Console.ReadLine();
+                    query = new Query(query_str);
+                    // movie recommendation trigger
+                    if (!parser.isAboutMovie(query))
+                    {
+                        Console.WriteLine(new string('=', 24));
+                        Console.WriteLine("\n");
+                        return;
+                    }
+                }
+                else
+                {
+                    query_str = Console.ReadLine();
+                    query = new Query(query_str);
+                }
+
+                List<string> question_entity = new List<string>();
+                // query parse according to parse status
+                switch (session.parse_status)
+                {
+                    case ParseStatus.All:
+                        parser.ParseAll(ref query);
+                        break;
+                    case ParseStatus.Movie:
+                        parser.ParseMovieName(ref query);
+                        break;
+                    case ParseStatus.Artist:
+                        parser.ParseArtistName(ref query);
+                        break;
+                    case ParseStatus.Director:
+                        parser.ParseDirectorName(ref query);
+                        break;
+                    case ParseStatus.Country:
+                        parser.ParseCountryName(ref query);
+                        break;
+                    case ParseStatus.Genre:
+                        parser.ParseGenreName(ref query);
+                        break;
+                    case ParseStatus.PublishDate:
+                        parser.ParsePublishDate(ref query);
+                        break;
+                    case ParseStatus.Rating:
+                        parser.ParseRating(ref query);
+                        break;
+                    case ParseStatus.Duration:
+                        parser.ParseDuration(ref query);
+                        break;
+                    default:
+                        Utils.WriteError("error parse status!");
+                        break;
+                }
+
+                // refresh session status using user query
+                session.RefreshSessionStatus(query);
+                DealArtistDirectorDuplicate(ref session);
+
+                // refresh session movie candidate status 
+                GetAllResult(ref session);
+
+                // is end
+                if (isDialogEnd(session))
+                {
+                    // if it is end, then get and show the final query result
+                    List<string> movies = new List<string>();
+                    int i = 0;
+                    foreach (var item in session.candidate_movies)
+                    {
+                        if (i++ == 5)
+                        {
+                            break;
+                        }
+                        movies.Add(item.name);
+                    }
+                    Utils.WriteResult(String.Join(", ", movies.ToArray()));
+                    Console.WriteLine("\n");
+                    break;
+                }
+                else
+                {
+                    if (session.parse_status == ParseStatus.All)
+                    {
+                        session.parse_status = MakeClearParseStatus(session);
+                    }
+                    // using current turn status(session.parse_status) to compute the Transition(next turn) status, a transition matrix requeried.
+                    ParseStatus nextturn_status = GetTransitionStatus(session);
+                    List<string> answer_entity_candidate = new List<string>();
+                    // response according to the nextturn_status we just chosen.
+                    switch (nextturn_status)
+                    {
+                        //case ParseStatus.All:
+                        //    answer_entity_candidate = AnalyseAll(session);
+                        //    break;
+                        case ParseStatus.Artist:
+                            answer_entity_candidate = AnalyseArtistName(session);
+                            break;
+                        case ParseStatus.Director:
+                            answer_entity_candidate = AnalyseDirectorName(session);
+                            break;
+                        case ParseStatus.Country:
+                            answer_entity_candidate = AnalyseCountryName(session);
+                            break;
+                        case ParseStatus.Genre:
+                            answer_entity_candidate = AnalyseGenreName(session);
+                            break;
+                        case ParseStatus.PublishDate:
+                            answer_entity_candidate = AnalysePublishDate(session);
+                            break;
+                        default:
+                            Utils.WriteError("error turn status!");
+                            break;
+                    }
+                    // answer and go to the next turn
+                    Console.WriteLine("transite to {0}", nextturn_status.ToString());
+                    string answer = AnswerGenerator.AnswerIt(answer_entity_candidate, session, nextturn_status);
+                    Utils.WriteMachine(answer);
+                    session.parse_status = nextturn_status;
+                }
+            }
+        }
+
         public void TestDialogFlow(string query_str)
         {
             // begin
@@ -220,7 +354,7 @@ namespace QueryAnswer
                         }
                         movies.Add(item.name);
                     }
-                    Utils.WriteStatus(String.Join(", ", movies.ToArray()));
+                    Utils.WriteResult(String.Join(", ", movies.ToArray()));
                     Console.WriteLine("\n");
                     break;
                 }
@@ -261,7 +395,7 @@ namespace QueryAnswer
                     // answer and go to the next turn
                     Console.WriteLine("transite to {0}", nextturn_status.ToString());
                     string answer = AnswerGenerator.AnswerIt(answer_entity_candidate, session, nextturn_status);
-                    Utils.WriteAnswer(answer);
+                    Utils.WriteMachine(answer);
                     session.parse_status = nextturn_status;
                 }
             }
@@ -304,7 +438,7 @@ namespace QueryAnswer
                 }
                 movies.Add(item.name);
             }
-            Utils.WriteStatus(String.Join(", ", movies.ToArray()));
+            Utils.WriteResult(String.Join(", ", movies.ToArray()));
             Console.WriteLine("\n");
         }
         #endregion

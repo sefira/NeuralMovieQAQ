@@ -12,22 +12,21 @@ namespace QueryAnswer
     {
         static void Main(string[] args)
         {
-            // start a dialog
-            //DialogManager movie_dialog = new DialogManager();
-            //movie_dialog.DialogFlow();
 
             // test
             //TestParser();
             //TestoSearchAPI();
-            //TestQueryFile(@"D:\MovieDomain\QueryAnswer\resource\userquery.txt");
+            TestQueryFile(@"D:\MovieDomain\QueryAnswer\resource\userquery.txt");
             //TestTranstionStatus();
             TestSessionFile(@"D:\MovieDomain\QueryAnswer\resource\usersession.txt");
+            TestSession();
         }
-        
+
         private static void TestParser()
         {
             //string query_str = @"上世纪香港的刘德华出演了张艺谋和冯小刚2001年的天下无贼一部喜剧片";
-            string query_str = @"我想看周星驰的电影";
+            //string query_str = @"我想看周星驰的电影";
+            string query_str = @"我想看成龙的电影";
             Query query = new Query(query_str);
             Parser m_Parser = new Parser();
             m_Parser.ParseAll(ref query);
@@ -82,6 +81,18 @@ namespace QueryAnswer
                     Utils.WriteQuery(query);
                     test_dialog.TestDialogFlow(query);
                 }
+            }
+        }
+
+        private static void TestSession()
+        {
+            while (true)
+            {
+                Utils.WriteMachine("Now, you can talk to me~");
+
+                // start a dialog
+                DialogManager movie_dialog = new DialogManager();
+                movie_dialog.DialogFlow();
             }
         }
     }

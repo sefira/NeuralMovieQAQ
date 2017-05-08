@@ -15,16 +15,16 @@ namespace QueryAnswer
             Console.ResetColor();
         }
 
-        public static void WriteAnswer(string str)
+        public static void WriteMachine(string str)
         {
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(str);
             Console.ResetColor();
         }
 
-        public static void WriteStatus(string str)
+        public static void WriteResult(string str)
         {
-            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine(str);
             Console.ResetColor();
         }
