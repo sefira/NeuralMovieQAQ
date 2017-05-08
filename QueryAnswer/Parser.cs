@@ -70,20 +70,22 @@ namespace QueryAnswer
         public HashSet<string> ReadEntityFromFile(string filename)
         {
             StreamReader sr = new StreamReader(filename);
-            List<string> lines = new List<string>();
+            List<string> entities = new List<string>();
             while (true)
             {
                 string line = sr.ReadLine();
+                string entity = "";
                 if (line != null && !string.IsNullOrEmpty(line))
                 {
-                    lines.Add(line);
+                    entity = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[0];
+                    entities.Add(entity);
                 }
                 else
                 {
                     break;
                 }
             }
-            return new HashSet<string>(lines);
+            return new HashSet<string>(entities);
         }
 
         private PosSegmenter pos_seg_movie;
@@ -109,30 +111,34 @@ namespace QueryAnswer
                 country_name = ReadEntityFromFile(data_path + country_filename);
                 genre_name = ReadEntityFromFile(data_path + genre_filename);
 
-                JiebaSegmenter segmenter;
-                segmenter = new JiebaSegmenter();
-                segmenter.LoadUserDict(data_path + movie_filename);
-                pos_seg_movie = new PosSegmenter(segmenter);
+                // NOTE:
+                // it seems the later PosSegmenter will overlap the former one, i.e. director
+                // will overlay artist when the artist have the same name with director
+                // even we use "new PosSegment(segment_xxx)".
+                // this issue is caused by the static _wordTagTab in PosSegmenter.cs in Jieba.NET
+                JiebaSegmenter segmenter_movie = new JiebaSegmenter();
+                segmenter_movie.LoadUserDict(data_path + movie_filename);
+                pos_seg_movie = new PosSegmenter(segmenter_movie);
                 pos_segers.Add(ParseStatus.Movie, pos_seg_movie);
 
-                segmenter = new JiebaSegmenter();
-                segmenter.LoadUserDict(data_path + artist_filename);
-                pos_seg_artist = new PosSegmenter(segmenter);
+                JiebaSegmenter segmenter_artist = new JiebaSegmenter();
+                segmenter_artist.LoadUserDict(data_path + artist_filename);
+                pos_seg_artist = new PosSegmenter(segmenter_artist);
                 pos_segers.Add(ParseStatus.Artist, pos_seg_artist);
 
-                segmenter = new JiebaSegmenter();
-                segmenter.LoadUserDict(data_path + director_filename);
-                pos_seg_director = new PosSegmenter(segmenter);
+                JiebaSegmenter segmenter_director = new JiebaSegmenter();
+                segmenter_director.LoadUserDict(data_path + director_filename);
+                pos_seg_director = new PosSegmenter(segmenter_director);
                 pos_segers.Add(ParseStatus.Director, pos_seg_director);
 
-                segmenter = new JiebaSegmenter();
-                segmenter.LoadUserDict(data_path + country_filename);
-                pos_seg_country = new PosSegmenter(segmenter);
+                JiebaSegmenter segmenter_country = new JiebaSegmenter();
+                segmenter_country.LoadUserDict(data_path + country_filename);
+                pos_seg_country = new PosSegmenter(segmenter_country);
                 pos_segers.Add(ParseStatus.Country, pos_seg_country);
 
-                segmenter = new JiebaSegmenter();
-                segmenter.LoadUserDict(data_path + genre_filename);
-                pos_seg_genre = new PosSegmenter(segmenter);
+                JiebaSegmenter segmenter_genre = new JiebaSegmenter();
+                segmenter_genre.LoadUserDict(data_path + genre_filename);
+                pos_seg_genre = new PosSegmenter(segmenter_genre);
                 pos_segers.Add(ParseStatus.Genre, pos_seg_genre);
             }
         }
@@ -207,6 +213,10 @@ namespace QueryAnswer
             var pos_tags = entity_seg.PosSegers[ParseStatus.Artist].Cut(query.RawQuery);
             foreach (var item in pos_tags)
             {
+                if (EntitySegmenter.Artist.Contains(item.Word))
+                {
+                    item.Flag = Entity.EntityTag[ParseStatus.Artist];
+                }
                 if (Entity.EntityTag[ParseStatus.Artist].Equals(item.Flag))
                 {
                     query.is_considerd[ParseStatus.Artist] = true;

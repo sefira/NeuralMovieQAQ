@@ -28,5 +28,11 @@ namespace QueryAnswer
             Console.WriteLine(str);
             Console.ResetColor();
         }
+        public static void WriteError(string str)
+        {
+            Console.ForegroundColor = ConsoleColor.Red ;
+            Console.WriteLine(str);
+            Console.ResetColor();
+        }
     }
 }

@@ -26,7 +26,8 @@ namespace QueryAnswer
         
         private static void TestParser()
         {
-            string query_str = @"上世纪香港的刘德华出演了张艺谋和冯小刚2001年的天下无贼一部喜剧片";
+            //string query_str = @"上世纪香港的刘德华出演了张艺谋和冯小刚2001年的天下无贼一部喜剧片";
+            string query_str = @"我想看周星驰的电影";
             Query query = new Query(query_str);
             Parser m_Parser = new Parser();
             m_Parser.ParseAll(ref query);

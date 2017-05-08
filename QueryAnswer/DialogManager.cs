@@ -195,7 +195,7 @@ namespace QueryAnswer
                         parser.ParseDuration(ref query);
                         break;
                     default:
-                        Console.WriteLine("error parse status!");
+                        Utils.WriteError("error parse status!");
                         break;
                 }
 
@@ -236,9 +236,9 @@ namespace QueryAnswer
                     // response according to the nextturn_status we just chosen.
                     switch (nextturn_status)
                     {
-                        case ParseStatus.All:
-                            answer_entity_candidate = AnalyseAll(session);
-                            break;
+                        //case ParseStatus.All:
+                        //    answer_entity_candidate = AnalyseAll(session);
+                        //    break;
                         case ParseStatus.Artist:
                             answer_entity_candidate = AnalyseArtistName(session);
                             break;
@@ -255,7 +255,7 @@ namespace QueryAnswer
                             answer_entity_candidate = AnalysePublishDate(session);
                             break;
                         default:
-                            Console.WriteLine("error turn status!");
+                            Utils.WriteError("error turn status!");
                             break;
                     }
                     // answer and go to the next turn
@@ -629,8 +629,11 @@ namespace QueryAnswer
             int from_status = DialogManager.parsestatus2int[session.parse_status];
             int to_status = DialogManager.parsestatus2int[to];
             string entity_in_question = "";
-            switch (session.parse_status)
+            switch (DialogManager.int2parsestatus[from_status])
             {
+                case ParseStatus.All:
+                    entity_in_question = string.Join("、 ", session.carried_artist.ToArray());
+                    break;
                 case ParseStatus.Artist:
                     entity_in_question = string.Join("、 ", session.carried_artist.ToArray());
                     break;
@@ -648,7 +651,7 @@ namespace QueryAnswer
                     entity_in_question = "";
                     break;
                 default:
-                    Console.WriteLine("error turn status!");
+                    Utils.WriteError("error turn status!");
                     break;
             }
             string answer = string.Format(relation_matrix[from_status,to_status], entity_in_question, string.Join("、 ", answer_entity.ToArray()));
@@ -691,8 +694,8 @@ namespace QueryAnswer
             return string.Format("{0}", String.Join(" OR ", filters_arr));
         }
 
-        // those type that can be concated by AND
-        // include artist director country genre
+        // those type that can be concated by "AND"
+        // include artist, director, country, genre
         public static string GenerateTypeQuery(Session session, string type)
         {
             List<string> filters_list = new List<string>();
@@ -712,7 +715,7 @@ namespace QueryAnswer
                     carried_info = session.carried_genre;
                     break;
                 default:
-                    Console.WriteLine("error type status!");
+                    Utils.WriteError("error type status!");
                     return "";
             }
             foreach (string item in carried_info)
