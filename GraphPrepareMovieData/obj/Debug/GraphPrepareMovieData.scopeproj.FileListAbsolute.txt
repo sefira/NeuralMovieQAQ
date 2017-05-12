@@ -1,0 +1,2 @@
+D:\MovieDomain\GraphPrepareMovieData\bin\Debug\Algebra.xml
+D:\MovieDomain\GraphPrepareMovieData\obj\Debug\Algebra.xml

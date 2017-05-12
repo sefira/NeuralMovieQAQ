@@ -12,13 +12,13 @@ namespace QueryAnswer
     {
         static void Main(string[] args)
         {
-
+            Console.ReadKey();
             // test
             //TestParser();
             //TestoSearchAPI();
-            TestQueryFile(@"D:\MovieDomain\QueryAnswer\resource\userquery.txt");
+            //TestQueryFile(@"D:\MovieDomain\QueryAnswer\resource\userquery.txt");
             //TestTranstionStatus();
-            TestSessionFile(@"D:\MovieDomain\QueryAnswer\resource\usersession.txt");
+            //TestSessionFile(@"D:\MovieDomain\QueryAnswer\resource\usersession.txt");
             TestSession();
         }
 

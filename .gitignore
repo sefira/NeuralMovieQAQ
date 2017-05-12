@@ -16,3 +16,13 @@ QueryWordBreaker/bin/
 QueryWordBreaker/obj/
 ScopeCompilerTrace.log
 packages
+GraphEngine/input
+GraphEngine/output
+*bin*
+*.tproj
+*proj
+*Properties
+*config
+*csproj
+*cache
+*user

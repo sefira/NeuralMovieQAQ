@@ -1,0 +1,92 @@
+﻿//Script GUID:38aaf275-e4ad-433a-be4e-05337c6e2eb3
+//Used for tracking history
+
+#DECLARE TimeNow string = DateTime.Now.ToString("yyyy-MM-dd-HH-mm");
+#DECLARE filename string = @"/my/MovieDomain/Entity.ss";
+rs0 = SSTREAM @filename;
+
+rs0 =
+    SELECT 
+        Key,
+        KGId,
+        Generes AS Genres,                  //Moive Type
+        Artists,                            //Actors
+        Directors,                          //Directors
+        Characters,
+        Performance,                        //Actors with order
+        Distributors,
+        Channels,
+        Albums,
+        Name,                               //Movie Name
+        Alias,
+        Description,
+        Segments,
+        Categories,
+        IntEmbeddedFilters,
+        Popularity AS NumberOfWantToWatch,  //Number of People Who Want to watch
+        Rating AS Rating,                   //The Rating
+        RatingCount AS NumberOfShortReview, //Number of Short Review
+        ReviewCount,
+        VisitCount AS NumberOfWatched,      //Number of People Who Watched
+        Rank AS NumberOfReviewer,           //Number of Reviewer for the Rating
+        PublishDate,                        //Publish Date
+        Length,                             //How Long is the Movie
+        Geographies AS Country,             //Country
+        Filter AS Language,                 //Language
+        SourceUrls,
+        ImageUrls,
+        OfficialSite,
+        EntityContainer,
+        Logo,
+        QueryRank
+    FROM 
+        rs0
+    HAVING
+        !string.IsNullOrEmpty(NumberOfWatched) &&
+        Int32.Parse(Rating) > 0
+    ;
+
+#DECLARE path_root string = @"/my/MovieDomain/GraphPrepareMovieData/";
+#DECLARE output_robustmoviefilename string = @path_root + @TimeNow + @"robustmovie_name.csv";
+#DECLARE output_junkmoviefilename string = @path_root + @TimeNow + @"junkmovie_name.csv";
+
+OUTPUT rs0 TO SSTREAM @"/my/MovieDomain/GraphPrepareMovieData/Entity.ss" 
+    CLUSTERED BY Name 
+    SORTED BY Name
+    ;
+
+// after read data, we split movie into robust movie and junk movie 
+robust_movie =
+    PROCESS rs0
+    USING ExceptJunkMovieProcessor
+    ;
+
+robust_movie =
+    SELECT *
+    FROM robust_movie
+    ORDER BY Name ASC
+    ;
+
+OUTPUT robust_movie
+    TO @output_robustmoviefilename
+    USING DefaultTextOutputter()
+    ;
+
+junk_movie =
+    SELECT *
+    FROM rs0
+    EXCEPT ALL
+    SELECT *
+    FROM robust_movie
+    ;
+
+junk_movie =
+    SELECT *
+    FROM junk_movie
+    ORDER BY Name ASC
+    ;
+
+OUTPUT junk_movie
+    TO @output_junkmoviefilename
+    USING DefaultTextOutputter()
+    ;

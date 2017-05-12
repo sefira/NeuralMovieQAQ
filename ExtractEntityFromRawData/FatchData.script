@@ -1,0 +1,16 @@
+﻿//Script GUID:62f55db4-2590-490a-8e4b-1df7a0e687af
+//Used for tracking history
+
+#DECLARE filename string = @"users/qliiu/Entity.ss";
+rs0 = SSTREAM @filename;
+
+rs0 = 
+    REDUCE rs0
+    ON KGId
+    USING MovieReducer
+    PRESORT Name;
+
+OUTPUT rs0 TO SSTREAM @"/my/MovieDomain/Entity.ss" 
+    CLUSTERED BY Name 
+    SORTED BY Name;
+;

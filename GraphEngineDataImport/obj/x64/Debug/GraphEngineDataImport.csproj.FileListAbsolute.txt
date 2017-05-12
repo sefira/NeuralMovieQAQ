@@ -1,0 +1,6 @@
+D:\MovieDomain\GraphEngineDataImport\bin\x64\Debug\GraphEngineDataImport.exe
+D:\MovieDomain\GraphEngineDataImport\bin\x64\Debug\GraphEngineDataImport.pdb
+D:\MovieDomain\GraphEngineDataImport\bin\x64\Debug\GraphEngine.dll
+D:\MovieDomain\GraphEngineDataImport\bin\x64\Debug\Trinity.Core.dll
+D:\MovieDomain\GraphEngineDataImport\obj\x64\Debug\GraphEngineDataImport.exe
+D:\MovieDomain\GraphEngineDataImport\obj\x64\Debug\GraphEngineDataImport.pdb

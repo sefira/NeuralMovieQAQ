@@ -1,0 +1,11 @@
+D:\MovieDomain\GraphEngineApptest\bin\Debug\GraphEngineApptest.exe.config
+D:\MovieDomain\GraphEngineApptest\bin\Debug\GraphEngineApptest.exe
+D:\MovieDomain\GraphEngineApptest\bin\Debug\GraphEngineApptest.pdb
+D:\MovieDomain\GraphEngineApptest\bin\Debug\GraphEngine.dll
+D:\MovieDomain\GraphEngineApptest\bin\Debug\Newtonsoft.Json.dll
+D:\MovieDomain\GraphEngineApptest\bin\Debug\GraphEngine.pdb
+D:\MovieDomain\GraphEngineApptest\bin\Debug\GraphEngine.xml
+D:\MovieDomain\GraphEngineApptest\bin\Debug\Trinity.Core.xml
+D:\MovieDomain\GraphEngineApptest\obj\Debug\GraphEngineApptest.csprojResolveAssemblyReference.cache
+D:\MovieDomain\GraphEngineApptest\obj\Debug\GraphEngineApptest.exe
+D:\MovieDomain\GraphEngineApptest\obj\Debug\GraphEngineApptest.pdb
