@@ -12,47 +12,59 @@ namespace GraphEngineApp
         {
             TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
             Global.LocalStorage.LoadStorage();
-
-            Console.WriteLine("The character list: ");
-            foreach (var character in Global.LocalStorage.Character_Accessor_Selector())
+            int count = 0;
+            foreach (var item in Global.LocalStorage.Movie_Accessor_Selector())
             {
-                Console.WriteLine(character.Name);
+                count++;
+                //Console.WriteLine(item.Name);
             }
-            Console.WriteLine("\n=============" + string.Join(" ", Index.SubstringQuery(Index.Character.Name, "华是")));
-            Console.WriteLine("\n=============" + string.Join(" ", Index.Character_Name_SubstringQuery("刘德")));
-            Console.WriteLine();
+            Console.WriteLine(count);
 
-            Console.WriteLine("The performer list: ");
-            foreach (var performer in Global.LocalStorage.Performer_Accessor_Selector())
-            {
-                Console.WriteLine(performer.Name);
-            }
-            Console.WriteLine();
-
-            Console.WriteLine("The movie list: ");
-            foreach (var movie in Global.LocalStorage.Movie_Accessor_Selector())
-            {
-                Console.WriteLine(movie.Name);
-            }
-            Console.WriteLine("\n=============" + string.Join(" ", Index.Movie_Name_SubstringQuery("传奇")));
-            Console.WriteLine();
-
-            long spouse_id = -1;
-            var lm = Global.LocalStorage.LoadCharacter(123456);
-            Console.WriteLine(lm.CellID);
-            using (var cm = Global.LocalStorage.UseCharacter(123456))
-            {
-                if (cm.Married)
-                    spouse_id = cm.Spouse;
-            }
-
-            Console.Write("The spouse of Monica is: ");
-
-            using (var cm = Global.LocalStorage.UseCharacter(spouse_id))
-            {
-                Console.WriteLine(cm.Name);
-            }
+            List<long> name_ids = Index.Person_Name_SubstringQuery("刘德华");
+            Console.WriteLine(name_ids.Count);
             
+            foreach (var cellid in name_ids)
+            {
+                using (var person = Global.LocalStorage.UsePerson(cellid))
+                {
+                    Console.WriteLine(person.Name + "||" + person.CellID);
+                    foreach (var item in person.Act)
+                    {
+                        using (var movie = Global.LocalStorage.UseMovie(item))
+                        { Console.WriteLine(movie.Name); }
+                    }
+                    Console.WriteLine("===========================");
+                    foreach (var item in person.Direct)
+                    {
+                        using (var movie = Global.LocalStorage.UseMovie(item))
+                        { Console.WriteLine(movie.Name); }
+                    }
+                }
+            }
+            Console.WriteLine("===========================");
+            
+
+            name_ids = Index.Person_Name_SubstringQuery("王宝强");
+            Console.WriteLine(name_ids.Count);
+            foreach (var cellid in name_ids)
+            {
+                using (var person = Global.LocalStorage.UsePerson(cellid))
+                {
+                    Console.WriteLine(person.Name + "||" + person.CellID);
+                    foreach (var item in person.Act)
+                    {
+                        using (var movie = Global.LocalStorage.UseMovie(item))
+                        { Console.WriteLine(movie.Name); }
+                    }
+                    Console.WriteLine("===========================");
+                    foreach (var item in person.Direct)
+                    {
+                        using (var movie = Global.LocalStorage.UseMovie(item))
+                        { Console.WriteLine(movie.Name); }
+                    }
+                }
+            }
+            Console.WriteLine("===========================");
         }
     }
 }

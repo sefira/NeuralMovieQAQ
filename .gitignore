@@ -26,3 +26,5 @@ GraphEngine/output
 *csproj
 *cache
 *user
+*pdb
+*.exe
