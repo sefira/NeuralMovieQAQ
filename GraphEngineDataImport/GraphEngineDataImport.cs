@@ -8,7 +8,7 @@ using GraphEngine;
 
 namespace GraphEngineDataImport
 {
-    internal class Program
+    internal class GraphEngineDataImport
     {
         static void Main(string[] args)
         {
