@@ -15,11 +15,11 @@ namespace QueryAnswer
             Console.ReadKey();
             // test
             //TestParser();
-            //TestoSearchAPI();
+            TestoSearchAPI();
             //TestQueryFile(@"D:\MovieDomain\QueryAnswer\resource\userquery.txt");
             //TestTranstionStatus();
             //TestSessionFile(@"D:\MovieDomain\QueryAnswer\resource\usersession.txt");
-            TestSession();
+            //TestSession();
         }
 
         private static void TestParser()

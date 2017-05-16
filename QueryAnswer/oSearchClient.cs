@@ -146,7 +146,8 @@ namespace QueryAnswer
             //string query_filter = @" #:""刘德华Artists "" AND #:""王宝强Artists "" AND #:""战争Genres """;
             //string query_filter = @"rangeconstraint:bt:20160504:20170604:#:"" _PublishDate"" #:"" _PublishDate"" adjust:1rankmul:#:"" _PublishDate";
             //string query_filter = @"rangeconstraint:bt:20160504:20170604:#:"" _PublishDate""";
-            string query_filter = @"((#:""刘德华Artists "") AND (#:""张艺谋Directors ""))";
+            //string query_filter = @"((#:""刘德华Artists "") AND (#:""张艺谋Directors ""))";
+            string query_filter = @"((#:""头发Name ""))";
             string query = string.Format(query_format, query_filter);
 
             uint offSet = 0;

@@ -26,14 +26,14 @@ cell struct Movie
 	string Segments;
 	string Categories;
 	string IntEmbeddedFilters;
-	string NumberOfWantToWatch;
-	string Rating;
-	string NumberOfShortReview;
+	int NumberOfWantToWatch;
+	int Rating;
+	int NumberOfShortReview;
 	string ReviewCount;
-	string NumberOfWatched;
-	string NumberOfReviewer;
-	string PublishDate;
-	string Length;
+	int NumberOfWatched;
+	int NumberOfReviewer;
+	int PublishDate;
+	int Length;
 	string Country;
 	string Language;
 	string SourceUrls;
@@ -42,17 +42,19 @@ cell struct Movie
 	string EntityContainer;
 	string Logo;
 	string QueryRank;
+
+	// indicate this cell type
+	string TheType;
 }
 
 cell struct Person
 {
-
-	int age;
+	int Age;
 	[GraphEdge]
-	long parent;	
+	long Parent;	
 	[Index]	
 	string Name;
-	byte Gender;
+	int Gender;
     bool Married;
 	[GraphEdge]
     CellId Spouse;
@@ -60,4 +62,7 @@ cell struct Person
     List<CellId> Act;
 	[GraphEdge]
     List<CellId> Direct;
+	
+	// indicate this cell type
+	string TheType;
 }

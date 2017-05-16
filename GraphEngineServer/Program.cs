@@ -11,6 +11,7 @@ using Trinity.Core.Lib;
 using Trinity.Network;
 using static FanoutSearch.LIKQ.KnowledgeGraph;
 using Action = FanoutSearch.Action;
+using static GraphEngineServer.DataStructure;
 
 namespace GraphEngineServer
 {
@@ -29,18 +30,20 @@ namespace GraphEngineServer
             server.RegisterCommunicationModule<FanoutSearchModule>();
             server.Start();
 
+            if (!Trinity.Global.LocalStorage.LoadStorage() || !Trinity.Global.LocalStorage.Movie_Accessor_Selector().Any())
+            {
+                Trinity.Global.LocalStorage.LoadStorage();
+                ImportMovieData(@"D:\MovieDomain\GraphEngineServer\data\");
+                Trinity.Global.LocalStorage.SaveStorage();
+            }
+            TestMovieData(@"D:\MovieDomain\GraphEngineServer\data\");
 
-            ImportMovieData(@"D:\MovieDomain\GraphEngineServer\data\");
-            TestMovieData();
-
-            //ImportToyData();
+            ImportToyData();
         }
 
         private static IEnumerable<long> Indexer(object matchobject, string typestring)
         {
             JObject queryObj = (JObject)matchobject;
-            //string key = queryObj["key"].ToString();
-
             string key = queryObj["CellId"].ToString();
             yield return long.Parse(key);
         }
@@ -50,27 +53,19 @@ namespace GraphEngineServer
             MovieEntityImport movie_entity_import = new MovieEntityImport(path);
             string filename = @"Movie.csv";
             movie_entity_import.ImportMovie(filename);
-            foreach (var movie in Global.LocalStorage.Movie_Accessor_Selector())
-            {
-                Console.WriteLine(movie.Name);
-                Console.WriteLine(movie.CellID);
-            }
             Console.WriteLine();
-            Global.LocalStorage.SaveStorage();
         }
 
-        private static void TestMovieData()
+        private static void TestMovieData(string path)
         {
             Global.LocalStorage.LoadStorage();
-            int count = 0;
-            foreach (var item in Global.LocalStorage.Movie_Accessor_Selector())
-            {
-                count++;
-            }
-            Console.WriteLine(count);
+            Console.WriteLine(Global.LocalStorage.Movie_Accessor_Selector().Count());
 
-            List<long> name_ids = Index.Person_Name_SubstringQuery("刘德华");
-            Console.WriteLine(name_ids.Count);
+            MovieEntityImport movie_entity_import = new MovieEntityImport(path);
+            List<long> name_ids = new List<long>();
+            name_ids.Add(movie_entity_import.person_cellid["刘德华"]);
+            //List<long> name_ids = Index.Person_Name_SubstringQuery("刘德华");
+            //Console.WriteLine(name_ids.Count);
 
             foreach (var cellid in name_ids)
             {
@@ -90,23 +85,31 @@ namespace GraphEngineServer
                     //}
                 }
             }
-            //Console.WriteLine("===========================");
-            //var desc = StartFrom(name_ids[0], new[] { "Name" }).FollowEdge("Act").VisitNode(Action.Return, new[] { "Name" }).FollowEdge("Directors").VisitNode(Action.Return, new[] { "Name" });
-            //foreach (var path in desc)
-            //{
-            //    Console.WriteLine(path);
-            //}
+            Console.WriteLine("===========================");
+            var desc = StartFrom(name_ids[0], new[] { "Name" }).FollowEdge("Act").VisitNode(Action.Continue, new[] { "Name" }).FollowEdge("Directors").VisitNode(Action.Return, new[] { "Name" });
+            foreach (var res in desc)
+            {
+                Console.WriteLine(res);
+            }
+            Console.WriteLine("===========================");
+            var result = from node in Global.LocalStorage.Movie_Accessor_Selector()
+                         where node.PublishDate > 20000101 && node.Rating > 93
+                         select node.Name;
+            foreach (var res in result)
+            {
+                Console.WriteLine(res);
+            }
         }
 
         private static void ImportToyData()
         {
-            Person p1 = new Person(233, 100, 0);
+            Person p1 = new Person(233, 100, 0, TheType: EntityType.person.ToString());
             Global.LocalStorage.SavePerson(p1);
-            Person p2 = new Person(-234, 200, p1.CellID);
+            Person p2 = new Person(-234, 200, p1.CellID, TheType: EntityType.person.ToString());
             Global.LocalStorage.SavePerson(p2);
-            p2.parent = 1;
-            //var desc = StartFrom(234, new[] { "age" }).FollowEdge("parent").VisitNode(Action.Return, new[] { "age" });
-            var desc = StartFrom(234, new[] { "age" }).VisitNode(Action.Return, new[] { "age" });
+            p2.Parent = 1;
+            //var desc = StartFrom(234, new[] { "Age" }).FollowEdge("Parent").VisitNode(Action.Return, new[] { "Age" });
+            var desc = StartFrom(234, new[] { "Age" }).VisitNode(Action.Return, new[] { "Age" });
             foreach (var path in desc)
             {
                 Console.WriteLine(path);

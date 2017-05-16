@@ -3,68 +3,19 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Trinity;
 
 namespace GraphEngineServer
 {
-    class MovieEntityImport
+    class MovieEntityImport : DataStructure
     {
-        public string path;
-        private string person_cellid_dict_filename = "person_cellid.dict";
-
-        enum MovieFieldType { Key, KGId, Genres, Artists, Directors, Characters, Performance, Distributors, Channels, Albums, Name, Alias, Description, Segments, Categories, IntEmbeddedFilters, NumberOfWantToWatch, Rating, NumberOfShortReview, ReviewCount, NumberOfWatched, NumberOfReviewer, PublishDate, Length, Country, Language, SourceUrls, ImageUrls, OfficialSite, EntityContainer, Logo, QueryRank };
-
-        enum PersonFieldType { Name, Gender, Married, Spouse, Act, Direct };
-
-        Dictionary<string, long> person_cellid = new Dictionary<string, long>();
-
-        #region constructor & destructor function
-        private void ReadDictionary()
-        {
-            string line = "";
-            try
-            {
-                StreamReader sr = new StreamReader(path + person_cellid_dict_filename);
-                while ((line = sr.ReadLine()) != null)
-                {
-                    string[] line_arr = line.Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
-                    person_cellid[line_arr[0]] = long.Parse(line_arr[1]);
-                }
-            }
-            catch
-            {
-                Console.WriteLine("Dictionary doesn't exist");
-            }
-        }
-
-        private void WriteDictionary()
-        {
-            using (StreamWriter sw = new StreamWriter(path + person_cellid_dict_filename))
-            {
-                foreach (var item in person_cellid)
-                {
-                    sw.WriteLine(item.Key + "\t" + item.Value);
-                }
-            }
-        }
-
-        public MovieEntityImport()
-        {
-            //ReadDictionary();
-        }
-
-        public MovieEntityImport(string str)
+        public MovieEntityImport(string str) : base(str)
         {
             path = str;
-            //ReadDictionary();
+            ReadDictionary();
         }
-
-        ~MovieEntityImport()
-        {
-            WriteDictionary();
-        }
-        #endregion 
 
         public List<string> GetListFromString(string str)
         {
@@ -90,8 +41,7 @@ namespace GraphEngineServer
                 else
                 {
                     // a new artist
-                    Person temp_person = new Person(Name: this_name);
-                    temp_person.Act = new List<long>();
+                    Person temp_person = new Person(TheType: EntityType.person.ToString(), Name: this_name, Act: new List<long>());
                     this_cellid = temp_person.CellID;
                     Global.LocalStorage.SavePerson(temp_person);
                 }
@@ -118,12 +68,13 @@ namespace GraphEngineServer
                 long this_cellid = -1;
                 if (person_cellid.ContainsKey(this_name))
                 {
+                    // a old director
                     this_cellid = person_cellid[this_name];
                 }
                 else
                 {
-                    Person temp_person = new Person(Name: this_name);
-                    temp_person.Direct = new List<long>();
+                    // a new director
+                    Person temp_person = new Person(TheType: EntityType.person.ToString(), Name: this_name, Direct: new List<long>());
                     this_cellid = temp_person.CellID;
                     Global.LocalStorage.SavePerson(temp_person);
                 }
@@ -137,58 +88,129 @@ namespace GraphEngineServer
             return persons;
         }
 
+        public int GetNumberFromString(string str)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                return 0;
+            }
+            string resultString = Regex.Match(str, @"\d+").Value;
+            if (string.IsNullOrEmpty(resultString))
+            {
+                return 0;
+            }
+            return int.Parse(resultString);
+        }
+
+        public int GetDateFromString(string str)
+        {
+            if (str.Count() == 4)
+            {
+                str += "-01-01";
+            }
+            if (str.Count() > 10)
+            {
+                str = str.Substring(0, 10);
+            }
+            string date = DateTime.Parse(str).ToString("yyyyMMdd");
+            return int.Parse(date);
+        }
+
         public void ImportMovie(string filename)
         {
-            TrinityConfig.CurrentRunningMode = RunningMode.Embedded;
-
-            StreamReader reader = new StreamReader(path + filename);
-
-            string line;
-            string[] fields;
-            int movie_count = 0;
-            while (null != (line = reader.ReadLine()))
+            if (movie_cellid.Count != 0)
             {
-                fields = line.Split('\t');
-                string movie_key = fields[0];
-                Movie movie = new Movie(movie_key);
-
-                for (int i = 0; i < fields.Count(); i++)
-                {
-                    List<string> temp_list;
-                    List<long> temp_person;
-                    string temp_field;
-                    switch ((MovieFieldType)i)
-                    {
-                        case MovieFieldType.Genres:
-                            temp_list = GetListFromString(fields[i]);
-                            movie.SetField(((MovieFieldType)i).ToString(), temp_list);
-                            break;
-
-                        case MovieFieldType.Artists:
-                            temp_person = GetArtistsFromString(fields[i], movie.CellID);
-                            movie.SetField(((MovieFieldType)i).ToString(), temp_person);
-                            break;
-
-                        case MovieFieldType.Directors:
-                            temp_person = GetDirectorsFromString(fields[i], movie.CellID);
-                            movie.SetField(((MovieFieldType)i).ToString(), temp_person);
-                            break;
-
-                        case MovieFieldType.Performance:
-                            temp_list = GetListFromString(fields[i]);
-                            movie.SetField(((MovieFieldType)i).ToString(), temp_list);
-                            break;
-
-                        default:
-                            temp_field = fields[i];
-                            movie.SetField(((MovieFieldType)i).ToString(), temp_field);
-                            break;
-                    }
-                }
-                Global.LocalStorage.SaveMovie(movie);
-                movie_count++;
-                Console.WriteLine("#movie: " + movie_count);
+                Console.WriteLine("=============================Data had been imported once. Skipping this turn.");
+                return;
             }
+
+            using (StreamReader reader = new StreamReader(path + filename))
+            {
+                string line;
+                string[] fields;
+                int movie_count = 0;
+                while (null != (line = reader.ReadLine()))
+                {
+                    fields = line.Split('\t');
+                    Movie movie = new Movie(TheType: EntityType.movie.ToString());
+
+                    for (int i = 0; i < fields.Count(); i++)
+                    {
+                        List<string> temp_list;
+                        List<long> temp_person;
+                        string temp_field;
+                        int temp_int;
+                        switch ((MovieFieldType)i)
+                        {
+                            case MovieFieldType.Genres:
+                                temp_list = GetListFromString(fields[i]);
+                                movie.SetField(((MovieFieldType)i).ToString(), temp_list);
+                                break;
+
+                            case MovieFieldType.Artists:
+                                temp_person = GetArtistsFromString(fields[i], movie.CellID);
+                                movie.SetField(((MovieFieldType)i).ToString(), temp_person);
+                                break;
+
+                            case MovieFieldType.Directors:
+                                temp_person = GetDirectorsFromString(fields[i], movie.CellID);
+                                movie.SetField(((MovieFieldType)i).ToString(), temp_person);
+                                break;
+
+                            case MovieFieldType.Performance:
+                                temp_list = GetListFromString(fields[i]);
+                                movie.SetField(((MovieFieldType)i).ToString(), temp_list);
+                                break;
+
+                            case MovieFieldType.NumberOfReviewer:
+                                temp_int = GetNumberFromString(fields[i]);
+                                movie.SetField(((MovieFieldType)i).ToString(), temp_int);
+                                break;
+
+                            case MovieFieldType.NumberOfShortReview:
+                                temp_int = GetNumberFromString(fields[i]);
+                                movie.SetField(((MovieFieldType)i).ToString(), temp_int);
+                                break;
+
+                            case MovieFieldType.NumberOfWantToWatch:
+                                temp_int = GetNumberFromString(fields[i]);
+                                movie.SetField(((MovieFieldType)i).ToString(), temp_int);
+                                break;
+
+                            case MovieFieldType.NumberOfWatched:
+                                temp_int = GetNumberFromString(fields[i]);
+                                movie.SetField(((MovieFieldType)i).ToString(), temp_int);
+                                break;
+
+                            case MovieFieldType.Length:
+                                temp_int = GetNumberFromString(fields[i]);
+                                movie.SetField(((MovieFieldType)i).ToString(), temp_int);
+                                break;
+
+                            case MovieFieldType.Rating:
+                                temp_int = GetNumberFromString(fields[i]);
+                                movie.SetField(((MovieFieldType)i).ToString(), temp_int);
+                                break;
+
+                            case MovieFieldType.PublishDate:
+                                temp_int = GetDateFromString(fields[i]);
+                                movie.SetField(((MovieFieldType)i).ToString(), temp_int);
+                                break;
+
+                            default:
+                                temp_field = fields[i];
+                                movie.SetField(((MovieFieldType)i).ToString(), temp_field);
+                                break;
+                        }
+                    }
+                    Global.LocalStorage.SaveMovie(movie);
+                    movie_count++;
+                    Console.WriteLine("#movie: " + movie_count);
+                    movie_cellid[movie.Name] = movie.CellID;
+                }
+            }
+            WriteDictionary();
+            //Global.LocalStorage.SaveStorage();
         }
     }
 }
