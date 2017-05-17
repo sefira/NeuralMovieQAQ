@@ -17,6 +17,6 @@ yeyan_name =
     FROM
         rs0
     WHERE
-        Name.Contains("号房间")
+        Name.Contains("疯狂原始人")
     ;
 OUTPUT yeyan_name TO SSTREAM @output_yeyan_moviefilename ;

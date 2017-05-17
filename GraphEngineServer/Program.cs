@@ -11,7 +11,6 @@ using Trinity.Core.Lib;
 using Trinity.Network;
 using static FanoutSearch.LIKQ.KnowledgeGraph;
 using Action = FanoutSearch.Action;
-using static GraphEngineServer.DataStructure;
 
 namespace GraphEngineServer
 {
@@ -33,10 +32,14 @@ namespace GraphEngineServer
             if (!Trinity.Global.LocalStorage.LoadStorage() || !Trinity.Global.LocalStorage.Movie_Accessor_Selector().Any())
             {
                 Trinity.Global.LocalStorage.LoadStorage();
-                ImportMovieData(@"D:\MovieDomain\GraphEngineServer\data\");
+                ImportMovieData(@"D:\MovieDomain\GraphEngineServer\bin\Debug\");
                 Trinity.Global.LocalStorage.SaveStorage();
             }
-            TestMovieData(@"D:\MovieDomain\GraphEngineServer\data\");
+            else
+            {
+                Console.WriteLine("=============================Movie had been imported once. Skipping this turn.");
+            }
+            TestMovieData(@"D:\MovieDomain\GraphEngineServer\bin\Debug\");
 
             ImportToyData();
         }
@@ -51,7 +54,7 @@ namespace GraphEngineServer
         private static void ImportMovieData(string path)
         {
             MovieEntityImport movie_entity_import = new MovieEntityImport(path);
-            string filename = @"Movie.csv";
+            string filename = @"data\Movie.csv";
             movie_entity_import.ImportMovie(filename);
             Console.WriteLine();
         }
@@ -103,9 +106,9 @@ namespace GraphEngineServer
 
         private static void ImportToyData()
         {
-            Person p1 = new Person(233, 100, 0, TheType: EntityType.person.ToString());
+            Person p1 = new Person(233, 100, 0, TheType: DataImport.EntityType.Person.ToString());
             Global.LocalStorage.SavePerson(p1);
-            Person p2 = new Person(-234, 200, p1.CellID, TheType: EntityType.person.ToString());
+            Person p2 = new Person(-234, 200, p1.CellID, TheType: DataImport.EntityType.Person.ToString());
             Global.LocalStorage.SavePerson(p2);
             p2.Parent = 1;
             //var desc = StartFrom(234, new[] { "Age" }).FollowEdge("Parent").VisitNode(Action.Return, new[] { "Age" });

@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace GraphEngineServer
 {
-    class DataStructure
+    class DataImport
     {
         public string path;
-        public const string person_cellid_dict_filename = "person_cellid.dict";
-        public const string movie_cellid_dict_filename = "movie_cellid.dict";
+        public const string person_cellid_dict_filename = @"data\person_cellid.dict";
+        public const string movie_cellid_dict_filename = @"data\movie_cellid.dict";
 
-        public enum EntityType { movie, person };
+        public enum EntityType { Movie, Person };
 
         /// <summary>
         /// the fields order in the below enum must be same with schema.tsl
@@ -25,6 +25,7 @@ namespace GraphEngineServer
 
         public Dictionary<string, long> person_cellid = new Dictionary<string, long>();
         public Dictionary<string, long> movie_cellid = new Dictionary<string, long>();
+
 
         #region constructor & destructor function
         public void ReadDictionary()
@@ -69,12 +70,12 @@ namespace GraphEngineServer
                 }
             }
         }
-        public DataStructure()
+        public DataImport()
         {
             ReadDictionary();
         }
 
-        public DataStructure(string str)
+        public DataImport(string str)
         {
             path = str;
             ReadDictionary();

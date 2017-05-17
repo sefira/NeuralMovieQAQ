@@ -54,7 +54,7 @@ cell struct Person
 	long Parent;	
 	[Index]	
 	string Name;
-	int Gender;
+	string Gender;
     bool Married;
 	[GraphEdge]
     CellId Spouse;

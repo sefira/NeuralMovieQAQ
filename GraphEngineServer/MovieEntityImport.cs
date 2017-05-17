@@ -9,7 +9,7 @@ using Trinity;
 
 namespace GraphEngineServer
 {
-    class MovieEntityImport : DataStructure
+    class MovieEntityImport : DataImport
     {
         public MovieEntityImport(string str) : base(str)
         {
@@ -41,7 +41,7 @@ namespace GraphEngineServer
                 else
                 {
                     // a new artist
-                    Person temp_person = new Person(TheType: EntityType.person.ToString(), Name: this_name, Act: new List<long>());
+                    Person temp_person = new Person(TheType: EntityType.Person.ToString(), Name: this_name, Act: new List<long>());
                     this_cellid = temp_person.CellID;
                     Global.LocalStorage.SavePerson(temp_person);
                 }
@@ -74,7 +74,7 @@ namespace GraphEngineServer
                 else
                 {
                     // a new director
-                    Person temp_person = new Person(TheType: EntityType.person.ToString(), Name: this_name, Direct: new List<long>());
+                    Person temp_person = new Person(TheType: EntityType.Person.ToString(), Name: this_name, Direct: new List<long>());
                     this_cellid = temp_person.CellID;
                     Global.LocalStorage.SavePerson(temp_person);
                 }
@@ -132,7 +132,7 @@ namespace GraphEngineServer
                 while (null != (line = reader.ReadLine()))
                 {
                     fields = line.Split('\t');
-                    Movie movie = new Movie(TheType: EntityType.movie.ToString());
+                    Movie movie = new Movie(TheType: EntityType.Movie.ToString());
 
                     for (int i = 0; i < fields.Count(); i++)
                     {
