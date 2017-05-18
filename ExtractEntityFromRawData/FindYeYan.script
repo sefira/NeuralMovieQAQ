@@ -7,7 +7,7 @@
 rs0 = SSTREAM @filename;
 
 #DECLARE path_root string = @"/my/MovieDomain/ExtractEntityFromRawData/";
-#DECLARE output_yeyan_moviefilename string = @path_root + @TimeNow + @"yeyan_movie_name.ss";
+#DECLARE output_yeyan_moviefilename string = @path_root + @TimeNow + @"afanda_movie_name.ss";
 
 
 // after read data, we are going to find the movie: YeYan 
@@ -17,6 +17,6 @@ yeyan_name =
     FROM
         rs0
     WHERE
-        Name.Contains("疯狂原始人")
+        Name.Contains("阿凡达")
     ;
 OUTPUT yeyan_name TO SSTREAM @output_yeyan_moviefilename ;

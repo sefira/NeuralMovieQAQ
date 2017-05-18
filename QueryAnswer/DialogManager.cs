@@ -28,7 +28,7 @@ namespace QueryAnswer
         private static double[,] transition_matrix = new double[6, 6]
         { 
             ///////////// all       artist director  country      genre   publishdate
-            /* all */     { 0.001,   0.2,    0.2,    0.001,       0.3,    0.3},
+            /* all */     { 0.001,   0.1,    0.1,    0.2,         0.3,    0.3},
             /* artist */  { 0.001,   0.2,    0.2,    0.001,       0.3,    0.3},
             /* director */{ 0.001,   0.3,    0.001,  0.001,       0.4,    0.3},
             /* country */ { 0.001,   0.3,    0.3,    0.001,       0.2,    0.2},

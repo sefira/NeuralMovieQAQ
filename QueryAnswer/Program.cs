@@ -12,16 +12,19 @@ namespace QueryAnswer
     {
         static void Main(string[] args)
         {
-            Console.ReadKey();
+            //Console.ReadKey();
             // test
             //TestParser();
-            TestoSearchAPI();
+            //TestoSearchAPI();
             //TestQueryFile(@"D:\MovieDomain\QueryAnswer\resource\userquery.txt");
             //TestTranstionStatus();
             //TestSessionFile(@"D:\MovieDomain\QueryAnswer\resource\usersession.txt");
             //TestSession();
+
+            TestPatternBased(@"D:\MovieDomain\QueryAnswer\resource\QA_pattern_qa.txt", @"D:\MovieDomain\QueryAnswer\resource\QA_pattern_output.txt");
         }
 
+        #region test jieba
         private static void TestParser()
         {
             //string query_str = @"上世纪香港的刘德华出演了张艺谋和冯小刚2001年的天下无贼一部喜剧片";
@@ -32,7 +35,9 @@ namespace QueryAnswer
             m_Parser.ParseAll(ref query);
             var a = query;
         }
+        #endregion
 
+        #region test oSearch
         private static void TestoSearchAPI()
         {
             oSearchClient.TestQuery();
@@ -52,7 +57,9 @@ namespace QueryAnswer
                 }
             }
         }
+        #endregion
 
+        #region test markov chain
         private static void TestTranstionStatus()
         {
             Session session = new Session();
@@ -68,7 +75,9 @@ namespace QueryAnswer
             res = DialogManager.TestTransitionStatus(session);
             Console.WriteLine(res.ToString());
         }
+        #endregion
 
+        #region test session
         private static void TestSessionFile(string filename)
         {
             StreamReader sr = new StreamReader(filename);
@@ -94,6 +103,32 @@ namespace QueryAnswer
                 DialogManager movie_dialog = new DialogManager();
                 movie_dialog.DialogFlow();
             }
+        }
+        #endregion
+
+        private static void TestPatternBased(string question_filename, string output_filename)
+        {
+            StreamReader sr = new StreamReader(question_filename);
+            PatternBased pb = new PatternBased();
+            StreamWriter sw = new StreamWriter(output_filename);
+            while (!sr.EndOfStream)
+            {
+                PatternResponse pr = new PatternResponse();
+                string line = sr.ReadLine();
+                string question = line.Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries)[0];
+                if (pb.QuestionClassify(question, out pr))
+                {
+                    sw.Write(question);
+                    sw.Write('\t');
+                    sw.WriteLine(pr.property);
+                }
+                else
+                {
+                    sw.WriteLine(question);
+                }
+            }
+            sw.Flush();
+            sw.Close();
         }
     }
 }

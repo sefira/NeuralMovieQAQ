@@ -28,12 +28,12 @@ namespace QueryAnswer
 
     class EntitySegmenter
     {
-        private static readonly string data_path = @"D:\MovieDomain\QueryAnswer\resource\";
-        private static readonly string movie_filename = @"movie_name.csv";
-        private static readonly string artist_filename = @"artist_name.csv";
-        private static readonly string director_filename = @"director_name.csv";
-        private static readonly string country_filename = @"country_name.csv";
-        private static readonly string genre_filename = @"genre_name.csv";
+        private static readonly string data_path = Config.data_path;
+        private static readonly string movie_filename = Config.movie_filename;
+        private static readonly string artist_filename = Config.artist_filename;
+        private static readonly string director_filename = Config.director_filename;
+        private static readonly string country_filename = Config.country_filename;
+        private static readonly string genre_filename = Config.genre_filename;
 
         private static HashSet<string> movie_name;
         private static HashSet<string> artist_name;
