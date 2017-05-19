@@ -30,7 +30,7 @@ namespace GraphEngineServer
     {
         Undefined = 0,
         Movie,
-        Person,
+        Celebrity,
     }
     public partial struct __type_injection__
     {

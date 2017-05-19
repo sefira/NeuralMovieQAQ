@@ -35,7 +35,6 @@ D:\MovieDomain\GraphEngineServer\obj\Debug\GeneratedCode\Lib\StringAccessor.cs
 D:\MovieDomain\GraphEngineServer\obj\Debug\GeneratedCode\Lib\Throw.cs
 D:\MovieDomain\GraphEngineServer\obj\Debug\GeneratedCode\Lib\Traits.cs
 D:\MovieDomain\GraphEngineServer\obj\Debug\GeneratedCode\Lib\U8StringAccessor.cs
-D:\MovieDomain\GraphEngineServer\obj\Debug\GeneratedCode\Person.cs
 D:\MovieDomain\GraphEngineServer\obj\Debug\GeneratedCode\Protocol.cs
 D:\MovieDomain\GraphEngineServer\obj\Debug\GeneratedCode\Storage.cs
 D:\MovieDomain\GraphEngineServer\obj\Debug\GeneratedCode\Structs.cs
@@ -49,3 +48,4 @@ D:\MovieDomain\GraphEngineServer\obj\Debug\GeneratedCode\Lib\SubstringIndex\Inde
 D:\MovieDomain\GraphEngineServer\obj\Debug\GeneratedCode\Lib\SubstringIndex\IndexItem.cs
 D:\MovieDomain\GraphEngineServer\obj\Debug\GeneratedCode\Lib\SubstringIndex\Searcher.cs
 D:\MovieDomain\GraphEngineServer\obj\Debug\GeneratedCode\Movie.cs
+D:\MovieDomain\GraphEngineServer\obj\Debug\GeneratedCode\Celebrity.cs

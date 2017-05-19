@@ -33,22 +33,22 @@ namespace GraphEngineServer
                 // if exist, load and return CellID directly;
                 // if not, new this person and save.
                 long this_cellid = -1;
-                if (person_cellid.ContainsKey(this_name))
+                if (celebrity_cellid.ContainsKey(this_name))
                 {
                     // a old artist
-                    this_cellid = person_cellid[this_name];
+                    this_cellid = celebrity_cellid[this_name];
                 }
                 else
                 {
                     // a new artist
-                    Person temp_person = new Person(TheType: EntityType.Person.ToString(), Name: this_name, Act: new List<long>());
+                    Celebrity temp_person = new Celebrity(TheType: EntityType.Celebrity.ToString(), Name: this_name, Act: new List<long>());
                     this_cellid = temp_person.CellID;
-                    Global.LocalStorage.SavePerson(temp_person);
+                    Global.LocalStorage.SaveCelebrity(temp_person);
                 }
-                using (var this_person = Global.LocalStorage.UsePerson(this_cellid))
+                using (var this_person = Global.LocalStorage.UseCelebrity(this_cellid))
                 {
                     this_person.Act.Add(this_movie);
-                    person_cellid[this_name] = this_cellid;
+                    celebrity_cellid[this_name] = this_cellid;
                     persons.Add(this_cellid);
                 }
             }
@@ -66,22 +66,22 @@ namespace GraphEngineServer
                 // if exist, load and return CellID directly;
                 // if not, new this person and save.
                 long this_cellid = -1;
-                if (person_cellid.ContainsKey(this_name))
+                if (celebrity_cellid.ContainsKey(this_name))
                 {
                     // a old director
-                    this_cellid = person_cellid[this_name];
+                    this_cellid = celebrity_cellid[this_name];
                 }
                 else
                 {
                     // a new director
-                    Person temp_person = new Person(TheType: EntityType.Person.ToString(), Name: this_name, Direct: new List<long>());
+                    Celebrity temp_person = new Celebrity(TheType: EntityType.Celebrity.ToString(), Name: this_name, Direct: new List<long>());
                     this_cellid = temp_person.CellID;
-                    Global.LocalStorage.SavePerson(temp_person);
+                    Global.LocalStorage.SaveCelebrity(temp_person);
                 }
-                using (var this_person = Global.LocalStorage.UsePerson(this_cellid))
+                using (var this_person = Global.LocalStorage.UseCelebrity(this_cellid))
                 {
                     this_person.Direct.Add(this_movie);
-                    person_cellid[this_name] = this_cellid;
+                    celebrity_cellid[this_name] = this_cellid;
                     persons.Add(this_cellid);
                 }
             }

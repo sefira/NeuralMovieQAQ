@@ -27,8 +27,8 @@ namespace GraphEngineServer
                     storage.SaveMovie((Movie)cell);
                     break;
                 
-                case CellType.Person:
-                    storage.SavePerson((Person)cell);
+                case CellType.Celebrity:
+                    storage.SaveCelebrity((Celebrity)cell);
                     break;
                 
             }
@@ -42,8 +42,8 @@ namespace GraphEngineServer
                     storage.SaveMovie(writeAheadLogOptions, (Movie)cell);
                     break;
                 
-                case CellType.Person:
-                    storage.SavePerson(writeAheadLogOptions, (Person)cell);
+                case CellType.Celebrity:
+                    storage.SaveCelebrity(writeAheadLogOptions, (Celebrity)cell);
                     break;
                 
             }
@@ -57,8 +57,8 @@ namespace GraphEngineServer
                     storage.SaveMovie(cellId, (Movie)cell);
                     break;
                 
-                case CellType.Person:
-                    storage.SavePerson(cellId, (Person)cell);
+                case CellType.Celebrity:
+                    storage.SaveCelebrity(cellId, (Celebrity)cell);
                     break;
                 
             }
@@ -72,8 +72,8 @@ namespace GraphEngineServer
                     storage.SaveMovie(writeAheadLogOptions, cellId, (Movie)cell);
                     break;
                 
-                case CellType.Person:
-                    storage.SavePerson(writeAheadLogOptions, cellId, (Person)cell);
+                case CellType.Celebrity:
+                    storage.SaveCelebrity(writeAheadLogOptions, cellId, (Celebrity)cell);
                     break;
                 
             }
@@ -102,12 +102,12 @@ namespace GraphEngineServer
                     return Movie_cell;
                     break;
                 
-                case CellType.Person:
-                    var Person_accessor = new Person_Accessor(cellPtr);
-                    var Person_cell = (Person)Person_accessor;
+                case CellType.Celebrity:
+                    var Celebrity_accessor = new Celebrity_Accessor(cellPtr);
+                    var Celebrity_cell = (Celebrity)Celebrity_accessor;
                     storage.ReleaseCellLock(cellId, entryIndex);
-                    Person_cell.CellID = cellId;
-                    return Person_cell;
+                    Celebrity_cell.CellID = cellId;
+                    return Celebrity_cell;
                     break;
                 
                 default:
@@ -128,8 +128,8 @@ namespace GraphEngineServer
                     return new Movie();
                     break;
                 
-                case global::GraphEngineServer.CellType.Person:
-                    return new Person();
+                case global::GraphEngineServer.CellType.Celebrity:
+                    return new Celebrity();
                     break;
                 
             }
@@ -148,8 +148,8 @@ namespace GraphEngineServer
                     return new Movie(cell_id: cellId);
                     break;
                 
-                case global::GraphEngineServer.CellType.Person:
-                    return new Person(cell_id: cellId);
+                case global::GraphEngineServer.CellType.Celebrity:
+                    return new Celebrity(cell_id: cellId);
                     break;
                 
             }
@@ -168,8 +168,8 @@ namespace GraphEngineServer
                     return Movie.Parse(content);
                     break;
                 
-                case global::GraphEngineServer.CellType.Person:
-                    return Person.Parse(content);
+                case global::GraphEngineServer.CellType.Celebrity:
+                    return Celebrity.Parse(content);
                     break;
                 
             }
@@ -195,8 +195,8 @@ namespace GraphEngineServer
                 case CellType.Movie:
                     return Movie_Accessor.New(CellId, cellPtr, entryIndex, CellAccessOptions.ThrowExceptionOnCellNotFound);
                 
-                case CellType.Person:
-                    return Person_Accessor.New(CellId, cellPtr, entryIndex, CellAccessOptions.ThrowExceptionOnCellNotFound);
+                case CellType.Celebrity:
+                    return Celebrity_Accessor.New(CellId, cellPtr, entryIndex, CellAccessOptions.ThrowExceptionOnCellNotFound);
                 
                 default:
                     storage.ReleaseCellLock(CellId, entryIndex);
@@ -253,8 +253,8 @@ namespace GraphEngineServer
                 case CellType.Movie:
                     return Movie_Accessor.New(CellId, cellPtr, entryIndex, options);
                 
-                case CellType.Person:
-                    return Person_Accessor.New(CellId, cellPtr, entryIndex, options);
+                case CellType.Celebrity:
+                    return Celebrity_Accessor.New(CellId, cellPtr, entryIndex, options);
                 
                 default:
                     storage.ReleaseCellLock(CellId, entryIndex);
@@ -279,12 +279,12 @@ namespace GraphEngineServer
                             break;
                         }
                     
-                    case CellType.Person:
+                    case CellType.Celebrity:
                         {
-                            var Person_accessor = Person_Accessor.AllocIterativeAccessor(cellInfo);
-                            var Person_cell     = (Person)Person_accessor;
-                            Person_accessor.Dispose();
-                            yield return Person_cell;
+                            var Celebrity_accessor = Celebrity_Accessor.AllocIterativeAccessor(cellInfo);
+                            var Celebrity_cell     = (Celebrity)Celebrity_accessor;
+                            Celebrity_accessor.Dispose();
+                            yield return Celebrity_cell;
                             break;
                         }
                     
@@ -309,11 +309,11 @@ namespace GraphEngineServer
                             break;
                         }
                     
-                    case CellType.Person:
+                    case CellType.Celebrity:
                         {
-                            var Person_accessor = Person_Accessor.AllocIterativeAccessor(cellInfo);
-                            yield return Person_accessor;
-                            Person_accessor.Dispose();
+                            var Celebrity_accessor = Celebrity_Accessor.AllocIterativeAccessor(cellInfo);
+                            yield return Celebrity_accessor;
+                            Celebrity_accessor.Dispose();
                             break;
                         }
                     
@@ -340,8 +340,8 @@ namespace GraphEngineServer
                     storage.SaveMovie((Movie)cell);
                     break;
                 
-                case CellType.Person:
-                    storage.SavePerson((Person)cell);
+                case CellType.Celebrity:
+                    storage.SaveCelebrity((Celebrity)cell);
                     break;
                 
             }
@@ -381,12 +381,12 @@ namespace GraphEngineServer
                     }
                     break;
                 
-                case CellType.Person:
-                    fixed (byte* Person_ptr = buff)
+                case CellType.Celebrity:
+                    fixed (byte* Celebrity_ptr = buff)
                     {
-                        Person_Accessor/*_*/Person_accessor = new Person_Accessor(Person_ptr);
-                        Person_accessor.CellID = cellId;
-                        return (Person)Person_accessor;
+                        Celebrity_Accessor/*_*/Celebrity_accessor = new Celebrity_Accessor(Celebrity_ptr);
+                        Celebrity_accessor.CellID = cellId;
+                        return (Celebrity)Celebrity_accessor;
                     }
                     break;
                 

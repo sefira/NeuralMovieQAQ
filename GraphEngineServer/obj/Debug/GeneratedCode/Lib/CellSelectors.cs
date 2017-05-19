@@ -515,14 +515,14 @@ namespace GraphEngineServer
     #region Internal
     /**
      * <summary>
-     * Accepts transformation from Person_Accessor to T.
+     * Accepts transformation from Celebrity_Accessor to T.
      * </summary>
      */
-    internal class Person_Accessor_local_projector<T> : IQueryable<T>
+    internal class Celebrity_Accessor_local_projector<T> : IQueryable<T>
     {
         private         Expression                                   query_expression;
-        private         Person_Accessor_local_query_provider    query_provider;
-        internal Person_Accessor_local_projector(Person_Accessor_local_query_provider provider, Expression expression)
+        private         Celebrity_Accessor_local_query_provider    query_provider;
+        internal Celebrity_Accessor_local_projector(Celebrity_Accessor_local_query_provider provider, Expression expression)
         {
             this.query_expression              = expression;
             this.query_provider                = provider;
@@ -549,13 +549,13 @@ namespace GraphEngineServer
         }
     }
     /**
-     * Accepts transformation from Person to T.
+     * Accepts transformation from Celebrity to T.
      */
-    internal class Person_local_projector<T> : IQueryable<T>
+    internal class Celebrity_local_projector<T> : IQueryable<T>
     {
         private         Expression                                   query_expression;
-        private         Person_local_query_provider             query_provider;
-        internal Person_local_projector(Person_local_query_provider provider, Expression expression)
+        private         Celebrity_local_query_provider             query_provider;
+        internal Celebrity_local_projector(Celebrity_local_query_provider provider, Expression expression)
         {
             this.query_expression              = expression;
             this.query_provider                = provider;
@@ -581,13 +581,13 @@ namespace GraphEngineServer
             get { return query_provider; }
         }
     }
-    internal class Person_AccessorEnumerable : IEnumerable<Person_Accessor>
+    internal class Celebrity_AccessorEnumerable : IEnumerable<Celebrity_Accessor>
     {
         private     LocalMemoryStorage              m_storage;
         private     HashSet<long>                   m_filter_set;
         private     bool                            m_is_positive_filtering;
-        private     Func<Person_Accessor,bool> m_filter_predicate;
-        internal Person_AccessorEnumerable(LocalMemoryStorage storage)
+        private     Func<Celebrity_Accessor,bool> m_filter_predicate;
+        internal Celebrity_AccessorEnumerable(LocalMemoryStorage storage)
         {
             this.m_storage     = storage;
             m_filter_set       = null;
@@ -603,16 +603,16 @@ namespace GraphEngineServer
             this.m_filter_set       = set;
             m_is_positive_filtering = false;
         }
-        public IEnumerator<Person_Accessor> GetEnumerator()
+        public IEnumerator<Celebrity_Accessor> GetEnumerator()
         {
             if (m_filter_set == null)
             {
                 if (m_filter_predicate == null)
                     foreach (var cellInfo in m_storage)
                     {
-                        if (cellInfo.CellType == (ushort)CellType.Person)
+                        if (cellInfo.CellType == (ushort)CellType.Celebrity)
                         {
-                            var accessor = Person_Accessor.AllocIterativeAccessor(cellInfo);
+                            var accessor = Celebrity_Accessor.AllocIterativeAccessor(cellInfo);
                             yield return accessor;
                             accessor.Dispose();
                         }
@@ -620,9 +620,9 @@ namespace GraphEngineServer
                 else
                     foreach (var cellInfo in m_storage)
                     {
-                        if (cellInfo.CellType == (ushort)CellType.Person)
+                        if (cellInfo.CellType == (ushort)CellType.Celebrity)
                         {
-                            var accessor = Person_Accessor.AllocIterativeAccessor(cellInfo);
+                            var accessor = Celebrity_Accessor.AllocIterativeAccessor(cellInfo);
                             if (m_filter_predicate(accessor))
                                 yield return accessor;
                             accessor.Dispose();
@@ -634,7 +634,7 @@ namespace GraphEngineServer
                 if (m_filter_predicate == null)
                     foreach (var cellID in m_filter_set)
                     {
-                        using (var accessor = m_storage.UsePerson(cellID))
+                        using (var accessor = m_storage.UseCelebrity(cellID))
                         {
                             yield return accessor;
                         }
@@ -642,7 +642,7 @@ namespace GraphEngineServer
                 else
                     foreach (var cellID in m_filter_set)
                     {
-                        using (var accessor = m_storage.UsePerson(cellID))
+                        using (var accessor = m_storage.UseCelebrity(cellID))
                         {
                             if (m_filter_predicate(accessor))
                                 yield return accessor;
@@ -660,20 +660,20 @@ namespace GraphEngineServer
         }
         internal void SetPredicate(Expression aggregated_where_clause, ParameterExpression parameter)
         {
-            m_filter_predicate = Expression.Lambda<Func<Person_Accessor, bool>>(
+            m_filter_predicate = Expression.Lambda<Func<Celebrity_Accessor, bool>>(
                 aggregated_where_clause,
                 parameter
                 ).Compile();
         }
     }
-    internal class Person_Enumerable : IEnumerable<Person>
+    internal class Celebrity_Enumerable : IEnumerable<Celebrity>
     {
         private     LocalMemoryStorage              m_storage;
         private     HashSet<long>                   m_filter_set;
         private     bool                            m_is_positive_filtering;
-        private     Func<Person,bool>          m_filter_predicate;
-        private     static Type                     m_cell_type = typeof(Person);
-        internal Person_Enumerable(LocalMemoryStorage storage)
+        private     Func<Celebrity,bool>          m_filter_predicate;
+        private     static Type                     m_cell_type = typeof(Celebrity);
+        internal Celebrity_Enumerable(LocalMemoryStorage storage)
         {
             this.m_storage     = storage;
             m_filter_set       = null;
@@ -689,16 +689,16 @@ namespace GraphEngineServer
             this.m_filter_set       = set;
             m_is_positive_filtering = false;
         }
-        public IEnumerator<Person> GetEnumerator()
+        public IEnumerator<Celebrity> GetEnumerator()
         {
             if (m_filter_set == null)
             {
                 if (m_filter_predicate == null)
                     foreach (var cellInfo in m_storage)
                     {
-                        if (cellInfo.CellType == (ushort)CellType.Person)
+                        if (cellInfo.CellType == (ushort)CellType.Celebrity)
                         {
-                            var accessor = Person_Accessor.AllocIterativeAccessor(cellInfo);
+                            var accessor = Celebrity_Accessor.AllocIterativeAccessor(cellInfo);
                             yield return accessor;
                             accessor.Dispose();
                         }
@@ -706,9 +706,9 @@ namespace GraphEngineServer
                 else
                     foreach (var cellInfo in m_storage)
                     {
-                        if (cellInfo.CellType == (ushort)CellType.Person)
+                        if (cellInfo.CellType == (ushort)CellType.Celebrity)
                         {
-                            var accessor = Person_Accessor.AllocIterativeAccessor(cellInfo);
+                            var accessor = Celebrity_Accessor.AllocIterativeAccessor(cellInfo);
                             if (m_filter_predicate(accessor))
                                 yield return accessor;
                             accessor.Dispose();
@@ -720,7 +720,7 @@ namespace GraphEngineServer
                 if (m_filter_predicate == null)
                     foreach (var cellID in m_filter_set)
                     {
-                        using (var accessor = m_storage.UsePerson(cellID))
+                        using (var accessor = m_storage.UseCelebrity(cellID))
                         {
                             yield return accessor;
                         }
@@ -728,7 +728,7 @@ namespace GraphEngineServer
                 else
                     foreach (var cellID in m_filter_set)
                     {
-                        using (var accessor = m_storage.UsePerson(cellID))
+                        using (var accessor = m_storage.UseCelebrity(cellID))
                         {
                             if (m_filter_predicate(accessor))
                                 yield return accessor;
@@ -746,49 +746,49 @@ namespace GraphEngineServer
         }
         internal void SetPredicate(Expression aggregated_where_clause, ParameterExpression parameter)
         {
-            m_filter_predicate = Expression.Lambda<Func<Person, bool>>(
+            m_filter_predicate = Expression.Lambda<Func<Celebrity, bool>>(
                 aggregated_where_clause,
                 parameter
                 ).Compile();
         }
     }
-    internal class Person_Accessor_local_query_provider : IQueryProvider
+    internal class Celebrity_Accessor_local_query_provider : IQueryProvider
     {
-        private static  Type                             s_accessor_type    = typeof(Person_Accessor);
-        private static  Type                             s_cell_type        = typeof(Person);
+        private static  Type                             s_accessor_type    = typeof(Celebrity_Accessor);
+        private static  Type                             s_cell_type        = typeof(Celebrity);
         private static  Type                             s_ienumerable_type = typeof(IEnumerable<>);
-        private         Person_AccessorEnumerable   m_accessor_enumerable;
-        internal Person_Accessor_local_query_provider(LocalMemoryStorage storage)
+        private         Celebrity_AccessorEnumerable   m_accessor_enumerable;
+        internal Celebrity_Accessor_local_query_provider(LocalMemoryStorage storage)
         {
-            m_accessor_enumerable = new Person_AccessorEnumerable(storage);
+            m_accessor_enumerable = new Celebrity_AccessorEnumerable(storage);
         }
         public IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
             if (typeof(TElement) == s_accessor_type)
             {
-                return (IQueryable<TElement>)new Person_Accessor_local_selector(this, expression);
+                return (IQueryable<TElement>)new Celebrity_Accessor_local_selector(this, expression);
             }
             else
             {
-                return new Person_Accessor_local_projector<TElement>(this, expression);
+                return new Celebrity_Accessor_local_projector<TElement>(this, expression);
             }
         }
         public TResult Execute<TResult>(Expression expression)
         {
-            var  visitor              = new RewrittableWhereCaluseVisitor<Person_Accessor>(expression);
+            var  visitor              = new RewrittableWhereCaluseVisitor<Celebrity_Accessor>(expression);
             var  where_clauses        = visitor.RewrittableWhereClauses;
-            var  queryable            = m_accessor_enumerable.AsQueryable<Person_Accessor>();
-            var  trimmed_expression   = visitor.InjectEnumerator(expression, queryable, typeof(Person_Accessor_local_selector));
+            var  queryable            = m_accessor_enumerable.AsQueryable<Celebrity_Accessor>();
+            var  trimmed_expression   = visitor.InjectEnumerator(expression, queryable, typeof(Celebrity_Accessor_local_selector));
             if (where_clauses.Count != 0)
             {
-                var subject_rewritter           = new PredicateSubjectRewritter<Person_Accessor>();
+                var subject_rewritter           = new PredicateSubjectRewritter<Celebrity_Accessor>();
                 Expression aggregated_predicate = subject_rewritter.Visit(where_clauses.First().Body);
                 foreach (var where_clause in where_clauses.Skip(1))
                 {
                     Expression predicate = where_clause.Body;
                     aggregated_predicate = Expression.AndAlso(aggregated_predicate, subject_rewritter.Visit(predicate));
                 }
-                IndexQueryTreeGenerator<Person_Accessor> query_tree_gen       = new IndexQueryTreeGenerator<Person_Accessor>("Person", Index.s_AccessorSubstringIndexAccessMethod, is_cell: false);
+                IndexQueryTreeGenerator<Celebrity_Accessor> query_tree_gen       = new IndexQueryTreeGenerator<Celebrity_Accessor>("Celebrity", Index.s_AccessorSubstringIndexAccessMethod, is_cell: false);
                 aggregated_predicate                                               = query_tree_gen.Visit(aggregated_predicate);
                 var query_tree                                                     = query_tree_gen.QueryTree;
                 if (query_tree != null)
@@ -834,42 +834,42 @@ namespace GraphEngineServer
         }
         #endregion
     }
-    internal class Person_local_query_provider : IQueryProvider
+    internal class Celebrity_local_query_provider : IQueryProvider
     {
-        private static  Type                             s_cell_type        = typeof(Person);
+        private static  Type                             s_cell_type        = typeof(Celebrity);
         private static  Type                             s_ienumerable_type = typeof(IEnumerable<>);
-        private         Person_Enumerable           s_cell_enumerable;
-        internal Person_local_query_provider(LocalMemoryStorage storage)
+        private         Celebrity_Enumerable           s_cell_enumerable;
+        internal Celebrity_local_query_provider(LocalMemoryStorage storage)
         {
-            s_cell_enumerable = new Person_Enumerable(storage);
+            s_cell_enumerable = new Celebrity_Enumerable(storage);
         }
         public IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
             if (typeof(TElement) == s_cell_type)
             {
-                return (IQueryable<TElement>)new Person_local_selector(this, expression);
+                return (IQueryable<TElement>)new Celebrity_local_selector(this, expression);
             }
             else
             {
-                return new Person_local_projector<TElement>(this, expression);
+                return new Celebrity_local_projector<TElement>(this, expression);
             }
         }
         public TResult Execute<TResult>(Expression expression)
         {
-            var  visitor              = new RewrittableWhereCaluseVisitor<Person>(expression);
+            var  visitor              = new RewrittableWhereCaluseVisitor<Celebrity>(expression);
             var  where_clauses        = visitor.RewrittableWhereClauses;
-            var  queryable            = s_cell_enumerable.AsQueryable<Person>();
-            var  trimmed_expression   = visitor.InjectEnumerator(expression, queryable, typeof(Person_local_selector));
+            var  queryable            = s_cell_enumerable.AsQueryable<Celebrity>();
+            var  trimmed_expression   = visitor.InjectEnumerator(expression, queryable, typeof(Celebrity_local_selector));
             if (where_clauses.Count != 0)
             {
-                var subject_rewritter           = new PredicateSubjectRewritter<Person>();
+                var subject_rewritter           = new PredicateSubjectRewritter<Celebrity>();
                 Expression aggregated_predicate = subject_rewritter.Visit(where_clauses.First().Body);
                 foreach (var where_clause in where_clauses.Skip(1))
                 {
                     Expression predicate = where_clause.Body;
                     aggregated_predicate = Expression.AndAlso(aggregated_predicate, subject_rewritter.Visit(predicate));
                 }
-                IndexQueryTreeGenerator<Person> query_tree_gen       = new IndexQueryTreeGenerator<Person>("Person", Index.s_CellSubstringIndexAccessMethod, is_cell: true);
+                IndexQueryTreeGenerator<Celebrity> query_tree_gen       = new IndexQueryTreeGenerator<Celebrity>("Celebrity", Index.s_CellSubstringIndexAccessMethod, is_cell: true);
                 aggregated_predicate                                      = query_tree_gen.Visit(aggregated_predicate);
                 var query_tree                                            = query_tree_gen.QueryTree;
                 if (query_tree != null)
@@ -918,28 +918,28 @@ namespace GraphEngineServer
     #endregion
     #region Public
     /// <summary>
-    /// Implements System.Linq.IQueryable{Person_Accessor} and accepts LINQ
+    /// Implements System.Linq.IQueryable{Celebrity_Accessor} and accepts LINQ
     /// queries on <see cref="Trinity.Global.LocalStorage"/>.
     /// </summary>
-    public class Person_Accessor_local_selector : IQueryable<Person_Accessor>
+    public class Celebrity_Accessor_local_selector : IQueryable<Celebrity_Accessor>
     {
         private         Expression                                   query_expression;
-        private         Person_Accessor_local_query_provider    query_provider;
-        private Person_Accessor_local_selector() { /* nobody should reach this method */ }
-        internal Person_Accessor_local_selector(Trinity.Storage.LocalMemoryStorage storage)
+        private         Celebrity_Accessor_local_query_provider    query_provider;
+        private Celebrity_Accessor_local_selector() { /* nobody should reach this method */ }
+        internal Celebrity_Accessor_local_selector(Trinity.Storage.LocalMemoryStorage storage)
         {
             this.query_expression              = Expression.Constant(this);
-            this.query_provider                = new Person_Accessor_local_query_provider(storage);
+            this.query_provider                = new Celebrity_Accessor_local_query_provider(storage);
         }
-        internal unsafe Person_Accessor_local_selector(Person_Accessor_local_query_provider query_provider, Expression query_expression)
+        internal unsafe Celebrity_Accessor_local_selector(Celebrity_Accessor_local_query_provider query_provider, Expression query_expression)
         {
             this.query_expression              = query_expression;
             this.query_provider                = query_provider;
         }
         #region IQueryable<CellAccessor> interfaces
-        public IEnumerator<Person_Accessor> GetEnumerator()
+        public IEnumerator<Celebrity_Accessor> GetEnumerator()
         {
-            return Provider.Execute<IEnumerator<Person_Accessor>>(query_expression);
+            return Provider.Execute<IEnumerator<Celebrity_Accessor>>(query_expression);
         }
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -947,7 +947,7 @@ namespace GraphEngineServer
         }
         public Type ElementType
         {
-            get { return typeof(Person_Accessor); }
+            get { return typeof(Celebrity_Accessor); }
         }
         public Expression Expression
         {
@@ -959,43 +959,43 @@ namespace GraphEngineServer
         }
         #endregion
         #region PLINQ Wrapper
-        public PLINQWrapper<Person_Accessor> AsParallel()
+        public PLINQWrapper<Celebrity_Accessor> AsParallel()
         {
-            return new PLINQWrapper<Person_Accessor>(this);
+            return new PLINQWrapper<Celebrity_Accessor>(this);
         }
         #endregion
     }
     /// <summary>
-    /// Implements System.Linq.IQueryable{Person} and accepts LINQ
+    /// Implements System.Linq.IQueryable{Celebrity} and accepts LINQ
     /// queries on <see cref="Trinity.Global.LocalStorage"/>.
     /// </summary>
-    public class Person_local_selector : IQueryable<Person>, IOrderedQueryable<Person>
+    public class Celebrity_local_selector : IQueryable<Celebrity>, IOrderedQueryable<Celebrity>
     {
         private         Expression                                   query_expression;
-        private         Person_local_query_provider             query_provider;
-        private Person_local_selector() { /* nobody should reach this method */ }
-        internal Person_local_selector(Trinity.Storage.LocalMemoryStorage storage)
+        private         Celebrity_local_query_provider             query_provider;
+        private Celebrity_local_selector() { /* nobody should reach this method */ }
+        internal Celebrity_local_selector(Trinity.Storage.LocalMemoryStorage storage)
         {
             this.query_expression              = Expression.Constant(this);
-            this.query_provider                = new Person_local_query_provider(storage);
+            this.query_provider                = new Celebrity_local_query_provider(storage);
         }
-        internal unsafe Person_local_selector(Person_local_query_provider query_provider, Expression query_expression)
+        internal unsafe Celebrity_local_selector(Celebrity_local_query_provider query_provider, Expression query_expression)
         {
             this.query_expression              = query_expression;
             this.query_provider                = query_provider;
         }
         #region IQueryable<Cell> interfaces
-        public IEnumerator<Person> GetEnumerator()
+        public IEnumerator<Celebrity> GetEnumerator()
         {
-            return Provider.Execute<IEnumerator<Person>>(query_expression);
+            return Provider.Execute<IEnumerator<Celebrity>>(query_expression);
         }
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return (IEnumerator<Person>)this.GetEnumerator();
+            return (IEnumerator<Celebrity>)this.GetEnumerator();
         }
         public Type ElementType
         {
-            get { return typeof(Person); }
+            get { return typeof(Celebrity); }
         }
         public Expression Expression
         {
@@ -1032,22 +1032,22 @@ namespace GraphEngineServer
         }
         
         /// <summary>
-        /// Enumerates all the Person within the local memory storage.
+        /// Enumerates all the Celebrity within the local memory storage.
         /// </summary>
         /// <param name="storage">A <see cref="Trinity.Storage.LocalMemoryStorage"/> object.</param>
-        /// <returns>All the Person within the local memory storage.</returns>
-        public static Person_local_selector/*_*/Person_Selector(this LocalMemoryStorage storage)
+        /// <returns>All the Celebrity within the local memory storage.</returns>
+        public static Celebrity_local_selector/*_*/Celebrity_Selector(this LocalMemoryStorage storage)
         {
-            return new Person_local_selector(storage);
+            return new Celebrity_local_selector(storage);
         }
         /// <summary>
-        /// Enumerates all the Person_Accessor within the local memory storage.
+        /// Enumerates all the Celebrity_Accessor within the local memory storage.
         /// </summary>
         /// <param name="storage">A <see cref="Trinity.Storage.LocalMemoryStorage"/> object.</param>
-        /// <returns>All the Person_Accessor within the local memory storage.</returns>
-        public static Person_Accessor_local_selector/*_*/Person_Accessor_Selector(this LocalMemoryStorage storage)
+        /// <returns>All the Celebrity_Accessor within the local memory storage.</returns>
+        public static Celebrity_Accessor_local_selector/*_*/Celebrity_Accessor_Selector(this LocalMemoryStorage storage)
         {
-            return new Person_Accessor_local_selector(storage);
+            return new Celebrity_Accessor_local_selector(storage);
         }
         
     }

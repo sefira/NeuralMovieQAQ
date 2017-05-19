@@ -47,7 +47,7 @@ cell struct Movie
 	string TheType;
 }
 
-cell struct Person
+cell struct Celebrity
 {
 	int Age;
 	[GraphEdge]

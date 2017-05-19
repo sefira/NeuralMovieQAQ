@@ -10,20 +10,20 @@ namespace GraphEngineServer
     class DataImport
     {
         public string path;
-        public const string person_cellid_dict_filename = @"data\person_cellid.dict";
+        public const string celebrity_cellid_dict_filename = @"data\celebrity_cellid.dict";
         public const string movie_cellid_dict_filename = @"data\movie_cellid.dict";
 
-        public enum EntityType { Movie, Person };
+        public enum EntityType { Movie, Celebrity };
 
         /// <summary>
         /// the fields order in the below enum must be same with schema.tsl
         /// </summary>
         public enum MovieFieldType { Key, KGId, Genres, Artists, Directors, Characters, Performance, Distributors, Channels, Albums, Name, Alias, Description, Segments, Categories, IntEmbeddedFilters, NumberOfWantToWatch, Rating, NumberOfShortReview, ReviewCount, NumberOfWatched, NumberOfReviewer, PublishDate, Length, Country, Language, SourceUrls, ImageUrls, OfficialSite, EntityContainer, Logo, QueryRank, TheType };
 
-        public enum PersonFieldType { Age, Parent, Name, Gender, Married, Spouse, Act, Direct, TheType };
+        public enum CelebrityFieldType { Age, Parent, Name, Gender, Married, Spouse, Act, Direct, TheType };
 
 
-        public Dictionary<string, long> person_cellid = new Dictionary<string, long>();
+        public Dictionary<string, long> celebrity_cellid = new Dictionary<string, long>();
         public Dictionary<string, long> movie_cellid = new Dictionary<string, long>();
 
 
@@ -33,12 +33,12 @@ namespace GraphEngineServer
             string line = "";
             try
             {
-                using (StreamReader sr = new StreamReader(path + person_cellid_dict_filename))
+                using (StreamReader sr = new StreamReader(path + celebrity_cellid_dict_filename))
                 {
                     while ((line = sr.ReadLine()) != null)
                     {
                         string[] line_arr = line.Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
-                        person_cellid[line_arr[0]] = long.Parse(line_arr[1]);
+                        celebrity_cellid[line_arr[0]] = long.Parse(line_arr[1]);
                     }
                 }
                 using (StreamReader sr = new StreamReader(path + movie_cellid_dict_filename))
@@ -55,9 +55,9 @@ namespace GraphEngineServer
 
         public void WriteDictionary()
         {
-            using (StreamWriter sw = new StreamWriter(path + person_cellid_dict_filename))
+            using (StreamWriter sw = new StreamWriter(path + celebrity_cellid_dict_filename))
             {
-                foreach (var item in person_cellid)
+                foreach (var item in celebrity_cellid)
                 {
                     sw.WriteLine(item.Key + "\t" + item.Value);
                 }
