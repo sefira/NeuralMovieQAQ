@@ -27,13 +27,17 @@ namespace QueryAnswer
         #region test jieba
         private static void TestParser()
         {
-            //string query_str = @"上世纪香港的刘德华出演了张艺谋和冯小刚2001年的天下无贼一部喜剧片";
+            string query_str = @"上世纪香港的刘德华出演了张艺谋和冯小刚2001年的天下无贼一部喜剧片";
             //string query_str = @"我想看周星驰的电影";
-            string query_str = @"我想看成龙的电影";
+            //string query_str = @"我想看成龙的电影";
             Query query = new Query(query_str);
             Parser m_Parser = new Parser();
-            m_Parser.ParseAll(ref query);
-            var a = query;
+            m_Parser.PosTagging(ref query);
+            m_Parser.ParseAllTag(ref query);
+            foreach (var item in query.postag_pair)
+            {
+                Console.WriteLine(item.Word + item.Flag);
+            }
         }
         #endregion
 
@@ -42,7 +46,9 @@ namespace QueryAnswer
         {
             oSearchClient.TestQuery();
         }
+        #endregion
 
+        #region test single turn query
         private static void TestQueryFile(string filename)
         {
             StreamReader sr = new StreamReader(filename);
@@ -111,12 +117,15 @@ namespace QueryAnswer
             StreamReader sr = new StreamReader(question_filename);
             PatternBased pb = new PatternBased();
             StreamWriter sw = new StreamWriter(output_filename);
+            Parser parse = new Parser();
             while (!sr.EndOfStream)
             {
                 PatternResponse pr = new PatternResponse();
                 string line = sr.ReadLine();
                 string question = line.Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries)[0];
-                if (pb.QuestionClassify(question, out pr))
+                Query query = new Query(question);
+                parse.PosTagging(ref query);
+                if (pb.QuestionClassify(query, out pr))
                 {
                     sw.Write(question);
                     sw.Write('\t');

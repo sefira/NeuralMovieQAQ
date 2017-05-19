@@ -19,4 +19,33 @@ namespace QueryAnswer
         public static readonly string patternQ_filename = @"QA_pattern_question.txt";
         public static readonly string patternA_filename = @"QA_pattern_answer.txt";
     }
+    class Entity
+    {
+        private static Dictionary<ParseStatus, string> entity_tag = new Dictionary<ParseStatus, string>()
+        {
+            { ParseStatus.Movie,"nmovie" } ,
+            { ParseStatus.Artist, "nrcelebrity" },
+            { ParseStatus.Director, "nrcelebrity" },
+            { ParseStatus.Country, "ncountry" },
+            { ParseStatus.Genre, "ngenre" }
+        };
+
+        private static HashSet<string> postag_type = new HashSet<string>()
+        {
+            "nmovie",
+            "nrcelebrity",
+            "ncountry",
+            "ngenre"
+        };
+
+        public static Dictionary<ParseStatus, string> EntityTag
+        {
+            get { return entity_tag; }
+        }
+        public static HashSet<string> PosTagType
+        {
+            get { return postag_type; }
+        }
+    }
+
 }

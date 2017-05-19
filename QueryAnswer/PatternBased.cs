@@ -10,8 +10,6 @@ using System.Threading.Tasks;
 
 namespace QueryAnswer
 {
-    public enum EntityType { Movie, Person };
-
     public class Pattern
     {
         public Regex regex_pattern;
@@ -54,18 +52,11 @@ namespace QueryAnswer
         }
     }
 
-    public class TaggedQuery
-    {
-        public Tuple<string, string> tagged_entity;
-        public string ori_query = "";
-        public string post_query = "";
-    }
-
-    public class PatternResponse
+    class PatternResponse
     {
         public Tuple<string, string> tagged_entity;
 
-        public string ori_query = "";
+        public string raw_query = "";
 
         public string post_query = "";
 
@@ -79,13 +70,12 @@ namespace QueryAnswer
         {
         }
 
-        public PatternResponse(TaggedQuery tagged_query, Pattern pattern)
+        public PatternResponse(Query tagged_query, Pattern pattern)
         {
-            this.ori_query = tagged_query.ori_query;
-            this.post_query = tagged_query.post_query;
+            this.raw_query = tagged_query.raw_query;
+            this.post_query = tagged_query.postagged_query;
 
             // used for generate database query
-            this.tagged_entity = tagged_query.tagged_entity;
             this.entity_type = pattern.entity_type;
             this.property = pattern.property;
 
@@ -96,9 +86,7 @@ namespace QueryAnswer
     // classify a qurry based on pattern
     class PatternBased
     {
-        private PosSegmenter entity_tagger = new PosSegmenter();
-
-        private List<Pattern> patterns= new List<Pattern>();
+        private List<Pattern> patterns = new List<Pattern>();
 
         public PatternBased()
         {
@@ -115,55 +103,20 @@ namespace QueryAnswer
                     }
                 }
             }
-
-            JiebaSegmenter segmenter = new JiebaSegmenter();
-            segmenter.LoadUserDict(Config.data_path + Config.movie_filename);
-            segmenter.LoadUserDict(Config.data_path + Config.artist_filename);
-            segmenter.LoadUserDict(Config.data_path + Config.director_filename);
-            //segmenter.LoadUserDict(Config.data_path + Config.country_filename);
-            //segmenter.LoadUserDict(Config.data_path + Config.genre_filename);
-
-            entity_tagger = new PosSegmenter(segmenter);
-        }
-
-        private bool EntityNameReplace(string ori_query, out TaggedQuery tagged_query)
-        {
-            bool is_relevance = false;
-            tagged_query = new TaggedQuery();
-            tagged_query.ori_query = ori_query;
-
-            var pos_tags = entity_tagger.Cut(ori_query);
-            foreach (var item in pos_tags)
-            {
-                if (Entity.EntityTag[ParseStatus.Movie].Equals(item.Flag) || 
-                    Entity.EntityTag[ParseStatus.Artist].Equals(item.Flag) ||
-                    Entity.EntityTag[ParseStatus.Director].Equals(item.Flag))
-                {
-                    tagged_query.tagged_entity = (new Tuple<string, string>(item.Word, item.Flag));
-                    tagged_query.post_query += "<Entity>";
-                    is_relevance = true;
-                }
-                else
-                {
-                    tagged_query.post_query += item.Word;
-                }
-            }
-            return is_relevance;
         }
 
         // classify a qurry based on pattern
-        public bool QuestionClassify(string query, out PatternResponse pattern_response)
+        public bool QuestionClassify(Query query, out PatternResponse pattern_response)
         {
             pattern_response = new PatternResponse();
-            TaggedQuery tagged_query;
-            bool is_relevance = EntityNameReplace(query, out tagged_query);
+            string postagged_query = query.postagged_query;
 
             foreach (Pattern pattern in patterns)
             {
-                Match match = pattern.regex_pattern.Match(tagged_query.post_query);
+                Match match = pattern.regex_pattern.Match(postagged_query);
                 if (match.Success)
                 {
-                    pattern_response = new PatternResponse(tagged_query, pattern);
+                    pattern_response = new PatternResponse(query, pattern);
                     return true;
                 }
             }

@@ -5,26 +5,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace QueryAnswer
 {
-    class Entity
-    {
-        private static Dictionary<ParseStatus, string> entity_tag = new Dictionary<ParseStatus, string>()
-        {
-            { ParseStatus.Movie,"nmovie" } ,
-            { ParseStatus.Artist, "nrartist" },
-            { ParseStatus.Director, "nrdirector" },
-            { ParseStatus.Country, "ncountry" },
-            { ParseStatus.Genre, "ngenre" }
-        };
-
-        public static Dictionary<ParseStatus, string> EntityTag
-        {
-            get { return entity_tag; }
-        }
-    }
 
     class EntitySegmenter
     {
@@ -88,22 +73,11 @@ namespace QueryAnswer
             return new HashSet<string>(entities);
         }
 
-        private PosSegmenter pos_seg_movie;
-        private PosSegmenter pos_seg_artist;
-        private PosSegmenter pos_seg_director;
-        private PosSegmenter pos_seg_country;
-        private PosSegmenter pos_seg_genre;
-
-        private Dictionary<ParseStatus, PosSegmenter> pos_segers = new Dictionary<ParseStatus, PosSegmenter>();
-
-        public Dictionary<ParseStatus, PosSegmenter> PosSegers
-        {
-            get { return pos_segers; }
-        }
+        public PosSegmenter pos_tagger;
 
         public EntitySegmenter()
         {
-            if (pos_segers == null || pos_segers.Count == 0)
+            if (pos_tagger == null)
             {
                 movie_name = ReadEntityFromFile(data_path + movie_filename);
                 artist_name = ReadEntityFromFile(data_path + artist_filename);
@@ -116,30 +90,13 @@ namespace QueryAnswer
                 // will overlay artist when the artist have the same name with director
                 // even we use "new PosSegment(segment_xxx)".
                 // this issue is caused by the static _wordTagTab in PosSegmenter.cs in Jieba.NET
-                JiebaSegmenter segmenter_movie = new JiebaSegmenter();
-                segmenter_movie.LoadUserDict(data_path + movie_filename);
-                pos_seg_movie = new PosSegmenter(segmenter_movie);
-                pos_segers.Add(ParseStatus.Movie, pos_seg_movie);
-
-                JiebaSegmenter segmenter_artist = new JiebaSegmenter();
-                segmenter_artist.LoadUserDict(data_path + artist_filename);
-                pos_seg_artist = new PosSegmenter(segmenter_artist);
-                pos_segers.Add(ParseStatus.Artist, pos_seg_artist);
-
-                JiebaSegmenter segmenter_director = new JiebaSegmenter();
-                segmenter_director.LoadUserDict(data_path + director_filename);
-                pos_seg_director = new PosSegmenter(segmenter_director);
-                pos_segers.Add(ParseStatus.Director, pos_seg_director);
-
-                JiebaSegmenter segmenter_country = new JiebaSegmenter();
-                segmenter_country.LoadUserDict(data_path + country_filename);
-                pos_seg_country = new PosSegmenter(segmenter_country);
-                pos_segers.Add(ParseStatus.Country, pos_seg_country);
-
-                JiebaSegmenter segmenter_genre = new JiebaSegmenter();
-                segmenter_genre.LoadUserDict(data_path + genre_filename);
-                pos_seg_genre = new PosSegmenter(segmenter_genre);
-                pos_segers.Add(ParseStatus.Genre, pos_seg_genre);
+                JiebaSegmenter segmenter = new JiebaSegmenter();
+                segmenter.LoadUserDict(data_path + movie_filename);
+                segmenter.LoadUserDict(data_path + artist_filename);
+                segmenter.LoadUserDict(data_path + director_filename);
+                segmenter.LoadUserDict(data_path + country_filename);
+                segmenter.LoadUserDict(data_path + genre_filename);
+                pos_tagger = new PosSegmenter(segmenter);
             }
         }
     }
@@ -149,6 +106,12 @@ namespace QueryAnswer
         private EntitySegmenter entity_seg = new EntitySegmenter();
         private JiebaSegmenter segmenter = new JiebaSegmenter();
 
+        // for parse person name 
+        private static readonly List<string> _artist_pattern = new List<string>(new string[] { "<nrcelebrity>(主|扮)?演" });
+        private static readonly List<string> _director_pattern = new List<string>(new string[] { "<nrcelebrity>(导|导演|拍摄)" });
+        private static readonly List<Regex> artist_pattern = new List<Regex>();
+        private static readonly List<Regex> director_pattern = new List<Regex>();
+        
         // for PublishDate
         private static readonly string _old_date = "怀旧,旧,经典,老,复古,旧电影,经典电影,老电影";
         private static readonly string _new_date = "最近,最新,新,最,热,热门";
@@ -171,6 +134,16 @@ namespace QueryAnswer
 
         public Parser()
         {
+            // for PersonName
+            foreach (string str in _artist_pattern)
+            {
+                artist_pattern.Add(new Regex(str, RegexOptions.Compiled));
+            }
+            foreach (string str in _director_pattern)
+            {
+                director_pattern.Add(new Regex(str, RegexOptions.Compiled));
+            }
+
             // for PublishDate
             string[] tmp = _old_date.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             old_date_tag = new HashSet<string>(tmp);
@@ -193,11 +166,42 @@ namespace QueryAnswer
         }
 
         #region Parse Entity, such as Movie, Artist, Director, Country, Genre, PublishDate, Rating and Duration
+        private void EntityNameReplace(Query to_be_tagged_query)
+        {
+            foreach (var item in to_be_tagged_query.postag_pair)
+            {
+                if (Entity.PosTagType.Contains(item.Flag))
+                {
+                    to_be_tagged_query.postagged_query += "<" + item.Flag + ">";
+                }
+                else
+                {
+                    to_be_tagged_query.postagged_query += item.Word;
+                }
+            }
+        }
+
+        public void PosTagging(ref Query query)
+        {
+            query.postag_pair = (List<Pair>)entity_seg.pos_tagger.Cut(query.raw_query);
+            EntityNameReplace(query);
+        }
+
+        public void ParseAllTag(ref Query query)
+        {
+            ParseMovieName(ref query);
+            ParsePersonName(ref query);
+            ParseCountryName(ref query);
+            ParseGenreName(ref query);
+            ParsePublishDate(ref query);
+            ParseRating(ref query);
+            ParseDuration(ref query);
+        }
+
         // for movie name
         public void ParseMovieName(ref Query query)
         {
-            var pos_tags = entity_seg.PosSegers[ParseStatus.Movie].Cut(query.RawQuery);
-            foreach (var item in pos_tags)
+            foreach (var item in query.postag_pair)
             {
                 if (Entity.EntityTag[ParseStatus.Movie].Equals(item.Flag))
                 {
@@ -207,16 +211,59 @@ namespace QueryAnswer
             }
         }
 
-        // for artist
+        // parse person name when we didn't know what we want
+        public void ParsePersonName(ref Query query)
+        {
+            foreach(var item in query.postag_pair)
+            {
+                if(Entity.EntityTag[ParseStatus.Artist].Equals(item.Flag) || Entity.EntityTag[ParseStatus.Director].Equals(item.Flag))
+                {
+                    bool is_artist = false;
+                    bool is_director = false;
+                    // discriminate artist and director by Contains
+                    // 李连杰can discri 宫崎骏can discri 张艺谋can't discri 王宝强can't discri
+                    is_artist = EntitySegmenter.Artist.Contains(item.Word);
+                    is_director = EntitySegmenter.Director.Contains(item.Word);
+                    if(!(is_artist ^ is_director))
+                    {
+                        // discriminate artist and director by Regex
+                        // 张艺谋演\导的can discri 张艺谋的can't discri
+                        foreach (Regex pattern in artist_pattern)
+                        {
+                            if (pattern.IsMatch(query.raw_query))
+                            {
+                                is_artist = true;
+                                break;
+                            }
+                        }
+                        foreach (Regex pattern in director_pattern)
+                        {
+                            if (pattern.IsMatch(query.raw_query))
+                            {
+                                is_director = true;
+                                break;
+                            }
+                        }
+                    }
+                    if(is_artist)
+                    {
+                        query.is_considerd[ParseStatus.Artist] = true;
+                        query.carried_artist.Add(item.Word);
+                    }
+                    if (is_director)
+                    {
+                        query.is_considerd[ParseStatus.Director] = true;
+                        query.carried_director.Add(item.Word);
+                    }
+                }
+            }
+        }
+
+        // for Artist, when we know we just need an artist, we can evade ParsePersonName
         public void ParseArtistName(ref Query query)
         {
-            var pos_tags = entity_seg.PosSegers[ParseStatus.Artist].Cut(query.RawQuery);
-            foreach (var item in pos_tags)
+            foreach (var item in query.postag_pair)
             {
-                if (EntitySegmenter.Artist.Contains(item.Word))
-                {
-                    item.Flag = Entity.EntityTag[ParseStatus.Artist];
-                }
                 if (Entity.EntityTag[ParseStatus.Artist].Equals(item.Flag))
                 {
                     query.is_considerd[ParseStatus.Artist] = true;
@@ -225,11 +272,10 @@ namespace QueryAnswer
             }
         }
 
-        // for Director
+        // for Director, when we know we just need a director, we can evade ParsePersonName
         public void ParseDirectorName(ref Query query)
         {
-            var pos_tags = entity_seg.PosSegers[ParseStatus.Director].Cut(query.RawQuery);
-            foreach (var item in pos_tags)
+            foreach (var item in query.postag_pair)
             {
                 if (Entity.EntityTag[ParseStatus.Director].Equals(item.Flag))
                 {
@@ -243,8 +289,7 @@ namespace QueryAnswer
         // for Country
         public void ParseCountryName(ref Query query)
         {
-            var pos_tags = entity_seg.PosSegers[ParseStatus.Country].Cut(query.RawQuery);
-            foreach (var item in pos_tags)
+            foreach (var item in query.postag_pair)
             {
                 if (Entity.EntityTag[ParseStatus.Country].Equals(item.Flag))
                 {
@@ -257,8 +302,7 @@ namespace QueryAnswer
         // for Genre
         public void ParseGenreName(ref Query query)
         {
-            var pos_tags = entity_seg.PosSegers[ParseStatus.Genre].Cut(query.RawQuery);
-            foreach (var item in pos_tags)
+            foreach (var item in query.postag_pair)
             {
                 if (Entity.EntityTag[ParseStatus.Genre].Equals(item.Flag))
                 {
@@ -273,8 +317,8 @@ namespace QueryAnswer
         {
             if (position > 0)
             {
-                string pre_word = query.WordBrokenQuery[position - 1];
-                string this_word = query.WordBrokenQuery[position];
+                string pre_word = query.wordbroken_query[position - 1];
+                string this_word = query.wordbroken_query[position];
 
                 int year = 0;
                 try
@@ -309,11 +353,11 @@ namespace QueryAnswer
 
         public void ParsePublishDate(ref Query query)
         {
-            if (query.WordBrokenQuery == null)
+            if (query.wordbroken_query == null)
             {
-                query.WordBrokenQuery = new List<string>(segmenter.Cut(query.RawQuery));
+                query.wordbroken_query = new List<string>(segmenter.Cut(query.raw_query));
             }
-            List<string> word_list = query.WordBrokenQuery;
+            List<string> word_list = query.wordbroken_query;
             string date;
             for (int i = 0; i < word_list.Count; i++)
             {
@@ -355,37 +399,27 @@ namespace QueryAnswer
         // for Rating
         public void ParseRating(ref Query query)
         {
-            if (query.WordBrokenQuery == null)
+            if (query.wordbroken_query == null)
             {
-                query.WordBrokenQuery = new List<string>(segmenter.Cut(query.RawQuery));
+                query.wordbroken_query = new List<string>(segmenter.Cut(query.raw_query));
             }
         }
 
         // for Duration
         public void ParseDuration(ref Query query)
         {
-            if (query.WordBrokenQuery == null)
+            if (query.wordbroken_query == null)
             {
-                query.WordBrokenQuery = new List<string>(segmenter.Cut(query.RawQuery));
+                query.wordbroken_query = new List<string>(segmenter.Cut(query.raw_query));
             }
         }
 
-        public void ParseAll(ref Query query)
-        {
-            ParseMovieName(ref query);
-            ParseArtistName(ref query);
-            ParseDirectorName(ref query);
-            ParseCountryName(ref query);
-            ParseGenreName(ref query);
-            ParsePublishDate(ref query);
-            ParseRating(ref query);
-            ParseDuration(ref query);
-        }
         #endregion
 
-        public bool isAboutMovie(Query query_origin)
+        public bool isAboutMovie(Query ori_query)
         {
-            Query query = new Query(query_origin.RawQuery);
+            Query query = new Query(ori_query.raw_query);
+            query.postag_pair = ori_query.postag_pair;
             // I want to watch an excat movie or an exact genre type movie
             ParseMovieName(ref query);
             ParseGenreName(ref query);
@@ -393,7 +427,7 @@ namespace QueryAnswer
             {
                 foreach (string intent_item in intent_word_tag)
                 {
-                    if (query.RawQuery.Contains(intent_item))
+                    if (query.raw_query.Contains(intent_item))
                     {
                         return true;
                     }
@@ -405,7 +439,7 @@ namespace QueryAnswer
             {
                 foreach (string must_item in must_word_tag)
                 {
-                    if (query.RawQuery.Contains(intent_item) && query.RawQuery.Contains(must_item))
+                    if (query.raw_query.Contains(intent_item) && query.raw_query.Contains(must_item))
                     {
                         return true;
                     }

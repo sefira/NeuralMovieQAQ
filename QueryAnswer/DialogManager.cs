@@ -151,6 +151,7 @@ namespace QueryAnswer
                 {
                     query_str = Console.ReadLine();
                     query = new Query(query_str);
+                    parser.PosTagging(ref query);
                     // movie recommendation trigger
                     if (!parser.isAboutMovie(query))
                     {
@@ -163,14 +164,14 @@ namespace QueryAnswer
                 {
                     query_str = Console.ReadLine();
                     query = new Query(query_str);
+                    parser.PosTagging(ref query);
                 }
 
-                List<string> question_entity = new List<string>();
                 // query parse according to parse status
                 switch (session.parse_status)
                 {
                     case ParseStatus.All:
-                        parser.ParseAll(ref query);
+                        parser.ParseAllTag(ref query);
                         break;
                     case ParseStatus.Movie:
                         parser.ParseMovieName(ref query);
@@ -283,6 +284,7 @@ namespace QueryAnswer
                 if (session.parse_status == ParseStatus.All)
                 {
                     query = new Query(query_str);
+                    parser.PosTagging(ref query);
                     // movie recommendation trigger
                     if (!parser.isAboutMovie(query))
                     {
@@ -295,14 +297,14 @@ namespace QueryAnswer
                 {
                     query_str = Console.ReadLine();
                     query = new Query(query_str);
+                    parser.PosTagging(ref query);
                 }
 
-                List<string> question_entity = new List<string>();
                 // query parse according to parse status
                 switch (session.parse_status)
                 {
                     case ParseStatus.All:
-                        parser.ParseAll(ref query);
+                        parser.ParseAllTag(ref query);
                         break;
                     case ParseStatus.Movie:
                         parser.ParseMovieName(ref query);
@@ -407,8 +409,9 @@ namespace QueryAnswer
             Parser parser = new Parser();
 
             // get query
-            Query query = new Query(query_str);
             Session session = new Session();
+            Query query = new Query(query_str);
+            parser.PosTagging(ref query);
 
             // movie recommendation trigger
             if (!parser.isAboutMovie(query))
@@ -418,7 +421,7 @@ namespace QueryAnswer
                 return;
             }
             // query parse 
-            parser.ParseAll(ref query);
+            parser.ParseAllTag(ref query);
 
             // refresh session status using user query
             session.RefreshSessionStatus(query);

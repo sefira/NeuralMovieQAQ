@@ -1,4 +1,5 @@
 ﻿using ChinaOpalSearch;
+using JiebaNet.Segmenter.PosSeg;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,8 +8,6 @@ using System.Threading.Tasks;
 
 namespace QueryAnswer
 {
-    //enum DateType { exact, round, before, after };
-
     class PublishDateType
     {
         public int from;
@@ -94,30 +93,20 @@ namespace QueryAnswer
         public PublishDateType carried_publishdate = new PublishDateType (DateTime.Now.Year, DateTime.Now.Year);
         public int carried_rating = 90;
         public int carried_duration = 120;
-
-        // can not put them into a dictionary due to their different behaviour
-        //public Dictionary<string, object> carried_info = new Dictionary<string, object>()
-        //{
-        //    { "movie", new List<string>() },
-        //    { "artist", new List<string>() },
-        //    { "director", new List<string>() },
-        //    { "country", new List<string>() },
-        //    { "genre", new List<string>() },
-        //    { "publishdate", new string[2] { DateTime.Today.Year.ToString(), "round" }},// round, before, after 
-        //    { "rating", 90 },
-        //    { "duration", 120 }
-        //};
     }
 
     class Query : InformationSentence
     {
-        public string RawQuery;
-        public List<string> NormalizedQuery;
-        public List<string> WordBrokenQuery;
+        public string raw_query;
+        public List<string> wordbroken_query;
+
+        // postagged query is the query that movie, person, ... entities have been tagged and replaced.
+        public List<Pair> postag_pair;
+        public string postagged_query;
 
         public Query(string query)
         {
-            RawQuery = query;
+            raw_query = query;
         }
     }
 
