@@ -1,7 +1,0 @@
-D:\MovieDomain\QueryAnswer\bin\Debug\QueryAnswer.exe.config
-D:\MovieDomain\QueryAnswer\bin\Debug\QueryAnswer.exe
-D:\MovieDomain\QueryAnswer\bin\Debug\QueryAnswer.pdb
-D:\MovieDomain\QueryAnswer\obj\Debug\QueryAnswer.csprojResolveAssemblyReference.cache
-D:\MovieDomain\QueryAnswer\obj\Debug\QueryAnswer.exe
-D:\MovieDomain\QueryAnswer\obj\Debug\QueryAnswer.pdb
-D:\MovieDomain\QueryAnswer\bin\Debug\Newtonsoft.Json.xml

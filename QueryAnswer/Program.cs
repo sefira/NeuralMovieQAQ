@@ -1,10 +1,10 @@
-﻿using JiebaNet.Segmenter;
-using JiebaNet.Analyser;
-using JiebaNet.Segmenter.PosSeg;
-using System;
-using System.Linq;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using FanoutSearch;
+using FanoutSearch.LIKQ;
+using static FanoutSearch.LIKQ.KnowledgeGraph;
+using Action = FanoutSearch.Action;
 
 namespace QueryAnswer
 {
@@ -21,7 +21,9 @@ namespace QueryAnswer
             //TestSessionFile(@"D:\MovieDomain\QueryAnswer\resource\usersession.txt");
             //TestSession();
 
-            TestPatternBased(@"D:\MovieDomain\QueryAnswer\resource\QA_pattern_qa.txt", @"D:\MovieDomain\QueryAnswer\resource\QA_pattern_output.txt");
+            //TestPatternBased(@"D:\MovieDomain\QueryAnswer\resource\QA_pattern_qa.txt", @"D:\MovieDomain\QueryAnswer\resource\QA_pattern_output.txt");
+            TestGraphEngineQuery();
+            //TestLIKQClient();
         }
 
         #region test jieba
@@ -112,6 +114,7 @@ namespace QueryAnswer
         }
         #endregion
 
+        #region test pattern parse
         private static void TestPatternBased(string question_filename, string output_filename)
         {
             StreamReader sr = new StreamReader(question_filename);
@@ -139,5 +142,33 @@ namespace QueryAnswer
             sw.Flush();
             sw.Close();
         }
+        #endregion
+
+        #region
+        private static void TestGraphEngineQuery()
+        {
+            GraphEngineQuery graphengine_query = new GraphEngineQuery();
+            List<string> res = graphengine_query.GetGraphEngineData("墨攻", "PublishDate", 0);
+            Console.WriteLine(string.Join(",", res.ToArray()));
+            res = graphengine_query.GetGraphEngineData("墨攻", "Artists:Name", 1);
+            Console.WriteLine(string.Join(",", res.ToArray()));
+            res = graphengine_query.GetGraphEngineData("刘德华", "Act:Name", 1);
+            Console.WriteLine(string.Join(",", res.ToArray()));
+        }
+
+        private static void TestLIKQClient()
+        {
+            FanoutSearchModule.ForceRunAsClient(true);
+            FanoutSearchModule.RegisterExpressionSerializerFactory(() => new ExpressionSerializer());
+            var paths = StartFrom(2391729982219739490, new[] { "Name" });
+            foreach (var path in paths)
+            {
+                foreach (var node in path)
+                {
+                    Console.WriteLine($"{node.id}: {node["Name"]}");
+                }
+            }
+        }
+        #endregion
     }
 }

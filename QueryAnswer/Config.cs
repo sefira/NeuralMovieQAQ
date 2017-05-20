@@ -18,6 +18,14 @@ namespace QueryAnswer
         public static readonly string pattern_filename = @"QA_pattern.txt";
         public static readonly string patternQ_filename = @"QA_pattern_question.txt";
         public static readonly string patternA_filename = @"QA_pattern_answer.txt";
+
+        // celebrity cellid dictionary
+        // movie cellid dictionary
+        public static readonly string path = @"D:\MovieDomain\GraphEngineServer\bin\Debug\";
+        public static readonly string celebrity_cellid_dict_filename = @"data\celebrity_cellid.dict";
+        public static readonly string movie_cellid_dict_filename = @"data\movie_cellid.dict";
+
+        public static readonly string rest_client_address = @"http://localhost:80/LIKQ/JsonQuery/";
     }
     class Entity
     {
