@@ -24,6 +24,7 @@ namespace QueryAnswer
         private static int end_movie_count = 5;
         private static int end_considerd_count = 100;
         private static int condidate_show_number = 3;
+        private static int condidate_movie_show_number = 10;
 
         private static double[,] transition_matrix = new double[6, 6]
         { 
@@ -69,6 +70,10 @@ namespace QueryAnswer
         //    { ParseStatus.Genre, 50 },
         //    { ParseStatus.PublishDate, 100 }
         //};
+
+        Parser parser = new Parser();
+        Session session = new Session();
+        PatternBased pattern_qa = new PatternBased();
 
         public DialogManager()
         {
@@ -137,10 +142,7 @@ namespace QueryAnswer
 
         public void DialogFlow()
         {
-
             // begin
-            Parser parser = new Parser();
-            Session session = new Session();
             session.parse_status = ParseStatus.All;
             string query_str = "";
             while (true)
@@ -217,7 +219,7 @@ namespace QueryAnswer
                     int i = 0;
                     foreach (var item in session.candidate_movies)
                     {
-                        if (i++ == 5)
+                        if (i++ == condidate_movie_show_number)
                         {
                             break;
                         }
@@ -225,6 +227,7 @@ namespace QueryAnswer
                     }
                     Utils.WriteResult(String.Join(", ", movies.ToArray()));
                     Console.WriteLine("\n");
+                    QASession(session);
                     break;
                 }
                 else
@@ -266,6 +269,42 @@ namespace QueryAnswer
                     string answer = AnswerGenerator.AnswerIt(answer_entity_candidate, session, nextturn_status);
                     Utils.WriteMachine(answer);
                     session.parse_status = nextturn_status;
+                }
+            }
+        }
+
+        private void QASession(Session session)
+        {
+            GraphEngineQuery graphengine_query = new GraphEngineQuery();
+            while (true)
+            {
+                string query_str = Console.ReadLine();
+                Query query = new Query(query_str);
+                if (Parser.isQAEnd(query))
+                {
+                    return ;
+                }
+                parser.PosTagging(ref query);
+                parser.ParseAllTag(ref query);
+                PatternResponse pattern_response;
+                if (pattern_qa.QuestionClassify(query, out pattern_response))
+                {
+                    string question_topic = "";
+                    switch(pattern_response.entity_type)
+                    {
+                        case EntityType.Movie:
+                            question_topic = query.carried_movie[0];
+                            break;
+                        case EntityType.Celebrity:
+                            question_topic = (query.carried_artist.Count > 0)? query.carried_artist[0] : query.carried_director[0];
+                            break;
+                    }
+                    List<object> res = graphengine_query.GetGraphEngineData(question_topic, pattern_response.property, pattern_response.hop_num);
+                    Utils.WriteResult(string.Join(",", res.ToArray()));
+                }
+                else
+                {
+                    return ;
                 }
             }
         }
@@ -350,7 +389,7 @@ namespace QueryAnswer
                     int i = 0;
                     foreach (var item in session.candidate_movies)
                     {
-                        if (i++ == 5)
+                        if (i++ == condidate_movie_show_number)
                         {
                             break;
                         }
@@ -358,6 +397,7 @@ namespace QueryAnswer
                     }
                     Utils.WriteResult(String.Join(", ", movies.ToArray()));
                     Console.WriteLine("\n");
+                    QASession(session);
                     break;
                 }
                 else
@@ -435,7 +475,7 @@ namespace QueryAnswer
             int i = 0;
             foreach (var item in session.candidate_movies)
             {
-                if (i++ == 5)
+                if (i++ == condidate_movie_show_number)
                 {
                     break;
                 }

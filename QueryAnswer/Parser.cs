@@ -132,6 +132,10 @@ namespace QueryAnswer
         private static HashSet<string> intent_word_tag;
         private static HashSet<string> must_word_tag;
 
+        // for end dialog
+        private static readonly List<string> _end_pattern = new List<string>(new string[] { "(那)?(就)?第(一|二|三|四|五|六|七|八|九|[1-9])(部|个)(吧)?", "(那)?就这样(吧)?", "(那)?就这(一)?部(吧)?", "就(他|它|她)" });
+        private static readonly List<Regex> end_pattern = new List<Regex>();
+
         public Parser()
         {
             // for PersonName
@@ -163,6 +167,12 @@ namespace QueryAnswer
             intent_word_tag = new HashSet<string>(tmp);
             tmp = _must.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             must_word_tag = new HashSet<string>(tmp);
+
+            // for end dialog
+            foreach (string str in _end_pattern)
+            {
+                end_pattern.Add(new Regex(str, RegexOptions.Compiled));
+            }
         }
 
         #region Parse Entity, such as Movie, Artist, Director, Country, Genre, PublishDate, Rating and Duration
@@ -443,6 +453,18 @@ namespace QueryAnswer
                     {
                         return true;
                     }
+                }
+            }
+            return false;
+        }
+
+        public static bool isQAEnd(Query query)
+        {
+            foreach (Regex pattern in end_pattern)
+            {
+                if (pattern.IsMatch(query.raw_query))
+                {
+                    return true;
                 }
             }
             return false;

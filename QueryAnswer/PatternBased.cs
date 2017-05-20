@@ -14,20 +14,15 @@ namespace QueryAnswer
     {
         public Regex regex_pattern;
 
-        public string entity_type;
+        public EntityType entity_type;
 
         public string property;
 
         public int hop_num;
 
-        public Pattern()
+        public Pattern(string entity_type_str, string property, int hop_num, Regex regex_pattern)
         {
-
-        }
-
-        public Pattern(string entity_type, string property, int hop_num, Regex regex_pattern)
-        {
-            this.entity_type = entity_type;
+            Enum.TryParse(entity_type_str, out entity_type);
             this.property = property;
             this.hop_num = hop_num;
             this.regex_pattern = regex_pattern;
@@ -54,13 +49,11 @@ namespace QueryAnswer
 
     class PatternResponse
     {
-        public Tuple<string, string> tagged_entity;
-
         public string raw_query = "";
 
         public string post_query = "";
 
-        public string entity_type;
+        public EntityType entity_type;
 
         public string property;
 
@@ -72,14 +65,14 @@ namespace QueryAnswer
 
         public PatternResponse(Query tagged_query, Pattern pattern)
         {
-            this.raw_query = tagged_query.raw_query;
-            this.post_query = tagged_query.postagged_query;
+            raw_query = tagged_query.raw_query;
+            post_query = tagged_query.postagged_query;
 
             // used for generate database query
-            this.entity_type = pattern.entity_type;
-            this.property = pattern.property;
+            entity_type = pattern.entity_type;
+            property = pattern.property;
 
-            this.hop_num = pattern.hop_num;
+            hop_num = pattern.hop_num;
         }
     }
 

@@ -30,3 +30,5 @@ GraphEngine/output
 *.exe
 *.dict
 *GeneratedCode*
+*obj*
+*bin*

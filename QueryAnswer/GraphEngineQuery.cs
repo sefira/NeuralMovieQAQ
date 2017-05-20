@@ -69,9 +69,9 @@ namespace QueryAnswer
             return response;
         }
 
-        public List<string> GetGraphEngineData(string from_which, string edge, int hop_num)
+        public List<object> GetGraphEngineData(string from_which, string edge, int hop_num)
         {
-            List<string> ret = new List<string>();
+            List<object> ret = new List<object>();
             // from which cell
             long from_cellid = 0;
             if (celebrity_cellid.ContainsKey(from_which))
@@ -97,9 +97,9 @@ namespace QueryAnswer
 
             return ret;
         }
-        private List<string> QueryZeroHopData(long from_cellid, string property, int hop_num)
+        private List<object> QueryZeroHopData(long from_cellid, string property, int hop_num)
         {
-            List<string> ret = new List<string>();
+            List<object> ret = new List<object>();
 
             string query_path = "\"/entity1\"";
 
@@ -107,7 +107,7 @@ namespace QueryAnswer
             var json_response = ExecuteRequest(request_body);
             dynamic response = JsonConvert.DeserializeObject(json_response.Content);
             Newtonsoft.Json.Linq.JArray response_res = response.Results;
-            var paths = response_res.ToObject<List<List<Dictionary<string, string>>>>();
+            var paths = response_res.ToObject<List<List<Dictionary<string, object>>>>();
             foreach (var ress in paths)
             {
                 ret.Add(ress[hop_num][property]);
@@ -115,9 +115,9 @@ namespace QueryAnswer
             return ret;
         }
 
-        private List<string> QueryOneHopData(long from_cellid, string info, int hop_num)
+        private List<object> QueryOneHopData(long from_cellid, string info, int hop_num)
         {
-            List<string> ret = new List<string>();
+            List<object> ret = new List<object>();
 
             //Artists:Name(Performance:1&Gender:male
             string[] line = info.Split(new char[] { '(' }, StringSplitOptions.RemoveEmptyEntries);
@@ -133,7 +133,7 @@ namespace QueryAnswer
             var json_response = ExecuteRequest(request_body);
             dynamic response = JsonConvert.DeserializeObject(json_response.Content);
             Newtonsoft.Json.Linq.JArray response_res = response.Results;
-            var paths = response_res.ToObject<List<List<Dictionary<string, string>>>>();
+            var paths = response_res.ToObject<List<List<Dictionary<string, object>>>>();
             foreach (var ress in paths)
             {
                 ret.Add(ress[hop_num]["Name"]);

@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace QueryAnswer
 {
+    public enum ParseStatus { All, Movie, Artist, Director, Country, Genre, PublishDate, Rating, Duration };
+
+    public enum EntityType { Movie, Celebrity };
+
     class Config
     {
         public static readonly string data_path = @"D:\MovieDomain\QueryAnswer\resource\";

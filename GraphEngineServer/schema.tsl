@@ -62,7 +62,8 @@ cell struct Celebrity
     List<CellId> Act;
 	[GraphEdge]
     List<CellId> Direct;
-	
+
 	// indicate this cell type
 	string TheType;
 }
+

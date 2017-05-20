@@ -15,8 +15,6 @@ namespace QueryAnswer
         public PublishDateType(int from, int to) { }
     }
 
-    enum ParseStatus { All, Movie, Artist, Director, Country, Genre, PublishDate, Rating, Duration };
-
     class MovieEntity : IEquatable<MovieEntity>, IComparable<MovieEntity>
     {
         public MovieEntity(SnappsEntity item)
