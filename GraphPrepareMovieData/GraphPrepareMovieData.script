@@ -47,13 +47,15 @@ rs0 =
     ;
 
 #DECLARE path_root string = @"/my/MovieDomain/GraphPrepareMovieData/";
-#DECLARE output_robustmoviefilename string = @path_root + @TimeNow + @"robustmovie_name.csv";
-#DECLARE output_junkmoviefilename string = @path_root + @TimeNow + @"junkmovie_name.csv";
+#DECLARE copy_data string = @path_root + @"Entity.ss";
 
-OUTPUT rs0 TO SSTREAM @"/my/MovieDomain/GraphPrepareMovieData/Entity.ss" 
+OUTPUT rs0 TO SSTREAM @copy_data
     CLUSTERED BY Name 
     SORTED BY Name
     ;
+
+#DECLARE output_robustmoviefilename string = @path_root + @TimeNow + @"robustmovie_name.csv";
+#DECLARE output_junkmoviefilename string = @path_root + @TimeNow + @"junkmovie_name.csv";
 
 // after read data, we split movie into robust movie and junk movie 
 robust_movie =

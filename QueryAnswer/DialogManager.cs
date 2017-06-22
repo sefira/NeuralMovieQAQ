@@ -312,8 +312,8 @@ namespace QueryAnswer
         public void TestDialogFlow(string query_str)
         {
             // begin
-            Parser parser = new Parser();
-            Session session = new Session();
+            //Parser parser = new Parser();
+            //Session session = new Session();
             session.parse_status = ParseStatus.All;
 
             while (true)
@@ -577,7 +577,7 @@ namespace QueryAnswer
             {
                 foreach (string name in duplicate_name)
                 {
-                    List<string> osearch_query = OsearchQueryGenerator.GenerateSingleArtDirQuery(name);
+                    List<string> osearch_query = oSearchQueryGenerator.GenerateSingleArtDirQuery(name);
                     var as_an_art = oSearchClient.Query(osearch_query[0]);
                     var as_a_dir = oSearchClient.Query(osearch_query[1]);
                     bool is_an_art = (as_an_art.Count() > as_a_dir.Count()) ? true : false;
@@ -722,7 +722,7 @@ namespace QueryAnswer
             // if considerd movie name, then it is no necessary to conside the others
             if (session.is_considerd[ParseStatus.Movie])
             {
-                string movie_query = string.Format("({0})", OsearchQueryGenerator.GenerateMovieNameQuery(session));
+                string movie_query = string.Format("({0})", oSearchQueryGenerator.GenerateMovieNameQuery(session));
                 return movie_query;
             }
 
@@ -730,37 +730,37 @@ namespace QueryAnswer
             List<string> osearch_query_list = new List<string>();
             if (session.is_considerd[ParseStatus.Artist])
             {
-                string artist_query = string.Format("({0})", OsearchQueryGenerator.GenerateTypeQuery(session, "artist"));
+                string artist_query = string.Format("({0})", oSearchQueryGenerator.GenerateTypeQuery(session, "artist"));
                 osearch_query_list.Add(artist_query);
             }
             if (session.is_considerd[ParseStatus.Director])
             {
-                string director_query = string.Format("({0})", OsearchQueryGenerator.GenerateTypeQuery(session, "director"));
+                string director_query = string.Format("({0})", oSearchQueryGenerator.GenerateTypeQuery(session, "director"));
                 osearch_query_list.Add(director_query);
             }
             if (session.is_considerd[ParseStatus.Country])
             {
-                string country_query = string.Format("({0})", OsearchQueryGenerator.GenerateTypeQuery(session, "country"));
+                string country_query = string.Format("({0})", oSearchQueryGenerator.GenerateTypeQuery(session, "country"));
                 osearch_query_list.Add(country_query);
             }
             if (session.is_considerd[ParseStatus.Genre])
             {
-                string genre_query = string.Format("({0})", OsearchQueryGenerator.GenerateTypeQuery(session, "genre"));
+                string genre_query = string.Format("({0})", oSearchQueryGenerator.GenerateTypeQuery(session, "genre"));
                 osearch_query_list.Add(genre_query);
             }
             if (session.is_considerd[ParseStatus.PublishDate])
             {
-                string publishdate_query = string.Format("({0})", OsearchQueryGenerator.GeneratePublishDateQuery(session));
+                string publishdate_query = string.Format("({0})", oSearchQueryGenerator.GeneratePublishDateQuery(session));
                 osearch_query_list.Add(publishdate_query);
             }
             if (session.is_considerd[ParseStatus.Rating])
             {
-                string rating_query = string.Format("({0})", OsearchQueryGenerator.GenerateRatingQuery(session));
+                string rating_query = string.Format("({0})", oSearchQueryGenerator.GenerateRatingQuery(session));
                 osearch_query_list.Add(rating_query);
             }
             if (session.is_considerd[ParseStatus.Duration])
             {
-                string duration_query = string.Format("({0})", OsearchQueryGenerator.GenerateDurationQuery(session));
+                string duration_query = string.Format("({0})", oSearchQueryGenerator.GenerateDurationQuery(session));
                 osearch_query_list.Add(duration_query);
             }
             string[] osearch_query_arr = osearch_query_list.ToArray();

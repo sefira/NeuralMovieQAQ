@@ -39,9 +39,10 @@ namespace GraphEngineServer
             {
                 Console.WriteLine("=============================Movie had been imported once. Skipping this turn.");
             }
-            TestMovieData(@"D:\MovieDomain\GraphEngineServer\bin\Debug\");
+            //TestMovieData(@"D:\MovieDomain\GraphEngineServer\bin\Debug\");
 
-            ImportToyData();
+            //ImportToyData();
+            //PrepareSeedEntity();
         }
 
         private static IEnumerable<long> Indexer(object matchobject, string typestring)
@@ -88,18 +89,18 @@ namespace GraphEngineServer
                     //}
                 }
             }
-            Console.WriteLine("====== test multi hop ========");
-            var desc = StartFrom(name_ids[0], new[] { "Name" }).FollowEdge("Act").VisitNode(Action.Continue, new[] { "Name" }).FollowEdge("Directors").VisitNode(Action.Return, new[] { "Name" });
-            foreach (var res in desc)
-            {
-                Console.WriteLine(res);
-            }
-            Console.WriteLine("========== test lambda ===========");
-            desc = StartFrom(name_ids[0], new[] { "Name" }).FollowEdge("Act").VisitNode(v => v.continue_if(v.GetField<string>("Name").Contains("无间道")), new[] { "Name" }).FollowEdge("Directors").VisitNode(Action.Return, new[] { "Name" }); ;
-            foreach (var res in desc)
-            {
-                Console.WriteLine(res);
-            }
+            //Console.WriteLine("====== test multi hop ========");
+            //var desc = StartFrom(name_ids[0], new[] { "Name" }).FollowEdge("Act").VisitNode(Action.Continue, new[] { "Name" }).FollowEdge("Directors").VisitNode(Action.Return, new[] { "Name" });
+            //foreach (var res in desc)
+            //{
+            //    Console.WriteLine(res);
+            //}
+            //Console.WriteLine("========== test lambda ===========");
+            //var desc = StartFrom(name_ids[0], new[] { "Name" }).FollowEdge("Act").VisitNode(v => v.continue_if(v.GetField<string>("Name").Contains("无间道")), new[] { "Name" }).FollowEdge("Directors").VisitNode(Action.Return, new[] { "Name" }); ;
+            //foreach (var res in desc)
+            //{
+            //    Console.WriteLine(res);
+            //}
             Console.WriteLine("======= test Accessor_Selector ========");
             var result = from node in Global.LocalStorage.Movie_Accessor_Selector()
                          where node.PublishDate > 20000101 && node.Rating > 93
@@ -123,6 +124,25 @@ namespace GraphEngineServer
             {
                 Console.WriteLine(path);
             }
+        }
+
+        private static void PrepareSeedEntity()
+        {
+            Trinity.Global.LocalStorage.LoadStorage();
+            DataImport cellid_container = new DataImport();
+            int i = 0;
+            foreach (var cellid in cellid_container.celebrity_cellid)
+            {
+                using (var person = Global.LocalStorage.UseCelebrity(cellid.Value))
+                {
+                    if (person.Act.Count > 8 || person.Direct.Count > 4)
+                    {
+                        Console.WriteLine(person.Name);
+                        i++;
+                    }
+                }
+            }
+            Console.WriteLine(i);
         }
     }
 }

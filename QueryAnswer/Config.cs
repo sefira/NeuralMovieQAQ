@@ -12,7 +12,7 @@ namespace QueryAnswer
 
     class Config
     {
-        public static readonly string data_path = @"D:\MovieDomain\QueryAnswer\resource\";
+        public static readonly string data_path = @"D:\MovieDomain\QueryAnswer\Resources\";
         public static readonly string movie_filename = @"movie_name.csv";
         public static readonly string artist_filename = @"artist_name.csv";
         public static readonly string director_filename = @"director_name.csv";

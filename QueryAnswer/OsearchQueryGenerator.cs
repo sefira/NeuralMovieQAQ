@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace QueryAnswer
 {
-    class OsearchQueryGenerator
+    class oSearchQueryGenerator
     {
         public static Dictionary<string, string> type_osearchIndex = new Dictionary<string, string>()
         {

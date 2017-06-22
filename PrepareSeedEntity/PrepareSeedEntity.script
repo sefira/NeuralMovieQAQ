@@ -1,0 +1,178 @@
+﻿//Script GUID:38aaf275-e4ad-433a-be4e-05337c6e2eb3
+//Used for tracking history
+
+#DECLARE TimeNow string = DateTime.Now.ToString("yyyy-MM-dd-HH-mm");
+#DECLARE filename string = @"/my/MovieDomain/Entity.ss";
+RESOURCE @"/my/MovieDomain/PrepareSeedEntity/SplitChar.txt";
+RESOURCE @"/my/MovieDomain/PrepareSeedEntity/artist_director_noise.csv";
+
+rs0 = SSTREAM @filename;
+
+rs0 =
+    SELECT 
+        Key,
+        KGId,
+        Generes AS Genres,                  //Moive Type
+        Artists,                            //Actors
+        Directors,                          //Directors
+        Characters,
+        Performance,                        //Actors with order
+        Distributors,
+        Channels,
+        Albums,
+        Name,                               //Movie Name
+        Alias,
+        Description,
+        Segments,
+        Categories,
+        IntEmbeddedFilters,
+        Popularity AS NumberOfWantToWatch,  //Number of People Who Want to watch
+        Rating AS Rating,                   //The Rating
+        RatingCount AS NumberOfShortReview, //Number of Short Review
+        ReviewCount,
+        VisitCount AS NumberOfWatched,      //Number of People Who Watched
+        Rank AS NumberOfReviewer,           //Number of Reviewer for the Rating
+        PublishDate,                        //Publish Date
+        Length,                             //How Long is the Movie
+        Geographies AS Country,             //Country
+        Filter AS Language,                 //Language
+        SourceUrls,
+        ImageUrls,
+        OfficialSite,
+        EntityContainer,
+        Logo,
+        QueryRank
+    FROM 
+        rs0
+    HAVING
+        !string.IsNullOrEmpty(NumberOfWatched) &&
+        !string.IsNullOrEmpty(NumberOfReviewer) &&
+        Int32.Parse(Rating) > 0 &&
+        Int32.Parse(NumberOfReviewer) > 0
+    ;
+
+#DECLARE path_root string = @"/my/MovieDomain/PrepareSeedEntity/";
+#DECLARE copy_data string = @path_root + @"Entity.ss";
+
+OUTPUT rs0 TO SSTREAM @copy_data
+    CLUSTERED BY Name 
+    SORTED BY Name
+    ;
+
+#DECLARE output_moviefilename string = @path_root + @TimeNow + @"movie_name.csv";
+#DECLARE output_artistfilename string = @path_root + @TimeNow + @"artist_name.csv";
+#DECLARE output_directorfilename string = @path_root + @TimeNow + @"director_name.csv";
+
+// after read data, we only keep seed movie which meet following conditions:
+// 1. NumberOfReviewer > 10000
+robust_movie =
+    PROCESS rs0
+    USING ExceptJunkMovieProcessor
+    ;
+////////////////////////////////////
+// extract movie name
+////////////////////////////////////
+movie_name =
+    SELECT
+        SplitMovieName AS Name,
+        NumberOfReviewer
+    FROM
+        robust_movie
+    CROSS APPLY
+        Name.Split('|') AS SplitMovieName
+    ;
+
+// replace all symbol with spaces, and split the name into several names
+movie_name =
+    PROCESS movie_name
+    USING MovieNameProcessor
+    ;
+
+// combine all movies which have the same name, meanwhile count 
+movie_name =
+    SELECT 
+        Name,
+        SUM(Int32.Parse(NumberOfReviewer)) AS NumberOfReviewer
+    FROM 
+        movie_name
+    ORDER BY NumberOfReviewer ASC
+    ;
+    
+OUTPUT movie_name
+    TO @output_moviefilename
+    USING DefaultTextOutputter()
+    ;
+
+////////////////////////////////////
+// extract artist name 
+////////////////////////////////////
+artist_name =
+    SELECT 
+        SplitArtists AS Artists
+    FROM 
+        robust_movie
+    CROSS APPLY
+        Artists.Split('|') AS SplitArtists
+    WHERE
+        Country.Contains("中国") || Country.Contains("香港") || Country.Contains("台湾")
+    ;
+
+// replace all symbol with spaces, and split the name into several names
+artist_name =
+    PROCESS artist_name
+    USING ArtistNameProcessor
+    ;
+
+// combine all artists which have the same name, meanwhile count 
+artist_name =
+    SELECT 
+        Artists,
+        COUNT() AS ArtistAppeareTimes
+    FROM 
+        artist_name
+    GROUP BY 
+        Artists
+    ORDER BY ArtistAppeareTimes ASC
+    ;
+    
+OUTPUT artist_name
+    TO @output_artistfilename
+    USING DefaultTextOutputter()
+    ;
+
+////////////////////////////////////
+// extract director name 
+////////////////////////////////////
+director_name =
+    SELECT 
+        SplitDirectors AS Directors
+    FROM 
+        robust_movie
+    CROSS APPLY
+        Directors.Split('|') AS SplitDirectors
+    WHERE
+        Country.Contains("中国") || Country.Contains("香港") || Country.Contains("台湾")
+    ;
+
+// replace all symbol with spaces, and split the name into several names
+director_name =
+    PROCESS director_name
+    USING DirectorNameProcessor
+    ;
+
+// combine all artists which have the same name, meanwhile count 
+director_name =
+    SELECT 
+        Directors,
+        COUNT() AS DirectorAppeareTimes
+    FROM 
+        director_name
+    GROUP BY 
+        Directors
+    ORDER BY DirectorAppeareTimes ASC
+    ;
+    
+OUTPUT director_name
+    TO @output_directorfilename
+    USING DefaultTextOutputter()
+    ;

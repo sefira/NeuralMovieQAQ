@@ -5,6 +5,8 @@ using FanoutSearch;
 using FanoutSearch.LIKQ;
 using static FanoutSearch.LIKQ.KnowledgeGraph;
 using Action = FanoutSearch.Action;
+using Trinity;
+using FanoutSearch.Protocols.TSL;
 
 namespace QueryAnswer
 {
@@ -16,13 +18,13 @@ namespace QueryAnswer
             // test
             //TestParser();
             //TestoSearchAPI();
-            //TestQueryFile(@"D:\MovieDomain\QueryAnswer\resource\userquery.txt");
+            //TestQueryFile(@"D:\MovieDomain\QueryAnswer\Resources\userquery.txt");
             //TestTranstionStatus();
-            TestSessionFile(@"D:\MovieDomain\QueryAnswer\resource\usersession.txt");
+            TestSessionFile(@"D:\MovieDomain\QueryAnswer\Resources\usersession.txt");
             //TestSession();
 
             //TestLIKQClient();
-            //TestPatternBased(@"D:\MovieDomain\QueryAnswer\resource\QA_pattern_qa.txt", @"D:\MovieDomain\QueryAnswer\resource\QA_pattern_output.txt");
+            //TestPatternBased(@"D:\MovieDomain\QueryAnswer\Resources\QA_pattern_qa.txt", @"D:\MovieDomain\QueryAnswer\Resources\QA_pattern_output.txt");
             //TestGraphEngineQuery();
             //TestGraphEngineQA();
         }
@@ -30,9 +32,10 @@ namespace QueryAnswer
         #region test jieba
         private static void TestParser()
         {
-            string query_str = @"上世纪香港的刘德华出演了张艺谋和冯小刚2001年的天下无贼一部喜剧片";
+            //string query_str = @"上世纪香港的刘德华出演了张艺谋和冯小刚2001年的天下无贼一部喜剧片";
             //string query_str = @"我想看周星驰的电影";
-            //string query_str = @"我想看成龙的电影";
+            //string query_str = @"我想看洛克";
+            string query_str = @"我想看洛克王国2";
             Query query = new Query(query_str);
             Parser m_Parser = new Parser();
             m_Parser.PosTagging(ref query);

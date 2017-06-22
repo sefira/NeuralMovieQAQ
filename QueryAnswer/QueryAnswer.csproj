@@ -123,7 +123,7 @@
     <Compile Include="chinaopalsearch_types.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="GraphEngineQuery.cs" />
-    <Compile Include="OsearchQueryGenerator.cs" />
+    <Compile Include="oSearchQueryGenerator.cs" />
     <Compile Include="DialogManager.cs" />
     <Compile Include="ExpressionSerializer.cs" />
     <Compile Include="oSearchClient.cs" />
@@ -137,11 +137,11 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-    <None Include="resource\artist_name.csv" />
-    <None Include="resource\country_name.csv" />
-    <None Include="resource\director_name.csv" />
-    <None Include="resource\genre_name.csv" />
-    <None Include="resource\movie_name.csv" />
+    <None Include="Resources\artist_name.csv" />
+    <None Include="Resources\country_name.csv" />
+    <None Include="Resources\director_name.csv" />
+    <None Include="Resources\genre_name.csv" />
+    <None Include="Resources\movie_name.csv" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
@@ -156,9 +156,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="resource\userdict.txt" />
-    <Content Include="resource\userquery.txt" />
-    <Content Include="resource\usersession.txt" />
+    <Content Include="Resources\userdict.txt" />
+    <Content Include="Resources\userquery.txt" />
+    <Content Include="Resources\usersession.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

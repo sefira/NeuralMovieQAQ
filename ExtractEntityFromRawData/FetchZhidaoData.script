@@ -1,0 +1,20 @@
+﻿//Script GUID:cd86aac6-42f9-4327-ab29-5e641715877d
+//Used for tracking history
+
+#DECLARE filename string = @"users/t-ruma/parsertest/08_zhidaoConversation.wsv";
+rs0 = 
+    EXTRACT 
+        URL: string,
+        HTML: string,
+        Mkt: string,
+        CodePage: string,
+        Question: string,
+        Answer: string
+    FROM
+        @filename
+    USING DefaultTextExtractor();
+
+OUTPUT rs0 TO SSTREAM @"/my/MovieDomain/08_zhidaoConversation.ss"
+    CLUSTERED BY URL 
+    SORTED BY URL;
+;
