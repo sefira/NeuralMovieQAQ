@@ -68,6 +68,7 @@ namespace GraphEngineServer
             MovieEntityImport movie_entity_import = new MovieEntityImport(path);
             List<long> name_ids = new List<long>();
             name_ids.Add(movie_entity_import.celebrity_cellid["刘德华"]);
+            name_ids.Add(movie_entity_import.celebrity_cellid["林家栋"]);
             //List<long> name_ids = Index.Person_Name_SubstringQuery("刘德华");
             //Console.WriteLine(name_ids.Count);
 
@@ -101,14 +102,14 @@ namespace GraphEngineServer
             //{
             //    Console.WriteLine(res);
             //}
-            Console.WriteLine("======= test Accessor_Selector ========");
-            var result = from node in Global.LocalStorage.Movie_Accessor_Selector()
-                         where node.PublishDate > 20000101 && node.Rating > 93
-                         select node.Name;
-            foreach (var res in result)
-            {
-                Console.WriteLine(res);
-            }
+            //Console.WriteLine("======= test Accessor_Selector ========");
+            //var result = from node in Global.LocalStorage.Movie_Accessor_Selector()
+            //             where node.PublishDate > 20000101 && node.Rating > 93
+            //             select node.Name;
+            //foreach (var res in result)
+            //{
+            //    Console.WriteLine(res);
+            //}
         }
 
         private static void ImportToyData()

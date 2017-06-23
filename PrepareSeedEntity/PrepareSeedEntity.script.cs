@@ -34,7 +34,7 @@ public class ExceptJunkMovieProcessor : Processor
         foreach (Row input_row in input_rowset.Rows)
         {
             if (!string.IsNullOrEmpty(input_row["NumberOfReviewer"].String) && 
-                Int32.Parse(input_row["NumberOfReviewer"].String) > 1000
+                Int32.Parse(input_row["NumberOfReviewer"].String) > 10000
                 )
             {
                 input_row.CopyTo(output_row);
@@ -155,7 +155,7 @@ public class MovieNameProcessor : Processor
             string input_string = input_row["Name"].String;
             string[] input_split = input_string.Split(name_filter.SplitChars, StringSplitOptions.RemoveEmptyEntries);
             List<string> input_splited = new List<string>(input_split);
-            //input_splited.Add(input_string);
+            input_splited.Add(input_string);
             foreach (string item in input_splited)
             {
                 string name = item.Trim();
