@@ -23,8 +23,8 @@ namespace MovieDialog
         public Dictionary<string, long> celebrity_cellid = new Dictionary<string, long>();
         public Dictionary<string, long> movie_cellid = new Dictionary<string, long>();
 
-        RestClient client = new RestClient("http://localhost:80/LIKQ/JsonQuery/");
-
+        RestClient client = new RestClient(Config.rest_client_address);
+        
         public GraphEngineQuery()
         {
             string line = "";
@@ -83,16 +83,24 @@ namespace MovieDialog
                 from_cellid = movie_cellid[from_which];
             }
 
-            // query path according to hop_num
-            switch (hop_num)
+            try
             {
-                case 0:
-                    string property = edge;
-                    ret = QueryZeroHopData(from_cellid, property, hop_num);
-                    break;
-                case 1:
-                    ret = QueryOneHopData(from_cellid, edge, hop_num);
-                    break;
+                // query path according to hop_num
+                switch (hop_num)
+                {
+                    case 0:
+                        string property = edge;
+                        ret = QueryZeroHopData(from_cellid, property, hop_num);
+                        break;
+                    case 1:
+                        ret = QueryOneHopData(from_cellid, edge, hop_num);
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Exception caught: {e}");
+                Utils.WriteError("Graph Engine Server hasn't been started!");
             }
 
             return ret;

@@ -20,8 +20,8 @@ namespace MovieDialog
             //TestoSearchAPI();
             //TestQueryFile(@"D:\MovieDomain\MovieDialog\Resources\userquery.txt");
             //TestTranstionStatus();
-            TestSessionFile(@"D:\MovieDomain\MovieDialog\Resources\usersession.txt");
-            //TestSession();
+            //TestSessionFile(@"D:\MovieDomain\MovieDialog\Resources\usersession.txt");
+            TestSession();
 
             //TestLIKQClient();
             //TestPatternBased(@"D:\MovieDomain\MovieDialog\Resources\QA_pattern_qa.txt", @"D:\MovieDomain\MovieDialog\Resources\QA_pattern_output.txt");
@@ -201,6 +201,7 @@ namespace MovieDialog
             //string question = "赌神是讲什么的";
             string question = "天下无贼是谁导演的";
             //string question = "林家栋拍过什么电影";  //拍 act？ direct？
+            //string question = "西游伏妖篇是谁导演的";
             Parser parser = new Parser();
             GraphEngineQuery graphengine_query = new GraphEngineQuery();
             PatternBased pattern_qa = new PatternBased();

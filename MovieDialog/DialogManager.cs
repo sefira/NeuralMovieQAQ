@@ -35,7 +35,7 @@ namespace MovieDialog
             /* director */{ 0.0,   0.3,    0.0,    0.0,         0.4,    0.3},
             /* country */ { 0.0,   0.3,    0.3,    0.0,         0.2,    0.2},
             /* genre */   { 0.0,   0.4,    0.3,    0.2,         0.0,    0.1},
-            /* publish */ { 0.0,   0.2,    0.1,    0.3,         0.4,    0.0}
+            /* publish */ { 0.0,   0.2,    0.1,    0.3,         0.5,    0.0}
         };
 
         private double[,] bk = new double[15, 5]

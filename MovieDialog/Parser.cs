@@ -146,8 +146,8 @@ namespace MovieDialog
             "就(他|它|她)",
             "好啊",
             "可以",
-            "行",
-            "好",
+            "^行(.){0,2}",
+            "^好(.){0,2}",
             "<nmovie>(吧|可以|行|不错)"
         });
         private static readonly List<Regex> accept_candidate_pattern = new List<Regex>();
