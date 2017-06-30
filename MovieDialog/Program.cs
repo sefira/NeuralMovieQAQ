@@ -21,10 +21,11 @@ namespace MovieDialog
             //TestQueryFile(@"D:\MovieDomain\MovieDialog\Resources\userquery.txt");
             //TestTranstionStatus();
             //TestSessionFile(@"D:\MovieDomain\MovieDialog\Resources\usersession.txt");
-            TestSession();
+            //TestSession();
 
             //TestLIKQClient();
             //TestPatternBased(@"D:\MovieDomain\MovieDialog\Resources\QA_pattern_qa.txt", @"D:\MovieDomain\MovieDialog\Resources\QA_pattern_output.txt");
+            TestCNNBased(@"D:\MovieDomain\MovieDialog\Resources\QA_pattern_qa.txt", @"D:\MovieDomain\MovieDialog\Resources\QA_pattern_output.txt");
             //TestGraphEngineQuery();
             //TestGraphEngineQA();
         }
@@ -116,7 +117,7 @@ namespace MovieDialog
         }
         #endregion
 
-        #region test pattern parse
+        #region test QA parse
         private static void TestPatternBased(string question_filename, string output_filename)
         {
             StreamReader sr = new StreamReader(question_filename);
@@ -131,6 +132,34 @@ namespace MovieDialog
                 Query query = new Query(question);
                 parse.PosTagging(ref query);
                 if (pb.QuestionClassify(query, out pr))
+                {
+                    sw.Write(question);
+                    sw.Write('\t');
+                    sw.WriteLine(pr.property);
+                }
+                else
+                {
+                    sw.WriteLine(question);
+                }
+            }
+            sw.Flush();
+            sw.Close();
+        }
+
+        private static void TestCNNBased(string question_filename, string output_filename)
+        {
+            StreamReader sr = new StreamReader(question_filename);
+            CNNBased cb = new CNNBased();
+            StreamWriter sw = new StreamWriter(output_filename);
+            Parser parse = new Parser();
+            while (!sr.EndOfStream)
+            {
+                PatternResponse pr = new PatternResponse();
+                string line = sr.ReadLine();
+                string question = line.Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries)[0];
+                Query query = new Query(question);
+                parse.PosTagging(ref query);
+                if (cb.QuestionClassify(query, out pr))
                 {
                     sw.Write(question);
                     sw.Write('\t');

@@ -32,7 +32,8 @@ namespace MovieDialog
         public static readonly string celebrity_cellid_dict_filename = @"data\celebrity_cellid.dict";
         public static readonly string movie_cellid_dict_filename = @"data\movie_cellid.dict";
 
-        public static readonly string rest_client_address = @"http://10.172.70.15:80/LIKQ/JsonQuery/";
+        public static readonly string graphengine_endpoint = @"http://10.172.70.15:80/LIKQ/JsonQuery/";
+        public static readonly string cnnbased_classifier_endpoint = @"http://10.139.139.99:9005/query?q=";
     }
     class Entity
     {

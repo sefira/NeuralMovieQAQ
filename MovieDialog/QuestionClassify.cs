@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace MovieDialog
 
         // Can parse from line with format: EntityType \t Property type with constraint \t #hop in knowledge graph \t Pattern RegEx
         // Return a Pattern class 
-        // Can be used as a Constructor
+        // Can be used as a Constructor 
         public static Pattern FromLine(string line)
         {
             if (string.IsNullOrEmpty(line))
@@ -98,7 +99,7 @@ namespace MovieDialog
             }
         }
 
-        // classify a qurry based on pattern
+        // classify a query based on pattern
         public bool QuestionClassify(Query query, out PatternResponse pattern_response)
         {
             pattern_response = new PatternResponse();
@@ -114,6 +115,73 @@ namespace MovieDialog
                 }
             }
             return false;
+        }
+    }
+
+    class CNNBased
+    {
+        private Dictionary<int, Pattern> class2pattern = new Dictionary<int, Pattern>()
+        {
+            {0, new Pattern("Negative", "Negative", 0, null)},
+            {1, new Pattern("Movie", "Artists:Name", 1, null)},
+            {2, new Pattern("Movie", "Directors:Name", 1, null)},
+            {3, new Pattern("Movie", "PublishDate", 0, null)},
+            {4, new Pattern("Movie", "Genres", 0, null)},
+            {5, new Pattern("Movie", "Country", 0, null)},
+            {6, new Pattern("Celebrity", "Act:Name", 1, null)},
+            {7, new Pattern("Celebrity", "Direct:Name", 1, null)}
+        };
+
+        // classify a query based on CNN
+        public bool QuestionClassify(Query query, out PatternResponse pattern_response)
+        {
+            pattern_response = new PatternResponse();
+            string postagged_query = query.postagged_query;
+            int tf_class = GetTensorFlowServingResponse(postagged_query);
+            if (tf_class != -1)
+            {
+                pattern_response = new PatternResponse(query, class2pattern[tf_class]);
+                return true;
+            }
+            return false;
+        }
+
+        public static int GetTensorFlowServingResponse(string query)
+        {
+            string query_url = Config.cnnbased_classifier_endpoint + query;
+            string result = GetResponse(query_url);
+            return int.Parse(result);
+        }
+
+        public static string GetResponse(string url)
+        {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+            string data = "";
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                Stream receiveStream = response.GetResponseStream();
+                StreamReader readStream = null;
+
+                if (response.CharacterSet == null)
+                {
+                    readStream = new StreamReader(receiveStream);
+                }
+                else
+                {
+                    readStream = new StreamReader(receiveStream, Encoding.GetEncoding(response.CharacterSet), true);
+                }
+
+                data = readStream.ReadToEnd();
+
+                response.Close();
+                readStream.Close();
+            }
+            else
+            {
+                Console.WriteLine($"Cannot fetch the HTML of {url}");
+            }
+            return data;
         }
     }
 }

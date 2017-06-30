@@ -259,13 +259,13 @@ namespace MovieDialog
                     bool is_artist = false;
                     bool is_director = false;
                     // discriminate artist and director by Contains
-                    // 李连杰can discri 宫崎骏can discri 张艺谋can't discri 王宝强can't discri
+                    // 李连杰can discrim 宫崎骏can discrim 张艺谋can't discrim 王宝强can't discrim
                     is_artist = EntitySegmenter.Artist.Contains(item.Word);
                     is_director = EntitySegmenter.Director.Contains(item.Word);
                     if (!(is_artist ^ is_director))
                     {
                         // discriminate artist and director by Regex
-                        // 张艺谋演\导的can discri 张艺谋的can't discri
+                        // 张艺谋演\导的can discrim 张艺谋的can't discrim
                         foreach (Regex pattern in artist_pattern)
                         {
                             if (pattern.IsMatch(query.raw_query))

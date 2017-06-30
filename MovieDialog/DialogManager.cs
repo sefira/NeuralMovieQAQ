@@ -95,6 +95,7 @@ namespace MovieDialog
         Parser parser = new Parser();
         Session session = new Session();
         PatternBased pattern_qa = new PatternBased();
+        CNNBased cnn_qa = new CNNBased();
         GraphEngineQuery graphengine_query = new GraphEngineQuery();
 
 
@@ -376,7 +377,7 @@ namespace MovieDialog
         {
             parser.ParseAllTag(ref query);
             PatternResponse pattern_response;
-            if (pattern_qa.QuestionClassify(query, out pattern_response))
+            if (pattern_qa.QuestionClassify(query, out pattern_response) || cnn_qa.QuestionClassify(query, out pattern_response))
             {
                 string question_topic = "";
                 switch(pattern_response.entity_type)

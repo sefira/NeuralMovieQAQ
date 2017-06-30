@@ -23,7 +23,7 @@ namespace MovieDialog
         public Dictionary<string, long> celebrity_cellid = new Dictionary<string, long>();
         public Dictionary<string, long> movie_cellid = new Dictionary<string, long>();
 
-        RestClient client = new RestClient(Config.rest_client_address);
+        RestClient client = new RestClient(Config.graphengine_endpoint);
         
         public GraphEngineQuery()
         {
