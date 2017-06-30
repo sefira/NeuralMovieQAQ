@@ -250,6 +250,7 @@ namespace MovieDialog
 
                 // refresh session status using user query
                 session.RefreshSessionStatus(query);
+                ClarifyArtistDirector();
 
                 // refresh session movie candidate status 
                 GetAllResult(ref session);
@@ -319,6 +320,7 @@ namespace MovieDialog
 
         private void ConfirmSession()
         {
+            Console.WriteLine("Going to Confirm Session");
             Utils.WriteMachine("我知道你想看什么啦");
             bool jump_show_candidate_dueto_kbqa = false;
             int offset = 0;
@@ -379,32 +381,102 @@ namespace MovieDialog
             PatternResponse pattern_response;
             if (pattern_qa.QuestionClassify(query, out pattern_response) || cnn_qa.QuestionClassify(query, out pattern_response))
             {
+                Console.WriteLine("Start to KBQA");
                 string question_topic = "";
-                switch(pattern_response.entity_type)
+                try
                 {
-                    case EntityType.Movie:
-                        question_topic = query.carried_movie[0];
-                        break;
-                    case EntityType.Celebrity:
-                        question_topic = (query.carried_artist.Count > 0)? query.carried_artist[0] : query.carried_director[0];
-                        break;
+                    switch (pattern_response.entity_type)
+                    {
+                        case EntityType.Movie:
+                            question_topic = query.carried_movie[0];
+                            break;
+                        case EntityType.Celebrity:
+                            question_topic = (query.carried_artist.Count > 0) ? query.carried_artist[0] : query.carried_director[0];
+                            break;
+                    }
+                    List<object> res = graphengine_query.GetGraphEngineData(question_topic, pattern_response.property, pattern_response.hop_num);
+                    string answer = string.Join(",", res.ToArray());
+                    if (answer.Length < 2)
+                    {
+                        Utils.WriteResult("数据库中没有相关的答案...");
+                    }
+                    else
+                    {
+                        Utils.WriteResult(answer);
+                    }
+                    return true;
                 }
-                List<object> res = graphengine_query.GetGraphEngineData(question_topic, pattern_response.property, pattern_response.hop_num);
-                string answer = string.Join(",", res.ToArray());
-                if (answer.Length < 2)
+                catch (Exception e)
                 {
-                    Utils.WriteResult("数据库中没有相关的答案...");
-                }else
-                {
-                    Utils.WriteResult(answer);
+                    Utils.WriteError("It seems Neural Network makes a mistake");
+                    return false;
                 }
-                return true;
             }
             else
             {
                 return false;
             }
         }
+
+        private void ClarifyArtistDirector()
+        {
+            List<string> duplicate_name = new List<string>();
+            foreach (string art in session.carried_artist)
+            {
+                foreach (string dir in session.carried_director)
+                {
+                    if (art.Equals(dir))
+                    {
+                        duplicate_name.Add(art);
+                    }
+                }
+            }
+            if (duplicate_name.Count != 0)
+            {
+                Console.WriteLine("Start to Clarify Artist Director");
+                foreach (string name in duplicate_name)
+                {
+                    Utils.WriteMachine($"QAQ有一点儿疑惑...，因为 {name} 既是演员也是导演呢...");
+                    while (true)
+                    {
+                        Utils.WriteMachine("你想看他拍的还是他演的呢?");
+                        string query_str = Console.ReadLine();
+                        Query query = new Query(query_str);
+                        parser.PosTagging(ref query);
+                        parser.ParseAllTag(ref query);
+                        int is_artist_director = parser.isArtistOrDirector(query);
+                        if (is_artist_director != -1)
+                        {
+                            if (is_artist_director == 1)
+                            {
+                                session.carried_director.Remove(name);
+                            }
+                            else
+                            {
+                                if (is_artist_director == 2)
+                                {
+                                    session.carried_artist.Remove(name);
+                                }
+                            }
+                            if (session.carried_artist.Count == 0)
+                            {
+                                session.is_considerd[ParseStatus.Artist] = false;
+                            }
+                            if (session.carried_director.Count == 0)
+                            {
+                                session.is_considerd[ParseStatus.Director] = false;
+                            }
+                            break;
+                        }
+                        if (KBQA(query))
+                        {
+                            continue;
+                        }
+                    }
+                }
+            }
+        }
+
         private ParseStatus MakeClearParseStatus(Session session)
         {
             int start = (int)ParseStatus.Artist;
@@ -442,6 +514,7 @@ namespace MovieDialog
 
             // refresh session status using user query
             session.RefreshSessionStatus(query);
+            ClarifyArtistDirector();
 
             // refresh session movie candidate status 
             GetAllResult(ref session);

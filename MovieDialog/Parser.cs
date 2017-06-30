@@ -138,26 +138,41 @@ namespace MovieDialog
         private static HashSet<string> intent_word_tag;
         private static HashSet<string> must_word_tag;
 
+        // for isArtistOrDirector
+        // int -1 for null, int 1 for artist, int 2 for director
+        private static readonly List<Tuple<int, string>> _artist_director_pattern = new List<Tuple<int, string>>(new Tuple<int, string>[] {
+            new Tuple<int, string>(2,"(是)?(他|她)?(导|导演|拍|拍摄)(的)?(啦)?"),
+            new Tuple<int, string>(1,"(是)?(他|她)?(主|扮)?演(的)?(啦)?"),
+        });
+        private static readonly List<Tuple<int, Regex>> artist_director_pattern = new List<Tuple<int, Regex>>();
+
         // for end dialog
         private static readonly List<string> _accept_candidate_pattern = new List<string>(new string[] {
             "(那)?(就)?第(一|二|三|四|五|六|七|八|九|[1-9])(部|个)(吧)?",
+            "(那)?就<nmovie>(吧)?",
             "(那)?就这样(吧)?",
             "(那)?就这(一)?部(吧)?",
             "就(他|它|她)",
             "好啊",
             "可以",
+            "谢谢|谢啦|thank|Thank",
             "^行(.){0,2}",
             "^好(.){0,2}",
-            "<nmovie>(吧|可以|行|不错)"
+            "<nmovie>(吧|可以|行|不错)",
+            "我想看<nmovie>",
+            "(看|听)(上去)?(可以|还行|不错)",
+            "(这部|这个|这)(吧|可以|行|不错)"
         });
         private static readonly List<Regex> accept_candidate_pattern = new List<Regex>();
 
         private static readonly List<string> _deny_candidate_pattern = new List<string>(new string[] {
-            "不",
-            "换"
+            "不(.){0,2}",
+            "换(.){0,3}",
+            "换(一)(部|批|波|下)?"
         });
         private static readonly List<Regex> deny_candidate_pattern = new List<Regex>();
 
+        private static readonly double confidence_ratio = 0.52;
 
         public Parser()
         {
@@ -179,7 +194,7 @@ namespace MovieDialog
             tmp = _date.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             date_tag = new HashSet<string>(tmp);
 
-            // for Rating 
+            // for Rating
             tmp = _high_rating.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             high_rating_tag = new HashSet<string>(tmp);
             tmp = _low_rating.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
@@ -190,6 +205,13 @@ namespace MovieDialog
             intent_word_tag = new HashSet<string>(tmp);
             tmp = _must.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             must_word_tag = new HashSet<string>(tmp);
+
+            // for isArtistOrDirector
+            // int 1 for artist, int 2 for director
+            foreach (var item in _artist_director_pattern)
+            {
+                artist_director_pattern.Add(new Tuple<int, Regex>(item.Item1, new Regex(item.Item2)));
+            }
 
             // for end dialog
             foreach (string str in _accept_candidate_pattern)
@@ -262,7 +284,7 @@ namespace MovieDialog
                     // 李连杰can discrim 宫崎骏can discrim 张艺谋can't discrim 王宝强can't discrim
                     is_artist = EntitySegmenter.Artist.Contains(item.Word);
                     is_director = EntitySegmenter.Director.Contains(item.Word);
-                    if (!(is_artist ^ is_director))
+                    if (is_artist && is_director)
                     {
                         // discriminate artist and director by Regex
                         // 张艺谋演\导的can discrim 张艺谋的can't discrim
@@ -486,6 +508,19 @@ namespace MovieDialog
             return false;
         }
 
+        public int isArtistOrDirector(Query query)
+        {
+            foreach (var class_pattern in artist_director_pattern)
+            {
+                Match res = class_pattern.Item2.Match(query.postagged_query);
+                if (res.Success && ((double)res.Length / query.postagged_query.Length) >= confidence_ratio)
+                {
+                    return class_pattern.Item1;
+                }
+            }
+            return -1;
+        }
+
         public bool isAcceptCandidate(Query query)
         {
             if (query.postagged_query == "<nmovie>")
@@ -494,7 +529,8 @@ namespace MovieDialog
             }
             foreach (Regex pattern in accept_candidate_pattern)
             {
-                if (pattern.IsMatch(query.postagged_query))
+                Match res = pattern.Match(query.postagged_query);
+                if (res.Success && ((double)res.Length / query.postagged_query.Length) >= confidence_ratio)
                 {
                     return true;
                 }
@@ -506,7 +542,8 @@ namespace MovieDialog
         {
             foreach (Regex pattern in deny_candidate_pattern)
             {
-                if (pattern.IsMatch(query.postagged_query))
+                Match res = pattern.Match(query.postagged_query);
+                if (res.Success && ((double)res.Length / query.postagged_query.Length) >= confidence_ratio)
                 {
                     return true;
                 }

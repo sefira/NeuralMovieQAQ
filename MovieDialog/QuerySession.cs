@@ -164,11 +164,12 @@ namespace MovieDialog
                 is_considerd[ParseStatus.Duration] = query.is_considerd[ParseStatus.Duration];
             }
 
-            DealArtistDirectorDuplicate();
+            // DealArtistDirectorDuplicate();
             RefreshKnownInfoNum();
         }
 
-        //wangbaoqiang as artist and director
+        // wangbaoqiang as artist and director
+        // DEPRECATED, use DialogManager.ClarifyArtistDirector instead
         private void DealArtistDirectorDuplicate()
         {
             List<string> duplicate_name = new List<string>();

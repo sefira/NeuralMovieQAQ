@@ -138,7 +138,7 @@ namespace MovieDialog
             pattern_response = new PatternResponse();
             string postagged_query = query.postagged_query;
             int tf_class = GetTensorFlowServingResponse(postagged_query);
-            if (tf_class != -1)
+            if (tf_class != -1 && tf_class != 0)
             {
                 pattern_response = new PatternResponse(query, class2pattern[tf_class]);
                 return true;

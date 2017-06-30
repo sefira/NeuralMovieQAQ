@@ -1,140 +1,140 @@
-寻找周杰伦是谁演的?
-谁是寻找周杰伦的主演
-寻找周杰伦的主演是谁啊
-寻找周杰伦主演有谁?
-哪个人演的寻找周杰伦
-谁主演的寻找周杰伦
-都谁演的寻找周杰伦
-寻找周杰伦都谁演的
-哪些人演的寻找周杰伦
-寻找周杰伦是哪些人演的
-寻找周杰伦主演都有谁
-寻找周杰伦里面都有谁
-寻找周杰伦是哪年的电影?
-寻找周杰伦是几几年出的?
-寻找周杰伦是几几年出了?
-寻找周杰伦是哪年的电影啊
-寻找周杰伦是哪年的电影
-寻找周杰伦谁演的来着
-谁是东邪西毒的导演
-东邪西毒的导演是谁
-谁导的东邪西毒
-东邪西毒是谁导的
-谁拍的东邪西毒
-东邪西毒谁拍的
-谁是东邪西毒的导演
-东邪西毒的导演叫什么
-东邪西毒的导演叫什么名字
-百鸟朝凤讲的是什么
-谁是百鸟朝凤的男主演
-谁是百鸟朝凤的男主角
-谁是百鸟朝凤的男主
-谁是百鸟朝凤的女主演
-谁是百鸟朝凤的女主角
-谁是百鸟朝凤的女主
-百鸟朝凤的男主演是谁	Artists:Name
-百鸟朝凤的男主角是谁
-百鸟朝凤的男主是谁	Artists:Name
-百鸟朝凤的女主演是谁
-百鸟朝凤的女主角是谁
-百鸟朝凤的女主是谁	Artists:Name
-百鸟朝凤的男主演是谁演的	Artists:Name
-百鸟朝凤的男主角是谁演的
-百鸟朝凤的男主是谁演的	Artists:Name
-百鸟朝凤的女主演是谁演的
-百鸟朝凤的女主是谁演的	Artists:Name
-百鸟朝凤的女主角是谁演的
-百鸟朝凤的男主演叫什么
-百鸟朝凤的男主角叫什么
-百鸟朝凤的男主叫什么
-百鸟朝凤的女主演叫什么
-百鸟朝凤的女主角叫什么
-百鸟朝凤的女主叫什么
-愤怒的小鸟的上映时间
-愤怒的小鸟什么时候上映
-愤怒的小鸟啥时候上映
-愤怒的小鸟什么时候播啊
+寻找周杰伦是谁演的?	Artists:Name
+谁是寻找周杰伦的主演	Artists:Name
+寻找周杰伦的主演是谁啊	Artists:Name
+寻找周杰伦主演有谁?	Artists:Name
+哪个人演的寻找周杰伦	Artists:Name
+谁主演的寻找周杰伦	Artists:Name
+都谁演的寻找周杰伦	Artists:Name
+寻找周杰伦都谁演的	Artists:Name
+哪些人演的寻找周杰伦	Artists:Name
+寻找周杰伦是哪些人演的	Artists:Name
+寻找周杰伦主演都有谁	Artists:Name
+寻找周杰伦里面都有谁	Artists:Name
+寻找周杰伦是哪年的电影?	PublishDate
+寻找周杰伦是几几年出的?	PublishDate
+寻找周杰伦是几几年出了?	PublishDate
+寻找周杰伦是哪年的电影啊	PublishDate
+寻找周杰伦是哪年的电影	PublishDate
+寻找周杰伦谁演的来着	Artists:Name
+谁是东邪西毒的导演	Directors:Name
+东邪西毒的导演是谁	Directors:Name
+谁导的东邪西毒	Directors:Name
+东邪西毒是谁导的	Directors:Name
+谁拍的东邪西毒	Directors:Name
+东邪西毒谁拍的	Directors:Name
+谁是东邪西毒的导演	Directors:Name
+东邪西毒的导演叫什么	Directors:Name
+东邪西毒的导演叫什么名字	Directors:Name
+百鸟朝凤讲的是什么	Description
+谁是百鸟朝凤的男主演	Artists:Name(Performance:1&Gender:male
+谁是百鸟朝凤的男主角	Artists:Name(Performance:1&Gender:male
+谁是百鸟朝凤的男主	Artists:Name(Performance:1&Gender:male
+谁是百鸟朝凤的女主演	Artists:Name(Performance:1&Gender:female
+谁是百鸟朝凤的女主角	Artists:Name(Performance:1&Gender:female
+谁是百鸟朝凤的女主	Artists:Name(Performance:1&Gender:female
+百鸟朝凤的男主演是谁	Artists:Name(Performance:1&Gender:male
+百鸟朝凤的男主角是谁	Artists:Name(Performance:1&Gender:male
+百鸟朝凤的男主是谁	Artists:Name(Performance:1&Gender:male
+百鸟朝凤的女主演是谁	Artists:Name(Performance:1&Gender:female
+百鸟朝凤的女主角是谁	Artists:Name(Performance:1&Gender:female
+百鸟朝凤的女主是谁	Artists:Name(Performance:1&Gender:female
+百鸟朝凤的男主演是谁演的	Artists:Name(Performance:1&Gender:male
+百鸟朝凤的男主角是谁演的	Artists:Name(Performance:1&Gender:male
+百鸟朝凤的男主是谁演的	Artists:Name(Performance:1&Gender:male
+百鸟朝凤的女主演是谁演的	Artists:Name(Performance:1&Gender:female
+百鸟朝凤的女主是谁演的	Artists:Name(Performance:1&Gender:female
+百鸟朝凤的女主角是谁演的	Artists:Name(Performance:1&Gender:female
+百鸟朝凤的男主演叫什么	Artists:Name(Performance:1&Gender:male
+百鸟朝凤的男主角叫什么	Artists:Name(Performance:1&Gender:male
+百鸟朝凤的男主叫什么	Artists:Name(Performance:1&Gender:male
+百鸟朝凤的女主演叫什么	Artists:Name(Performance:1&Gender:female
+百鸟朝凤的女主角叫什么	Artists:Name(Performance:1&Gender:female
+百鸟朝凤的女主叫什么	Artists:Name(Performance:1&Gender:female
+愤怒的小鸟的上映时间	PublishDate
+愤怒的小鸟什么时候上映	PublishDate
+愤怒的小鸟啥时候上映	PublishDate
+愤怒的小鸟什么时候播啊	PublishDate
 愤怒的小鸟上映时间是什么时候啊	PublishDate
-愤怒的小鸟哪一年出的
-愤怒的小鸟哪年出的
-愤怒的小鸟是几几年出的
-愤怒的小鸟哪年播的
-愤怒的小鸟哪一年播的
-愤怒的小鸟是几几年播的
-愤怒的小鸟是哪年的电影
-愤怒的小鸟是哪一年的电影
-愤怒的小鸟是几几年的电影
-旺角卡门剧情是什么
-讲讲旺角卡门剧情
-讲讲旺角卡门的剧情
-旺角卡门是什么剧情
-旺角卡门讲的什么
-旺角卡门演的什么
-旺角卡门讲的啥
-介绍旺角卡门剧情
-旺角卡门剧情介绍
-介绍一下旺角卡门剧情
-介绍一下旺角卡门
-给我介绍一下旺角卡门
-讲一下旺角卡门剧情
-说说旺角卡门的剧情
-旺角卡门的女猪脚是谁
-双旗镇刀客是谁演的
-湄公河行动男主谁演的
-湄公河行动男主是谁	Artists:Name
-双旗镇刀客的导演是谁呀
-猜火车讲的啥
-猜火车的男主是谁啊
-双旗镇刀客的导演是谁啊
+愤怒的小鸟哪一年出的	PublishDate
+愤怒的小鸟哪年出的	PublishDate
+愤怒的小鸟是几几年出的	PublishDate
+愤怒的小鸟哪年播的	PublishDate
+愤怒的小鸟哪一年播的	PublishDate
+愤怒的小鸟是几几年播的	PublishDate
+愤怒的小鸟是哪年的电影	PublishDate
+愤怒的小鸟是哪一年的电影	PublishDate
+愤怒的小鸟是几几年的电影	PublishDate
+旺角卡门剧情是什么	Description
+讲讲旺角卡门剧情	Description
+讲讲旺角卡门的剧情	Description
+旺角卡门是什么剧情	Description
+旺角卡门讲的什么	Description
+旺角卡门演的什么	Description
+旺角卡门讲的啥	Description
+介绍旺角卡门剧情	Description
+旺角卡门剧情介绍	Description
+介绍一下旺角卡门剧情	Description
+介绍一下旺角卡门	Description
+给我介绍一下旺角卡门	Description
+讲一下旺角卡门剧情	Description
+说说旺角卡门的剧情	Description
+旺角卡门的女猪脚是谁	Artists:Name(Performance:1&Gender:female
+双旗镇刀客是谁演的	Artists:Name
+湄公河行动男主谁演的	Artists:Name(Performance:1&Gender:male
+湄公河行动男主是谁	Artists:Name(Performance:1&Gender:male
+双旗镇刀客的导演是谁呀	Directors:Name
+猜火车讲的啥	Description
+猜火车的男主是谁啊	Artists:Name(Performance:1&Gender:male
+双旗镇刀客的导演是谁啊	Directors:Name
 双旗镇刀客啥时上映的	PublishDate
 双旗镇刀客啥时上映	PublishDate
-双旗镇刀客的评分
-双旗镇刀客多少分
-双旗镇刀客豆瓣多少分
-双旗镇刀客豆瓣几分
-请问双旗镇刀客主演是谁？
-我问双旗镇刀客主演是谁？
-我问你双旗镇刀客讲的什么
-猜火车的男主是谁啊
-猜火车是讲啥的
-我是问英国病人主演是谁
-我是问英国病人主演是谁，帅吗？
-双旗镇刀客的导演是谁啊
-给我剧透一下双旗镇刀客
-私人订制什么剧情
-双旗镇刀客剧情如何
-花千骨主演是谁
-双旗镇刀客谁演的
-双旗镇刀客哪个演的
-双旗镇刀客哪个导演拍的
-李连杰演过什么电影
-李连杰演了哪些电影
+双旗镇刀客的评分	Rating
+双旗镇刀客多少分	Rating
+双旗镇刀客豆瓣多少分	Rating
+双旗镇刀客豆瓣几分	Rating
+请问双旗镇刀客主演是谁？	Artists:Name
+我问双旗镇刀客主演是谁？	Artists:Name
+我问你双旗镇刀客讲的什么	Description
+猜火车的男主是谁啊	Artists:Name(Performance:1&Gender:male
+猜火车是讲啥的	Description
+我是问英国病人主演是谁	Artists:Name
+我是问英国病人主演是谁，帅吗？	Artists:Name
+双旗镇刀客的导演是谁啊	Directors:Name
+给我剧透一下双旗镇刀客	Description
+私人订制什么剧情	Description
+双旗镇刀客剧情如何	Description
+花千骨主演是谁	Artists:Name
+双旗镇刀客谁演的	Artists:Name
+双旗镇刀客哪个演的	Artists:Name
+双旗镇刀客哪个导演拍的	Directors:Name
+李连杰演过什么电影	Act:Name
+李连杰演了哪些电影	Act:Name
 李连杰都演过哪些电影	Act:Name
-李连杰都有哪些电影
-李连杰都演过什么电影
+李连杰都有哪些电影	Act:Name
+李连杰都演过什么电影	Act:Name
 李连杰主演过什么电影	Act:Name
 李连杰演过的电影都有哪些	Act:Name
-哪些电影是李连杰演的
-张艺谋拍过什么电影
-张艺谋都拍过哪些电影
+哪些电影是李连杰演的	Act:Name
+张艺谋拍过什么电影	Direct:Name
+张艺谋都拍过哪些电影	Direct:Name
 张艺谋导演过哪些电影	Direct:Name
-张艺谋都导过什么电影
-张艺谋拍摄了哪些电影
+张艺谋都导过什么电影	Direct:Name
+张艺谋拍摄了哪些电影	Direct:Name
 张艺谋主演过什么电影	Act:Name
 张艺谋演过的电影都有哪些	Act:Name
-哪些电影是张艺谋拍的
-碟中谍剧情 
+哪些电影是张艺谋拍的	Direct:Name
+碟中谍剧情 	Description
 忍者神龟2海报
 一路惊喜的票房
 忍者神龟2票房
 来一张寒战2的剧照
 来张寒战2的剧照
-疯狂原始人是哪个公司出的	Country
+疯狂原始人是哪个公司出的
 分手大师女演员
-花千骨剧情很赞啊
+花千骨剧情很赞啊	Description
 花千骨主角都挺帅的
-绝地逃亡剧情很不错啊
-绝地逃亡女主很漂亮啊	Artists:Name
+绝地逃亡剧情很不错啊	Description
+绝地逃亡女主很漂亮啊
 绝地逃亡男主身材太好了
 分手大师男主演技一般啊
 绝地逃亡男主长的不帅啊
@@ -142,4 +142,4 @@
 矩阵革命你喜欢男主吗？
 你喜欢矩阵革命男主吗？
 矩阵革命男主怎么样？
-喜欢无间道剧情
+喜欢无间道剧情	Description
