@@ -34,7 +34,7 @@ namespace MovieDialog
             /* artist */  { 0.0,   0.2,    0.2,    0.0,         0.3,    0.3},
             /* director */{ 0.0,   0.3,    0.0,    0.0,         0.4,    0.3},
             /* country */ { 0.0,   0.3,    0.3,    0.0,         0.2,    0.2},
-            /* genre */   { 0.0,   0.4,    0.3,    0.2,         0.0,    0.1},
+            /* genre */   { 0.0,   100.4,    0.3,    0.2,         0.0,    0.1},
             /* publish */ { 0.0,   0.2,    0.1,    0.3,         0.5,    0.0}
         };
 
@@ -248,20 +248,6 @@ namespace MovieDialog
                         break;
                 }
 
-                // in this trun we ask some information, but user did not provide
-                if (session.parse_status == ParseStatus.Artist ||
-                    session.parse_status == ParseStatus.Director ||
-                    session.parse_status == ParseStatus.Country ||
-                    session.parse_status == ParseStatus.Genre ||
-                    session.parse_status == ParseStatus.PublishDate)
-                {
-                    if (query.is_considerd[session.parse_status] != true)
-                    {
-                        Utils.WriteMachine("Pardon me");
-                        continue;
-                    }
-                }
-
                 // refresh session status using user query
                 session.RefreshSessionStatus(query);
                 ClarifyArtistDirector();
@@ -291,6 +277,20 @@ namespace MovieDialog
                 }
                 else
                 {
+                    // in this trun we asked some information, but user did not provide
+                    if (session.parse_status == ParseStatus.Artist ||
+                        session.parse_status == ParseStatus.Director ||
+                        session.parse_status == ParseStatus.Country ||
+                        session.parse_status == ParseStatus.Genre ||
+                        session.parse_status == ParseStatus.PublishDate)
+                    {
+                        if (session.is_considerd[session.parse_status] != true)
+                        {
+                            Utils.WriteMachine("Pardon me");
+                            continue;
+                        }
+                    }
+
                     if (session.parse_status == ParseStatus.All)
                     {
                         session.parse_status = MakeClearParseStatus(session);

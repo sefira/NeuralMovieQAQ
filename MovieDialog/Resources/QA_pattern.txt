@@ -37,7 +37,7 @@ Movie	Description	0	介绍(一下)?<nmovie>(的)?(主要)?(内容|故事|剧情|
 Movie	Description	0	<nmovie>(的)?(主要)?(内容|故事|剧情|大意|大义|故事梗概|情节)介绍(一下)?
 Movie	Description	0	<nmovie>(是)?什么(主要)?(内容|故事|剧情|大意|大义|故事梗概|情节)
 Movie	Description	0	<nmovie>(是讲|讲|讲了)(啥|什么)(主要)?(内容|故事|剧情|大意|大义|故事梗概|情节)?
-Movie	Description	0	<nmovie>(是|是讲|讲)?(啥|什么)(主要)?(内容|故事|剧情|大意|大义|故事梗概|情节)
+Movie	Description	0	<nmovie>(是|是讲|讲|讲了)?(啥|什么)(主要)?(内容|故事|剧情|大意|大义|故事梗概|情节)
 Movie	Description	0	(给我)?(剧透(一下)?|讲(一)?讲|说(一)?说|讲(一)?下|说(一)?下|介绍(一)?下)<nmovie>(的)?(主要)?(内容|故事|剧情|大意|大义|故事梗概|情节)?
 Celebrity	Act:Name	1	<nrcelebrity>(主演|扮演|出演|演)(过)?的电影(都|还)?(有哪些)?
 Celebrity	Act:Name	1	<nrcelebrity>(都|还)?(主演|扮演|出演|演|有)(过|了)?(哪些|什么)?电影
