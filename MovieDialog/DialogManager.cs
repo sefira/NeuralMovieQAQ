@@ -128,7 +128,7 @@ namespace MovieDialog
             Utils.WriteMachine("=========================");
             Utils.WriteMachine("Now, you can talk to me~");
         }
-
+        
         #region Dialog Logic
         // judge is this dialog should be ended
         public bool isRecommendationEnd(Session session)
@@ -180,7 +180,7 @@ namespace MovieDialog
                 {
                     if (string.IsNullOrWhiteSpace(input))
                     {
-                        query_str = Console.ReadLine();
+                        query_str = Utils.ReadLine();
                         Utils.WriteQuery(query_str);
                     }
                     else
@@ -200,7 +200,7 @@ namespace MovieDialog
                 }
                 else
                 {
-                    query_str = Console.ReadLine();
+                    query_str = Utils.ReadLine();
                     Utils.WriteQuery(query_str);
                     query = new Query(query_str);
 
@@ -248,6 +248,20 @@ namespace MovieDialog
                         break;
                 }
 
+                // in this trun we ask some information, but user did not provide
+                if (session.parse_status == ParseStatus.Artist ||
+                    session.parse_status == ParseStatus.Director ||
+                    session.parse_status == ParseStatus.Country ||
+                    session.parse_status == ParseStatus.Genre ||
+                    session.parse_status == ParseStatus.PublishDate)
+                {
+                    if (query.is_considerd[session.parse_status] != true)
+                    {
+                        Utils.WriteMachine("Pardon me");
+                        continue;
+                    }
+                }
+
                 // refresh session status using user query
                 session.RefreshSessionStatus(query);
                 ClarifyArtistDirector();
@@ -265,8 +279,8 @@ namespace MovieDialog
                     }
                     if (session.is_considerd[ParseStatus.Movie] && session.candidate_movies.Count > 0)
                     {
-                        Utils.WriteResult("想看" + session.candidate_movies[0].name + "啊");
-                        Utils.WriteResult("眼光不错哦");
+                        Utils.WriteMachine("想看" + session.candidate_movies[0].name + "啊");
+                        Utils.WriteMachine("眼光不错哦");
                     }
                     else
                     {
@@ -347,7 +361,7 @@ namespace MovieDialog
                     offset += confirm_turn;
                 }
 
-                string query_str = Console.ReadLine();
+                string query_str = Utils.ReadLine();
                 Utils.WriteQuery(query_str);
                 Query query = new Query(query_str);
                 parser.PosTagging(ref query);
@@ -369,7 +383,7 @@ namespace MovieDialog
                 else
                 {
                     jump_show_candidate_dueto_kbqa = true;
-                    Utils.WriteResult("数据库中没有相关的答案...");
+                    Utils.WriteMachine("数据库中没有相关的答案...");
                 }
             }
             Utils.WriteMachine("好像找不到你喜欢看的电影...");
@@ -398,11 +412,11 @@ namespace MovieDialog
                     string answer = string.Join(",", res.ToArray());
                     if (answer.Length < 2)
                     {
-                        Utils.WriteResult("数据库中没有相关的答案...");
+                        Utils.WriteMachine("数据库中没有相关的答案...");
                     }
                     else
                     {
-                        Utils.WriteResult(answer);
+                        Utils.WriteMachine(answer);
                     }
                     return true;
                 }
@@ -440,7 +454,7 @@ namespace MovieDialog
                     while (true)
                     {
                         Utils.WriteMachine("你想看他拍的还是他演的呢?");
-                        string query_str = Console.ReadLine();
+                        string query_str = Utils.ReadLine();
                         Query query = new Query(query_str);
                         parser.PosTagging(ref query);
                         parser.ParseAllTag(ref query);
@@ -530,7 +544,7 @@ namespace MovieDialog
                 }
                 movies.Add(item.name);
             }
-            Utils.WriteResult(String.Join(", ", movies.ToArray()));
+            Utils.WriteMachine(String.Join(", ", movies.ToArray()));
             Console.WriteLine("\n");
         }
 

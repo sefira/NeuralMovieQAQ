@@ -22,7 +22,7 @@ Movie	Directors:Name	1	<nmovie>(是|都|由|是由)?(哪个|哪个人|哪些人)
 Movie	PublishDate	0	<nmovie>(是)?(什么时候的片子|哪天上映(的)?)
 Movie	PublishDate	0	<nmovie>(的)?(上映时间|(是)?什么时候上映)(的)?
 Movie	PublishDate	0	<nmovie>(是)?(啥时(候)?|哪(一)?年|几几年)(上|上映|出)?(的)?(电影)?
-Movie	PublishDate	0	<nmovie>(啥|什么)时候(出|播|播出|拍|拍摄)(啊)?
+Movie	PublishDate	0	<nmovie>(是)?(啥|什么)时候(出|播|播出|拍|拍摄)(啊)?
 Movie	PublishDate	0	<nmovie>(是)?(哪(一)?|几几)年(出|播|播出|拍|拍摄)(的|了)?
 Movie	Rating	0	<nmovie>(的)?(豆瓣)?评分(是多少|多少|几)分?
 Movie	Rating	0	<nmovie>(的)?(豆瓣|评分)?(是多少|多少|几)分
@@ -36,7 +36,7 @@ Movie	Description	0	<nmovie>(说|讲|演)(的|了)?(是)?(什么|啥)(主要)?(�
 Movie	Description	0	介绍(一下)?<nmovie>(的)?(主要)?(内容|故事|剧情|大意|大义|故事梗概|情节)?
 Movie	Description	0	<nmovie>(的)?(主要)?(内容|故事|剧情|大意|大义|故事梗概|情节)介绍(一下)?
 Movie	Description	0	<nmovie>(是)?什么(主要)?(内容|故事|剧情|大意|大义|故事梗概|情节)
-Movie	Description	0	<nmovie>(是|是讲|讲)(啥|什么)(主要)?(内容|故事|剧情|大意|大义|故事梗概|情节)?
+Movie	Description	0	<nmovie>(是讲|讲|讲了)(啥|什么)(主要)?(内容|故事|剧情|大意|大义|故事梗概|情节)?
 Movie	Description	0	<nmovie>(是|是讲|讲)?(啥|什么)(主要)?(内容|故事|剧情|大意|大义|故事梗概|情节)
 Movie	Description	0	(给我)?(剧透(一下)?|讲(一)?讲|说(一)?说|讲(一)?下|说(一)?下|介绍(一)?下)<nmovie>(的)?(主要)?(内容|故事|剧情|大意|大义|故事梗概|情节)?
 Celebrity	Act:Name	1	<nrcelebrity>(主演|扮演|出演|演)(过)?的电影(都|还)?(有哪些)?

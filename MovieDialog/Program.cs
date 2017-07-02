@@ -21,13 +21,15 @@ namespace MovieDialog
             //TestQueryFile(@"D:\MovieDomain\MovieDialog\Resources\userquery.txt");
             //TestTranstionStatus();
             //TestSessionFile(@"D:\MovieDomain\MovieDialog\Resources\usersession.txt");
-            TestSession();
+            //TestSession();
 
             //TestLIKQClient();
             //TestPatternBased(@"D:\MovieDomain\MovieDialog\Resources\QA_pattern_qa.txt", @"D:\MovieDomain\MovieDialog\Resources\QA_pattern_output.txt");
             //TestCNNBased(@"D:\MovieDomain\MovieDialog\Resources\QA_pattern_qa.txt", @"D:\MovieDomain\MovieDialog\Resources\QA_pattern_output.txt");
             //TestGraphEngineQuery();
             //TestGraphEngineQA();
+
+            TestDialogServer();
         }
 
         #region test jieba
@@ -227,10 +229,11 @@ namespace MovieDialog
             //string question = "你的名字是哪个国家拍的"; // 你的名字 in NER, but 你的名字。in CellID
             //string question = "十二怒汉是讲什么的"; // have no 十二怒汉
             //string question = "活着是讲什么的";
+            //string question = "你的名字。是讲什么的";
             //string question = "赌神是讲什么的";
-            string question = "天下无贼是谁导演的";
+            //string question = "天下无贼是谁导演的";
             //string question = "林家栋拍过什么电影";  //拍 act？ direct？
-            //string question = "西游伏妖篇是谁导演的";
+            string question = "大话西游之大圣娶亲是什么时候拍的";
             Parser parser = new Parser();
             GraphEngineQuery graphengine_query = new GraphEngineQuery();
             PatternBased pattern_qa = new PatternBased();
@@ -252,9 +255,18 @@ namespace MovieDialog
                         break;
                 }
                 List<object> res = graphengine_query.GetGraphEngineData(question_topic, pattern_response.property, pattern_response.hop_num);
-                Utils.WriteResult(string.Join(",", res.ToArray()));
+                Utils.WriteMachine(string.Join(",", res.ToArray()));
             }
         }
+        #endregion
+
+        #region Dialog Http Server
+        private static void TestDialogServer()
+        {
+            DialogHttpServer dialog_server = new DialogHttpServer();
+            dialog_server.WorkWithMovieDialog();
+        }
+
         #endregion
     }
 }
