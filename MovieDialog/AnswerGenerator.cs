@@ -21,7 +21,7 @@ namespace MovieDialog
               
             /* genre */   {"X", "{1}拍了很多{0}电影，想看谁的呢？",  "{1}拍了很多{0}电影，想看谁的呢？",  "{1}拍了很多{0}电影，想看哪里的呢？",  "X",                           "这种类型的电影有很多啦，想看经典的还是最近的呢？"}, 
 
-            /* publish */ {"X", "想看{1}的电影吗？",               "想看{1}的电影吗？",              "想看{1}的电影吗？",            "想看{1}吗？",                            "X"}
+            /* publish */ {"X", "想看哪个演员的电影呢？{1}",       "想看哪个导演的电影呢？{1}",      "想看哪个国家的电影呢？{1}",    "想看哪个类型的电影呢？{1}",                            "X"}
         };
 
         public static string AnswerIt(List<string> answer_entity, Session session, ParseStatus to)

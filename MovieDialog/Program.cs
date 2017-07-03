@@ -19,7 +19,7 @@ namespace MovieDialog
             //TestQueryFile(@"D:\MovieDomain\MovieDialog\Resources\userquery.txt");
             //TestTranstionStatus();
             //TestSessionFile(@"D:\MovieDomain\MovieDialog\Resources\usersession.txt");
-            TestSession();
+            //TestSession();
 
             //TestLIKQClient();
             //TestPatternBased(@"D:\MovieDomain\MovieDialog\Resources\QA_pattern_qa.txt", @"D:\MovieDomain\MovieDialog\Resources\QA_pattern_output.txt");
@@ -27,7 +27,7 @@ namespace MovieDialog
             //TestGraphEngineQuery();
             //TestGraphEngineQA();
 
-            //TestDialogServer();
+            TestDialogServer();
         }
 
         #region test jieba
