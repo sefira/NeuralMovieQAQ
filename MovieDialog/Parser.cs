@@ -141,7 +141,7 @@ namespace MovieDialog
         // for isArtistOrDirector
         // int -1 for null, int 1 for artist, int 2 for director
         private static readonly List<Tuple<int, string>> _artist_director_pattern = new List<Tuple<int, string>>(new Tuple<int, string>[] {
-            new Tuple<int, string>(2,"(是)?(他|她)?(导|导演|拍|拍摄)(的)?(啦)?"),
+            new Tuple<int, string>(2,"(是)?(他|她)?(导(演)?|拍(摄)?)(的)?(啦)?"),
             new Tuple<int, string>(1,"(是)?(他|她)?(主|扮)?演(的)?(啦)?"),
         });
         private static readonly List<Tuple<int, Regex>> artist_director_pattern = new List<Tuple<int, Regex>>();

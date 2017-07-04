@@ -455,6 +455,7 @@ namespace MovieDialog
                     {
                         Utils.WriteMachine("你想看他拍的还是他演的呢?");
                         string query_str = Utils.ReadLine();
+                        Utils.WriteQuery(query_str);
                         Query query = new Query(query_str);
                         parser.PosTagging(ref query);
                         parser.ParseAllTag(ref query);
