@@ -109,3 +109,6 @@ KBQA不会影响对话流程
     
     系统展示结果时需要用户确认，Bot响应用户“Accept Candidate”Intent和“Deny Candidate ”。一共展示三轮，第一轮一部，第二轮两部，第三轮三部
     Bot提出候选后，用户可以接受或拒绝，拒绝后进入下一轮推荐，接受后对话结束
+
+## Screenshot
+![Screenshot](https://raw.githubusercontent.com/sefira/NeuralMovieQAQ/master/MovieDialog/DialogScreenshot.png)
