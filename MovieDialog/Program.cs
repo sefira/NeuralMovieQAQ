@@ -16,6 +16,7 @@ namespace MovieDialog
         {
             //TestParser();
             //TestoSearchAPI();
+            //TestSearchObjectStoreClient();
             //TestQueryFile(@"D:\MovieDomain\MovieDialog\Resources\userquery.txt");
             //TestTranstionStatus();
             //TestSessionFile(@"D:\MovieDomain\MovieDialog\Resources\usersession.txt");
@@ -53,6 +54,11 @@ namespace MovieDialog
         private static void TestoSearchAPI()
         {
             oSearchClient.TestQuery();
+        }
+
+        private static void TestSearchObjectStoreClient()
+        {
+            SearchObjectStoreClient.TestQuery();
         }
         #endregion
 

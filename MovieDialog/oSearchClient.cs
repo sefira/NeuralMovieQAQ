@@ -101,10 +101,14 @@ namespace MovieDialog
 
             do
             {
+                Stopwatch watch = new Stopwatch();
+                watch.Start();
                 Microsoft.ObjectStore.ObjectStoreClient.ObjectStoreOSearchRequest.DoQuery(
                     QueryURL, Namespace, Table, indexQueryType, tlaQuery, offSet, resultsCount,
                     out results, out indexSubResponses, out indexResponse, out latencyBackend);
-
+                watch.Stop();
+                var elapsedMs = watch.ElapsedMilliseconds;
+                Console.WriteLine(latencyBackend + "    " + elapsedMs);
                 if (indexResponse.m_IndexQueryStatus != IndexQueryStatus.IndexQueryStatusFailure)
                 {
                     // Here we received the expected number of sub responses.
