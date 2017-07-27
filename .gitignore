@@ -18,7 +18,7 @@ ScopeCompilerTrace.log
 packages
 GraphEngine/input
 GraphEngine/output
-*bin*
+bin/
 *.tproj
 *proj
 *Properties
@@ -30,5 +30,4 @@ GraphEngine/output
 *.exe
 *.dict
 *GeneratedCode*
-*obj*
-*bin*
+obj/

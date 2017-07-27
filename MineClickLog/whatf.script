@@ -1,0 +1,60 @@
+﻿//Script GUID:bc66d9cd-d2dc-41ba-8acb-3721800ce89c
+//Used for tracking history
+
+// exist in cosmos09 relevance local
+
+REFERENCE @"/shares/searchWebLoad/RetroIndex/bin/RetroIndexProcessor.dll";
+REFERENCE @"/shares/searchWebLoad/RetroIndex/bin/ManagedUrlNormalizer.dll";
+RESOURCE @"/shares/searchWebLoad/RetroIndex/bin/NativeUrlNormalizer.dll";
+
+REFERENCE @"/shares/searchDM/distrib/released/CompetitiveUnifiedView/SearchLogApi.dll";
+REFERENCE @"/shares/searchDM/distrib/released/CompetitiveUnifiedView/CompetitiveAPI.dll";
+REFERENCE @"/shares/searchDM/distrib/released/FrontEndUtil/FrontEndUtil.dll";
+RESOURCE @"/shares/searchDM/distrib/released/FrontEndUtil/GetHashUtil.dll";
+
+REFERENCE @"/local/IndexQualityCJK/Navigational/lib/CommonUtility.dll";
+REFERENCE @"/local/IndexQualityCJK/Navigational/lib/NavClassifier.dll";
+
+USING RetroIndex;
+USING DeepLinks;
+USING FrontEndUtil;
+
+#DECLARE StartDate string = @"2017-07-01";
+#DECLARE EndDate string = @"2017-07-01";
+
+#DECLARE TimeNow string = DateTime.Now.ToString("yyyy-MM-dd-HH-mm");
+#DECLARE path_root string = @"/my/SearchEngingClicks/";
+#DECLARE query_url_filename string = @path_root + @TimeNow + "_" + @StartDate + "_" + @"query_url.tsv";
+#DECLARE top_one_query_url_filename string = @path_root + @TimeNow + "_" + @StartDate + "_" + @"top_one_query_url.tsv";
+
+
+UnifiedView =
+    VIEW @"/shares/searchDM/distrib/released/CompetitiveUnifiedView/CompetitiveUnifiedPageView.view"
+    PARAMS
+    (
+        Start = @StartDate,
+        End = @EndDate,
+        Source = @"DesktopIE",
+        ReturnHttpsUrl = false
+    );
+
+IELogs =
+    SELECT LogDate,
+           Query_Engine,
+           Query_Vertical,
+           Query_Market,
+           Query_RawQuery AS Query,
+           Session_SessionId
+    FROM UnifiedView
+    WHERE NOT Request_IsBot
+          AND Request_IsQuery
+          AND NOT string.IsNullOrEmpty(Query_Engine)
+          AND Query_Vertical == "web"
+          AND NOT Query_IsDup
+          AND NOT string.IsNullOrEmpty(Query_RawQuery)
+          AND NOT string.IsNullOrEmpty(Query_Market)
+          AND Query_Market.ToLower() == "zh-cn"
+    HAVING NOT string.IsNullOrEmpty(Query);
+
+OUTPUT
+TO @query_url_filename;

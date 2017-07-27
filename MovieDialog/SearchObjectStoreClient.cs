@@ -36,7 +36,6 @@ namespace MovieDialog
                 try
                 {
                     var keys = await client.IndexQuery(req).GetKeysOnly();
-
                     var oSResults = await client.IndexQuery(req).GetKeysWithValues();
                     var kFull = await client.IndexQuery(req).WithHttpHeaders(header).WithDebugInfoEnabled().GetKeysOnlyFullResponse();
                     var kvFull = await client.IndexQuery(req).WithHttpHeaders(header).WithDebugInfoEnabled().GetKeysWithValuesFullResponse();
@@ -46,7 +45,10 @@ namespace MovieDialog
                     //column_list.Add(new ColumnLocation("PublishDate"));
                     //column_list.Add(new ColumnLocation("Description"));
                     //column_list.Add(new ColumnLocation("Popularity"));
-                    var res = await client.IndexQuery(req).GetKeysWithColumnValues(column_list);
+                    //var res = await client.IndexQuery(req).GetKeysWithColumnValues(column_list);
+                    var records = await client.ColumnRead(keys, column_list).SendAsync();
+                    string Name;
+                    records[0].GetColumnValue<string>("Name", null, out Name);
                     foreach (var key in keys)
                     {
                         var yourkey = key;

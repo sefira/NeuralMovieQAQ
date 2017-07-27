@@ -1,0 +1,87 @@
+﻿//Script GUID:0e40818c-e8c3-4b0d-bf73-652182c3fd75
+//Used for tracking history
+
+REFERENCE @"/shares/searchDM/distrib/released/SLAPI/SearchLogApi.dll";
+REFERENCE @"/shares/searchDM/distrib/released/SLAPI/Serializer.exe";
+REFERENCE @"/shares/searchDM/distrib/released/SLAPI/Microsoft.Live.Json.dll";
+
+USING MS.Internal.Bing.DataMining.SearchLogApi;
+USING Microsoft.Live.Json;
+
+#DECLARE StartDate string = "2016-04-01";
+#DECLARE EndDate string = "2016-04-01";
+#DECLARE TimeNow string = DateTime.Now.ToString("yyyy-MM-dd-HH-mm");
+
+#DECLARE path_root string = @"/my/BingClicks/";
+#DECLARE output_filename string = @path_root + @TimeNow + "_" + @StartDate + "_" + @EndDate + "_" + @"BingClicks.tsv";
+
+//get the slapi search log data
+SlapiPageView = VIEW "/shares/searchDM/distrib/released/SLAPI/SearchLogPageView.view"
+PARAMS
+(
+    Dataset = "Bing.com",
+    Start = @StartDate,
+    End = @EndDate,
+    UseSample = false,                                            //###TODO### modeified to false when run formally ###
+    ReturnAbnormalTraffic = false
+);
+
+BingQuery =
+    SELECT  
+        SessionId AS SessionId,                              //Session ID
+        Query_RawQuery AS RawQuery,                             //Raw Query that FD logged.
+        Market AS Market,
+        Vertical AS Vertical,
+        // Dataset,
+        // Request_RequestTime AS RequestTime,
+        // Request_IsBotVNext AS IsBot,
+        // Query_IsNormal AS IsNormalQuery
+        Page_Clicks
+    FROM 
+        SlapiPageView
+    WHERE Market == "zh-CN" AND
+          Query_IsNormal AND
+          Request_IsNormalTraffic AND
+          NOT Request_IsInternalTraffic AND
+          NOT Request_IsBotVNext AND
+          NOT Request_IsMarketingTraffic;
+        ;
+
+BingClick = 
+    SELECT 
+        SessionId,
+        RawQuery,
+        Market,
+        Vertical,
+        Click.ClickedLink.TitleUrl AS ClickedUrl,
+        Click.DwellTimeClickInSeconds  AS FirstClickDwellTime,
+        COUNT() AS ClickCount
+//        (Page_Entities_WebResults.Count >= 1 ? Page_Entities_WebResults[0].TitleUrl : "") AS WebAlgo1,
+//        (Page_Entities_WebResults.Count >= 1 ? (Page_Entities_WebResults[0].Clicks.Count > 0 ?1 : 0) : 0) AS WebAlgo1PageClicks,
+//        (Page_Entities_WebResults.Count >= 2 ? Page_Entities_WebResults[1].TitleUrl : "") AS WebAlgo2,
+//        (Page_Entities_WebResults.Count >= 2 ? (Page_Entities_WebResults[1].Clicks.Count > 0 ?1 : 0) : 0) AS WebAlgo2PageClicks,
+//        (Page_Entities_WebResults.Count >= 3 ? Page_Entities_WebResults[2].TitleUrl : "") AS WebAlgo3,
+//        (Page_Entities_WebResults.Count >= 3 ? (Page_Entities_WebResults[2].Clicks.Count > 0 ?1 : 0) : 0) AS WebAlgo3PageClicks,
+//        (Page_Entities_WebResults.Count >= 4 ? Page_Entities_WebResults[3].TitleUrl : "") AS WebAlgo4,
+//        (Page_Entities_WebResults.Count >= 4 ? (Page_Entities_WebResults[3].Clicks.Count > 0 ?1 : 0) : 0) AS WebAlgo4PageClicks,
+//        (Page_Entities_WebResults.Count >= 5 ? Page_Entities_WebResults[4].TitleUrl : "") AS WebAlgo5,
+//        (Page_Entities_WebResults.Count >= 5 ? (Page_Entities_WebResults[4].Clicks.Count > 0 ?1 : 0) : 0) AS WebAlgo5PageClicks
+
+    FROM BingQuery
+    CROSS APPLY Page_Clicks AS Click
+    HAVING NOT string.IsNullOrEmpty(ClickedUrl);
+
+ZhidaoClick = 
+    PROCESS BingClick
+    USING ZhidaoFilterProcessor;
+
+ZhidaoClick = 
+    SELECT
+        RawQuery,
+        ClickedUrl
+    FROM ZhidaoClick;
+
+OUTPUT ZhidaoClick
+TO @output_filename
+USING DefaultTextOutputter()
+;

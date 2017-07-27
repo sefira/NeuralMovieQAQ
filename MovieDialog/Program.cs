@@ -16,7 +16,7 @@ namespace MovieDialog
         {
             //TestParser();
             //TestoSearchAPI();
-            //TestSearchObjectStoreClient();
+            TestSearchObjectStoreClient();
             //TestQueryFile(@"D:\MovieDomain\MovieDialog\Resources\userquery.txt");
             //TestTranstionStatus();
             //TestSessionFile(@"D:\MovieDomain\MovieDialog\Resources\usersession.txt");
