@@ -1,0 +1,68 @@
+﻿//Script GUID:1e8a97a2-c04a-4768-8a8a-63c4619b2ff8
+//Used for tracking history
+
+#DECLARE path_root string = @"/my/BingClicks/";
+#DECLARE bingclick_filename string = @path_root + @"2017-07-28-11-40_2016-03-01_2017-07-01_BingClicks.tsv";
+#DECLARE zhidao_filename string = @"my/Zhidao/2017-06-01-00-22zhidaoqa.tsv";
+#DECLARE TimeNow string = DateTime.Now.ToString("yyyy-MM-dd-HH-mm");
+#DECLARE full_output_filename string = @path_root + @TimeNow + "_" + @"BingClicksZhidaoQuestions.tsv";
+#DECLARE simple_output_filename string = @path_root + @TimeNow + "_" + @"QueryQuestions.tsv";
+
+BingQueryUrl =
+    EXTRACT 
+        Query:string,
+        Url:string
+    FROM
+        @bingclick_filename
+    USING
+        DefaultTextExtractor();
+
+ZhidaoRetrindex = 
+    EXTRACT
+        Url:string,
+        DocHtmlBody:string,
+        Language:string,
+        DocumentType:string,
+        Question:string,
+        Answer:string
+    FROM
+        @zhidao_filename
+    USING 
+        DefaultTextExtractor();
+
+ZhidaoQuestionUrl = 
+    SELECT
+        Url,
+        Question
+    FROM
+        ZhidaoRetrindex;
+
+QueryQuestionUrl = 
+    SELECT 
+        BingQueryUrl.Url AS BingUrl,
+        BingQueryUrl.Query AS BingQuery,
+        ZhidaoQuestionUrl.Url AS ZhidaoUrl,
+        ZhidaoQuestionUrl.Question AS ZhidaoQuestion
+    FROM
+        BingQueryUrl
+    INNER JOIN 
+        ZhidaoQuestionUrl
+    ON
+        BingQueryUrl.Url == ZhidaoQuestionUrl.Url;
+
+OUTPUT QueryQuestionUrl
+TO @full_output_filename
+USING DefaultTextOutputter()
+;
+
+QueryQuestion = 
+    SELECT
+        BingQuery,
+        ZhidaoQuestion
+    FROM
+        QueryQuestionUrl;
+
+OUTPUT QueryQuestion
+TO @simple_output_filename
+USING DefaultTextOutputter()
+;
