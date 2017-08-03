@@ -34,6 +34,12 @@ namespace MovieDialog
 
         public static readonly string graphengine_endpoint = @"http://10.172.70.15:80/LIKQ/JsonQuery/";
         public static readonly string cnnbased_classifier_endpoint = @"http://10.139.139.99:9005/query?q=";
+
+        // ObjectStore
+        public static readonly string environment = "ObjectStoreMulti.Prod.HK.BingInternal.com:83/sds";
+        public static readonly string osNamespace = "MsnJVFeeds";
+        public static readonly string osSearchTable = "SnappsEntity";
+        public static readonly string osColumnTable = "SnappsEntityColumn";
     }
     class Entity
     {

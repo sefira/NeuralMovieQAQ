@@ -101,18 +101,18 @@ namespace ColumnTable
                             line = sr.ReadLine();
                             if (string.IsNullOrWhiteSpace(line)) { break; }
                             i++;
-
                             string[] term = line.Split(new char[] { '\t' });
-
-
-                            ChinaOpalSearch.EntityID key = new ChinaOpalSearch.EntityID();
-                            key.Id = BaseHelper.TsvBase64Encode(term[10]);
-                            var record = client.CreateColumnRecord(new ChinaOpalSearch.EntityID { Id = key.Id });
-
 
                             ChinaOpalSearch.SnappsEntity value = new ChinaOpalSearch.SnappsEntity();
                             OSColumnOperationResultType result;
+                            ChinaOpalSearch.EntityID key = new ChinaOpalSearch.EntityID();
+                            value.KgId = term[1];
+                            key.Id = value.KgId.Substring("http://kg.microsoft.com/".Length);
+                            var record = client.CreateColumnRecord(new ChinaOpalSearch.EntityID { Id = key.Id });
+                            result = record.SetColumnValue<string>("KgId", null, value.KgId);
+
                             #region init
+
                             System.Text.RegularExpressions.Regex regx = new System.Text.RegularExpressions.Regex("^[a-zA-Z0-9]+$");
                             value.Alias = term[11].Split('|').Where(m => !string.IsNullOrWhiteSpace(m) && m.Length > 1
                                 ).Where(m => regx.IsMatch(m) && m.Length > 10 || regx.IsMatch(m)).Distinct().ToList();
@@ -203,10 +203,7 @@ namespace ColumnTable
                                 }
                             }
                             result = record.SetColumnValue<Dictionary<string, string>>("ImageUrls", null, value.ImageUrls);
-
-                            value.KgId = term[1];
-                            result = record.SetColumnValue<string>("KgId", null, value.KgId);
-
+                            
                             uint length = 0;
                             if (!string.IsNullOrWhiteSpace(term[23]) && BaseHelper.IsNumberic.IsMatch(term[23]) &&
                                 uint.TryParse(term[23], out length))
@@ -354,7 +351,6 @@ namespace ColumnTable
                             sw.WriteLine(string.Format("{0}\t{1}\t{2}\t{3}", term[0], term[10], key.Id, res));
                             Console.WriteLine(term[0] + "\t" + term[10] + "\t" + res + "\t" + i);
                             System.Threading.Thread.Sleep(10);
-                            return;
 
                         }
                         Console.WriteLine(string.Format("Injested complteted, totally ingest {0} papers.", i));

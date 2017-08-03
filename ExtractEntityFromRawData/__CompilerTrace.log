@@ -1,0 +1,5 @@
+﻿2017-08-02T10:59:48.9627129+08:00	UnknownJobId_0052459359	CFE	VC	SetDefaultCredentials	SetDefaultCredentials("vc://cosmos09/relevance", "<noproxy>") : 33ms =>	null
+2017-08-02T10:59:52.6119406+08:00	UnknownJobId_0052459359	CFE	VC	GetStreamInfo	GetStreamInfo("https://cosmos09.osdinfra.net/cosmos/relevance/users/qliiu/Entity.ss", False, True) : 478ms =>	VcClient.StreamInfo
+2017-08-03T11:42:45.2404351+08:00	UnknownJobId_1112453826	CFE	VC	SetDefaultCredentials	SetDefaultCredentials("vc://cosmos09/searchSTC-A", "<noproxy>") : 43ms =>	null
+2017-08-03T11:42:48.5311645+08:00	UnknownJobId_1112453826	CFE	VC	GetStreamInfo	GetStreamInfo("https://cosmos09.osdinfra.net/cosmos/searchSTC-A/my/MovieDomain/ExtractEntityFromRawData/SplitChar.txt", False, True) : 159ms =>	VcClient.StreamInfo
+2017-08-03T11:42:49.3012903+08:00	UnknownJobId_1112453826	CFE	VC	GetStreamInfo	GetStreamInfo("https://cosmos09.osdinfra.net/cosmos/searchSTC-A/users/qliiu/Entity.ss", False, True) : 159ms =>	VcClient.StreamInfo

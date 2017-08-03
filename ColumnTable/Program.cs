@@ -13,7 +13,7 @@ namespace ColumnTable
     {
         static void Main(string[] args)
         {
-            //Writer.WriteDataColumnTable();
+            Writer.WriteDataColumnTable();
             ReadDataColumnTable().Wait();
         }
 
@@ -32,11 +32,13 @@ namespace ColumnTable
                 var keys = new List<ChinaOpalSearch.EntityID> {
                     new ChinaOpalSearch.EntityID { Id = BaseHelper.TsvBase64Encode("Leon") },
                     new ChinaOpalSearch.EntityID { Id = BaseHelper.TsvBase64Encode("! [ai-ou]") },
-                    new ChinaOpalSearch.EntityID { Id = "ISBbYWktb3Vd" }
+                    new ChinaOpalSearch.EntityID { Id = "ISBbYWktb3Vd" },
+                    new ChinaOpalSearch.EntityID { Id = "85354b40-2904-0e0f-f42a-4d2900ca04d0" }
                 };
 
                 var columninfos = new List<ColumnLocation>();
                 columninfos.Add(new ColumnLocation("Name", ""));
+                columninfos.Add(new ColumnLocation("KgId", ""));
                 columninfos.Add(new ColumnLocation("Description", ""));
 
                 List<IColumnRecord<ChinaOpalSearch.EntityID>> records;
@@ -48,10 +50,14 @@ namespace ColumnTable
                     string Name;
                     result = item.GetColumnValue<string>("Name", null, out Name);
                     Console.WriteLine("Name: " + Name);
-
+                    string KgId;
+                    result = item.GetColumnValue<string>("KgId", null, out KgId);
+                    Console.WriteLine("KgId: " + KgId);
                     string Description;
                     result = item.GetColumnValue<string>("Description", null, out Description);
                     Console.WriteLine("Description: " + Description);
+
+                    Console.WriteLine();
                 }
             }
         }

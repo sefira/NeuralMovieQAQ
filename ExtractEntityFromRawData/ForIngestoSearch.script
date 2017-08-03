@@ -1,0 +1,94 @@
+﻿//Script GUID:bd2c1fe1-1d8d-47db-aadc-1662a9ecb6b7
+//Used for tracking history
+
+#DECLARE TimeNow string = DateTime.Now.ToString("yyyy-MM-dd-HH-mm");
+#DECLARE filename1 string = @"/my/MovieDomain/Entity_201705110757.ss";
+#DECLARE filename2 string = @"/my/MovieDomain/Entity_201708011125.ss";
+#DECLARE filename3 string = @"/my/MovieDomain/Entity_201708011501.ss";
+#DECLARE filename4 string = @"/my/MovieDomain/Entity_201708021004.ss";
+#DECLARE copy_data string = @"/my/MovieDomain/Entity" + @TimeNow + ".tsv";
+rs1 = SSTREAM @filename1;
+rs2 = SSTREAM @filename2;
+rs3 = SSTREAM @filename3;
+rs4 = SSTREAM @filename4;
+
+rs0 = 
+    SELECT * FROM rs1
+    UNION DISTINCT
+    SELECT * FROM rs2;
+
+rs0 = 
+    SELECT * FROM rs0
+    UNION DISTINCT
+    SELECT * FROM rs3;
+
+rs0 = 
+    SELECT * FROM rs0
+    UNION DISTINCT
+    SELECT * FROM rs4;
+
+rs0 =
+    REDUCE rs0
+    ON KGId
+    USING MovieReducer
+    PRESORT Name;
+
+rs0 = 
+    SELECT
+        * 
+    FROM
+        rs0
+    WHERE
+        !string.IsNullOrEmpty(VisitCount) &&
+        Int32.Parse(Rating) > 0
+    ;
+
+rs0 =
+    SELECT 
+        Key,
+        KGId,
+        Generes,
+        Artists,
+        Directors,
+        Characters,
+        Performance,
+        Distributors,
+        Channels,
+        Albums,
+        Name,
+        Alias,
+        Description,
+        Segments,
+        Categories,
+        IntEmbeddedFilters,
+        Popularity,
+        Rating,
+        RatingCount,
+        ReviewCount,
+        VisitCount,
+        Rank,
+        PublishDate,
+        Length,
+        Geographies,
+        Filter,
+        SourceUrls,
+        ImageUrls,
+        OfficialSite,
+        //EntityContainer,
+        Logo,
+        QueryRank
+    FROM 
+        rs0
+    ;
+    
+rs0 =
+    SELECT 
+        *
+    FROM
+        rs0
+    ORDER BY Rank DESC;
+
+OUTPUT rs0
+    TO @copy_data
+    USING DefaultTextOutputter()
+    ;

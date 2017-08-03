@@ -12,7 +12,7 @@ namespace ColumnTable
         public static readonly string osNamespace = "MsnJVFeeds";
         public static readonly string osTable = "SnappsEntityColumn";
 
-        public static readonly string dataPath = @"D:\oSearch\data\Entity.tsv";
+        public static readonly string dataPath = @"D:\oSearch\data\Entity2017-08-02-20-48.tsv";
         public static readonly string logPath = @"D:\oSearch\data\log\log_" + DateTime.Now.ToString("yyyy-MM-dd") + ".txt";
     }
 }
