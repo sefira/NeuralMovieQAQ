@@ -210,7 +210,7 @@ namespace MovieDialog
             string query = string.Format(query_format, query_filter);
 
             uint offSet = 0;
-            uint resultsCount = 100;
+            uint resultsCount = 50;
 
             Console.WriteLine("Get oSearch results for query: {0}", query);
 
@@ -236,7 +236,7 @@ namespace MovieDialog
             string query = string.Format(query_format, query_filter);
 
             uint offSet = 0;
-            uint resultsCount = 10;
+            uint resultsCount = 50;
 
             Console.WriteLine("Get oSearch results for query: {0}", query);
 
@@ -244,17 +244,97 @@ namespace MovieDialog
             List<EntityID> keys = new List<EntityID>();
             List<SnappsEntity> results = new List<SnappsEntity>();
 
-            keys = IndexQuery(tlaQuery, offSet, resultsCount).Result;
-            results = ColumnTableQuery(keys).Result;
-            foreach (var key in keys)
+            try
             {
-                Console.WriteLine(key.Id);
+                keys = IndexQuery(tlaQuery, offSet, resultsCount).Result;
+                results = ColumnTableQuery(keys).Result;
             }
-            foreach (var result in results)
+            catch (Exception e)
             {
-                Console.WriteLine(string.Join(" ", result.Entment.Genres));
+                //Console.WriteLine($"Exception caught: {e}");
+                Utils.WriteError("Column Table has not this record!");
             }
             return results;
+        }
+
+        public static List<string> GetColumnData(EntityType topic_type, string topic, string property)
+        {
+            List<string> ret = new List<string>();
+            // filter which column
+            string query_filter = "";
+            string result_filter = "";
+
+            string[] edge_property_arr = property.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+            property = edge_property_arr[0];
+            if (topic_type == EntityType.Celebrity)
+            {
+                if ("Act".Equals(property))
+                {
+                    query_filter = $@"(#:""{topic}Artists "")";
+                }
+                else
+                {
+                    query_filter = $@"(#:""{topic}Directors "")";
+                }
+                result_filter = "Name";
+            }
+            else
+            {
+                query_filter = $@"(#:""{topic}Name "")";
+                result_filter = property;
+            }
+
+            List<SnappsEntity> res = (List<SnappsEntity>)Query(query_filter);
+            try
+            {
+                ret = ParseResult(res, result_filter);
+            }
+            catch (Exception e)
+            {
+                //Console.WriteLine($"Exception caught: {e}");
+                Utils.WriteError("Column Table has not this record!");
+            }
+            return ret;
+        }
+
+        static List<string> ParseResult(List<SnappsEntity> input, string property)
+        {
+            List<string> res = new List<string>();
+            if (input.Count() <= 0)
+            {
+                return res;
+            }
+            switch(property)
+            {
+                case "PublishDate":
+                    res.Add(input[0].PublishDate.ToString());
+                    break;
+                case "Rating":
+                    res.Add(input[0].Rating.ToString());
+                    break;
+                case "Genres":
+                    res = input[0].Entment.Genres;
+                    break;
+                case "Country":
+                    res = input[0].Geographies;
+                    break;
+                case "Description":
+                    res.Add(input[0].Description);
+                    break;
+                case "Artists":
+                    res = input[0].Entment.Artists;
+                    break;
+                case "Directors":
+                    res = input[0].Entment.Directors;
+                    break;
+                case "Name":
+                    foreach (var item in input)
+                    {
+                        res.Add(item.Name);
+                    }
+                    break;
+            }
+            return res;
         }
     }
 }

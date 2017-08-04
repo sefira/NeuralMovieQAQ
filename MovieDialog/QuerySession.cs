@@ -188,8 +188,10 @@ namespace MovieDialog
                 foreach (string name in duplicate_name)
                 {
                     List<string> osearch_query = oSearchQueryGenerator.GenerateSingleArtDirQuery(name);
-                    var as_an_art = oSearchClient.Query(osearch_query[0]);
-                    var as_a_dir = oSearchClient.Query(osearch_query[1]);
+                    //var as_an_art = oSearchClient.Query(osearch_query[0]);
+                    var as_an_art = SearchObjectStoreClient.Query(osearch_query[0]);
+                    //var as_a_dir = oSearchClient.Query(osearch_query[1]);
+                    var as_a_dir = SearchObjectStoreClient.Query(osearch_query[1]);
                     bool is_an_art = (as_an_art.Count() > as_a_dir.Count()) ? true : false;
                     if (is_an_art)
                     {

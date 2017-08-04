@@ -16,19 +16,24 @@ namespace MovieDialog
         {
             //TestParser();
             //TestoSearchAPI();
-            TestSearchObjectStoreClient();
+
             //TestQueryFile(@"D:\MovieDomain\MovieDialog\Resources\userquery.txt");
             //TestTranstionStatus();
-            //TestSessionFile(@"D:\MovieDomain\MovieDialog\Resources\usersession.txt");
+            TestSessionFile(@"D:\MovieDomain\MovieDialog\Resources\usersession.txt");
             //TestSession();
 
-            //TestLIKQClient();
             //TestPatternBased(@"D:\MovieDomain\MovieDialog\Resources\QA_pattern_qa.txt", @"D:\MovieDomain\MovieDialog\Resources\QA_pattern_output.txt");
             //TestCNNBased(@"D:\MovieDomain\MovieDialog\Resources\QA_pattern_qa.txt", @"D:\MovieDomain\MovieDialog\Resources\QA_pattern_output.txt");
+
+            //TestLIKQClient();
             //TestGraphEngineQuery();
             //TestGraphEngineQA();
 
-            TestDialogServer();
+            //TestSearchObjectStoreClient();
+            //TestColumnTableQuery();
+            //TestColumnTableQA();
+
+            //TestDialogServer();
         }
 
         #region test jieba
@@ -236,9 +241,9 @@ namespace MovieDialog
             //string question = "你的名字。是讲什么的"; // the period
             //string question = "赌神是讲什么的";
             //string question = "天下无贼是谁导演的";
-            //string question = "林家栋拍过什么电影";  //拍 act？ direct？
+            string question = "林家栋拍过什么电影";  //拍 act？ direct？
             //string question = "大话西游之大圣娶亲是什么时候拍的";
-            string question = "有木有徐克的";
+            //string question = "有木有徐克的";
             Parser parser = new Parser();
             GraphEngineQuery graphengine_query = new GraphEngineQuery();
             PatternBased pattern_qa = new PatternBased();
@@ -261,6 +266,89 @@ namespace MovieDialog
                 }
                 List<object> res = graphengine_query.GetGraphEngineData(question_topic, pattern_response.property, pattern_response.hop_num);
                 Utils.WriteMachine(string.Join(",", res.ToArray()));
+            }
+        }
+        #endregion
+
+        #region ColumnTable 
+        struct ColumnTableQueryInfo
+        {
+            public EntityType type;
+            public string entity;
+            public string property;
+            public ColumnTableQueryInfo(EntityType t, string e, string p)
+            {
+                type = t;
+                entity = e;
+                property = p;
+            }
+        }
+
+        private static void TestColumnTableQuery()
+        {
+            List<ColumnTableQueryInfo> info_list = new List<ColumnTableQueryInfo>
+            {
+                new ColumnTableQueryInfo(EntityType.Movie, "墨攻", "PublishDate"),
+                new ColumnTableQueryInfo(EntityType.Movie, "墨攻", "Rating"),
+                new ColumnTableQueryInfo(EntityType.Movie, "墨攻", "Genres"),
+                new ColumnTableQueryInfo(EntityType.Movie, "墨攻", "Country"),
+                new ColumnTableQueryInfo(EntityType.Movie, "墨攻", "Description"),
+                new ColumnTableQueryInfo(EntityType.Movie, "墨攻", "Artists:Name"),
+                new ColumnTableQueryInfo(EntityType.Movie, "墨攻", "Directors:Name"),
+                new ColumnTableQueryInfo(EntityType.Celebrity, "刘德华", "Act:Name"),
+                new ColumnTableQueryInfo(EntityType.Celebrity, "张艺谋", "Direct:Name"),
+            };
+
+            List<string> res;
+            foreach (var item in info_list)
+            {
+                res = SearchObjectStoreClient.GetColumnData(item.type, item.entity, item.property);
+                Console.WriteLine(string.Join(",", res.ToArray()));
+                Console.WriteLine();
+            }
+        }
+
+        private static void TestColumnTableQA()
+        {
+            Parser parser = new Parser();
+            PatternBased pattern_qa = new PatternBased();
+            List<string> questions = new List<string>
+            {
+                "肯尼思·洛纳根导演过哪些电影", // 肯尼思·洛纳根 splited
+                "你的名字是哪个国家拍的", // 你的名字 in NER, but 你的名字。in CellID
+                "十二怒汉是讲什么的", // have no 十二怒汉
+                "活着是讲什么的",
+                "你的名字。是讲什么的", // the period
+                "赌神是讲什么的",
+                "天下无贼是谁导演的",
+                "林家栋拍过什么电影",  //拍 act？ direct？
+                "大话西游之大圣娶亲是什么时候拍的",
+                "有木有徐克的",
+            };
+            foreach (string question in questions)
+            {
+                Query query = new Query(question);
+                parser.PosTagging(ref query);
+                parser.ParseAllTag(ref query);
+
+                PatternResponse pattern_response;
+                if (pattern_qa.QuestionClassify(query, out pattern_response))
+                {
+                    string question_topic = "";
+                    switch (pattern_response.entity_type)
+                    {
+                        case EntityType.Movie:
+                            question_topic = query.carried_movie[0];
+                            break;
+                        case EntityType.Celebrity:
+                            question_topic = (query.carried_artist.Count > 0) ? query.carried_artist[0] : query.carried_director[0];
+                            break;
+                    }
+                    List<string> res = SearchObjectStoreClient.GetColumnData(pattern_response.entity_type, question_topic, pattern_response.property);
+                    Console.WriteLine("Question:" + question);
+                    Console.WriteLine("Answer:" + string.Join(",", res.ToArray()));
+                    Console.WriteLine();
+                }
             }
         }
         #endregion

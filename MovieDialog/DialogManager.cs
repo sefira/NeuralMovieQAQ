@@ -408,7 +408,8 @@ namespace MovieDialog
                             question_topic = (query.carried_artist.Count > 0) ? query.carried_artist[0] : query.carried_director[0];
                             break;
                     }
-                    List<object> res = graphengine_query.GetGraphEngineData(question_topic, pattern_response.property, pattern_response.hop_num);
+                    //List<object> res = graphengine_query.GetGraphEngineData(question_topic, pattern_response.property, pattern_response.hop_num);
+                    List<string> res = SearchObjectStoreClient.GetColumnData(pattern_response.entity_type, question_topic, pattern_response.property);
                     string answer = string.Join(",", res.ToArray());
                     if (answer.Length < 2)
                     {
@@ -513,7 +514,7 @@ namespace MovieDialog
             Parser parser = new Parser();
 
             // get query
-            Session session = new Session();
+            session = new Session();
             Query query = new Query(query_str);
             parser.PosTagging(ref query);
 
@@ -746,7 +747,8 @@ namespace MovieDialog
         private void GetAllResult(ref Session session)
         {
             string final_query = GenerateAllOsearchQuery(session);
-            var results = oSearchClient.Query(final_query);
+            //var results = oSearchClient.Query(final_query);
+            var results = SearchObjectStoreClient.Query(final_query);
             List<MovieEntity> format_results = new List<MovieEntity>();
             foreach (var item in results)
             {
