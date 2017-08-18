@@ -16,7 +16,7 @@ namespace MovieDialog
     {
         private HttpListener listener;
         private Thread dialog_thread;
-        public static List<string> dialog_history;
+        public static List<string> dialog_history = new List<string>();
         public static Semaphore bot_response_sem;
         public static string user_query;
         public static Semaphore user_request_sem;

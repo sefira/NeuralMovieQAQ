@@ -283,7 +283,7 @@ namespace MovieDialog
                     {
                         if (session.is_considerd[session.parse_status] != true)
                         {
-                            Utils.WriteMachine("Pardon me");
+                            Utils.WriteUnknow("Pardon me", query.raw_query);
                             continue;
                         }
                     }
@@ -380,7 +380,7 @@ namespace MovieDialog
                 else
                 {
                     jump_show_candidate_dueto_kbqa = true;
-                    Utils.WriteMachine("数据库中没有相关的答案...");
+                    Utils.WriteUnknow("数据库中没有相关的答案...", query.raw_query);
                 }
             }
             Utils.WriteMachine("好像找不到你喜欢看的电影...");

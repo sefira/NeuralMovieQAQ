@@ -31,9 +31,11 @@ namespace MovieDialog
 
             //TestSearchObjectStoreClient();
             //TestColumnTableQuery();
-            TestColumnTableQA();
+            //TestColumnTableQA();
 
+            //TestXiaoIce();
             TestDialogServer();
+
         }
 
         #region test jieba
@@ -317,16 +319,16 @@ namespace MovieDialog
             PatternBased pattern_qa = new PatternBased();
             List<string> questions = new List<string>
             {
-                //"肯尼思·洛纳根导演过哪些电影", // 肯尼思·洛纳根 splited
-                //"你的名字是哪个国家拍的", // 你的名字 in NER, but 你的名字。in CellID
-                //"十二怒汉是讲什么的", // have no 十二怒汉
-                //"活着是讲什么的",
-                //"你的名字。是讲什么的", // the period
-                //"赌神是讲什么的",
-                //"天下无贼是谁导演的",
-                //"林家栋拍过什么电影",  //拍 act？ direct？
-                //"大话西游之大圣娶亲是什么时候拍的",
-                //"有木有徐克的",
+                "肯尼思·洛纳根导演过哪些电影", // 肯尼思·洛纳根 splited
+                "你的名字是哪个国家拍的", // 你的名字 in NER, but 你的名字。in CellID
+                "十二怒汉是讲什么的", // have no 十二怒汉
+                "活着是讲什么的",
+                "你的名字。是讲什么的", // the period
+                "赌神是讲什么的",
+                "天下无贼是谁导演的",
+                "林家栋拍过什么电影",  //拍 act？ direct？
+                "大话西游之大圣娶亲是什么时候拍的",
+                "有木有徐克的",
                 "美人鱼上映了吗",
                 "绝世高手上映了吗",
                 "最近有什么好电影"
@@ -335,32 +337,10 @@ namespace MovieDialog
             {
                 Query query = new Query(question);
                 parser.PosTagging(ref query);
-                parser.ParseAllTag(ref query);
-
-                PatternResponse pattern_response;
-                if (pattern_qa.QuestionClassify(query, out pattern_response))
-                {
-                    string question_topic = "";
-                    switch (pattern_response.entity_type)
-                    {
-                        case KBQAEntityType.Movie:
-                            question_topic = query.carried_movie[0];
-                            break;
-                        case KBQAEntityType.Celebrity:
-                            question_topic = (query.carried_artist.Count > 0) ? query.carried_artist[0] : query.carried_director[0];
-                            break;
-                        case KBQAEntityType.RecentMovie:
-                            question_topic = "";
-                            break;
-                        case KBQAEntityType.IsPublish:
-                            question_topic = query.carried_movie[0];
-                            break;
-                    }
-                    List<string> res = KBQA.GetColumnData(pattern_response.entity_type, question_topic, pattern_response.property);
-                    Console.WriteLine("Question:" + question);
-                    Console.WriteLine("Answer:" + string.Join(",", res.ToArray()));
-                    Console.WriteLine();
-                }
+                Console.WriteLine("Question:" + question);
+                Console.WriteLine("Answer:");
+                Console.WriteLine(KBQA.DoKBQA(query, parser));
+                Console.WriteLine();
             }
         }
         #endregion
@@ -372,6 +352,14 @@ namespace MovieDialog
             dialog_server.WorkWithMovieDialog();
         }
 
+        #endregion
+
+        #region Test Xiaoice
+        private static void TestXiaoIce()
+        {
+            Console.WriteLine(XiaoIce.XiaoIceResponse("你好啊"));
+            return;
+        }
         #endregion
     }
 }

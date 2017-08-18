@@ -32,13 +32,19 @@ namespace MovieDialog
                         case KBQAEntityType.Celebrity:
                             question_topic = (query.carried_artist.Count > 0) ? query.carried_artist[0] : query.carried_director[0];
                             break;
+                        case KBQAEntityType.RecentMovie:
+                            question_topic = "";
+                            break;
+                        case KBQAEntityType.IsPublish:
+                            question_topic = query.carried_movie[0];
+                            break;
                     }
                     //List<object> res = graphengine_query.GetGraphEngineData(question_topic, pattern_response.property, pattern_response.hop_num);
                     List<string> res = GetColumnData(pattern_response.entity_type, question_topic, pattern_response.property);
                     string answer = string.Join(",", res.ToArray());
                     if (answer.Length < 2)
                     {
-                        Utils.WriteMachine("数据库中没有相关的答案...");
+                        Utils.WriteUnknow("数据库中没有相关的答案...", query.raw_query);
                     }
                     else
                     {
@@ -48,7 +54,7 @@ namespace MovieDialog
                 }
                 catch (Exception e)
                 {
-                    Utils.WriteError("It seems Neural Network makes a mistake");
+                    Utils.WriteUnknow("It seems Neural Network makes a mistake", query.raw_query);
                     return false;
                 }
             }
@@ -106,7 +112,9 @@ namespace MovieDialog
                         {
                             ret = ParseResult(temp_res, result_filter);
                             datetime = int.Parse(ret[0]);
-                            return int.Parse(DateTime.Now.ToString("yyyyMMdd")) >= datetime ? new List<string> { "上映了" } : new List<string> { $"还没上映呢，上映时间是{ret[0]}" };
+                            string publish_date = DateTime.ParseExact(ret[0], "yyyyMMdd", null).ToString("yyyy年MM月dd日");
+                            return int.Parse(DateTime.Now.ToString("yyyyMMdd")) >= datetime ? 
+                                new List<string> { $"上映了，上映时间是{publish_date}" } : new List<string> { $"还没上映呢，上映时间是{publish_date}" };
                         }
                         catch (Exception e)
                         {

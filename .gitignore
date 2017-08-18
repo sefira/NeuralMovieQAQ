@@ -31,3 +31,4 @@ bin/
 *.dict
 *GeneratedCode*
 obj/
+XiaoIce.cs

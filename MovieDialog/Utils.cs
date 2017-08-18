@@ -1,4 +1,4 @@
-﻿#define LOCAL
+﻿//#define LOCAL
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,6 +59,19 @@ namespace MovieDialog
             Console.ResetColor();
         }
 
+        public static void WriteUnknow(string str, string query)
+        {
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine(str);
+            Console.ResetColor();
+            string xiaoice = XiaoIce.XiaoIceResponse(query);
+            Console.WriteLine(xiaoice);
+#if LOCAL
+#else
+            //DialogHttpServer.dialog_history.Add($"Bot-Unknow: {str}");
+            DialogHttpServer.dialog_history.Add($"Bot: {xiaoice}");
+#endif
+        }
         public static void WriteError(string str)
         {
             Console.ForegroundColor = ConsoleColor.Red ;
@@ -66,7 +79,7 @@ namespace MovieDialog
             Console.ResetColor();
 #if LOCAL
 #else
-            DialogHttpServer.dialog_history.Add($"Bot-Error: {str}");
+            //DialogHttpServer.dialog_history.Add($"Bot-Error: {str}");
 #endif
         }
     }
