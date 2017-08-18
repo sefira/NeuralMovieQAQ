@@ -8,7 +8,7 @@ namespace MovieDialog
 {
     public enum ParseStatus { All, Movie, Artist, Director, Country, Genre, PublishDate, Rating, Duration };
 
-    public enum EntityType { Movie, Celebrity };
+    public enum KBQAEntityType { Movie, Celebrity, RecentMovie, IsPublish };
 
     class Config
     {

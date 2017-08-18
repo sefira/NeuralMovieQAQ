@@ -28,7 +28,6 @@ namespace MovieDialog
             rating = item.Rating;
             duration = item.Length;
             number_reviewer = item.Rank;
-            douban_url = item.SourceUrls.ContainsKey("douban") ? item.SourceUrls["douban"]:"";
         }
 
         public string name = "";

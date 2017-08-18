@@ -133,6 +133,12 @@ namespace MovieDialog
                 try
                 {
                     keys = await client.IndexQuery(req).GetKeysOnly();
+
+                    //var columninfos = new List<ColumnLocation>();
+                    //columninfos.Add(new ColumnLocation("Name", ""));
+                    //columninfos.Add(new ColumnLocation("Alias", ""));
+                    //columninfos.Add(new ColumnLocation("KgId", ""));
+                    //var res = await client.IndexQuery(req).GetKeysWithColumnValues(columninfos);
                 }
                 catch (Exception ex)
                 {
@@ -173,18 +179,25 @@ namespace MovieDialog
                 columninfos.Add(new ColumnLocation("UpdateDate", ""));
                 columninfos.Add(new ColumnLocation("EndDate", ""));
                 columninfos.Add(new ColumnLocation("Length", ""));
-                columninfos.Add(new ColumnLocation("CustomData", ""));
-                columninfos.Add(new ColumnLocation("Clients", ""));
-                columninfos.Add(new ColumnLocation("Excludes", ""));
                 columninfos.Add(new ColumnLocation("QueryRank", ""));
-                columninfos.Add(new ColumnLocation("ImageUrls", ""));
-                columninfos.Add(new ColumnLocation("SourceUrls", ""));
-                columninfos.Add(new ColumnLocation("OfficialSite", ""));
-                columninfos.Add(new ColumnLocation("Logo", ""));
                 columninfos.Add(new ColumnLocation("Entment", ""));
 
                 List<IColumnRecord<ChinaOpalSearch.EntityID>> records;
                 records = await client.ColumnRead(keys, columninfos).SendAsync();
+
+
+                //string query_format = @"#:"" _DocType_ChinaEntity"" #:""filmSegments "" AND ({0})";
+                //string query_filter = @"rangeconstraint:bt:20160504:20170604:#:"" _PublishDate""";
+                //string query = string.Format(query_format, query_filter);
+                //string tlaQuery = GetTLAQuery(query);
+                //officialObjectStore::ObjectStoreWireProtocol.IndexQueryRequest req = new officialObjectStore::ObjectStoreWireProtocol.IndexQueryRequest();
+                //req.m_IndexQuery = tlaQuery;
+                //req.m_ResultBase = 0;
+                //req.m_ResultCount = 12;
+                //Dictionary<string, string> header = new Dictionary<string, string>();
+                //string traceId = Guid.NewGuid().ToString("N");
+                //header.Add("X-TraceId", traceId);
+                //var res = await client.IndexQuery(req).GetKeysWithColumnValues(columninfos);
                 List<SnappsEntity> results = new List<SnappsEntity>();
                 foreach (var record in records)
                 {
@@ -210,7 +223,7 @@ namespace MovieDialog
             string query = string.Format(query_format, query_filter);
 
             uint offSet = 0;
-            uint resultsCount = 50;
+            uint resultsCount = 100;
 
             Console.WriteLine("Get oSearch results for query: {0}", query);
 
@@ -230,9 +243,23 @@ namespace MovieDialog
             }
         }
 
-        public static IEnumerable<ChinaOpalSearch.SnappsEntity> Query(string query_filter)
+        public static IEnumerable<ChinaOpalSearch.SnappsEntity> Query(string query_filter, string rank_policy = "rating")
         {
-            string query_format = @"#:"" _DocType_ChinaEntity"" #:""filmSegments "" AND ({0})" + " AND #:\" _RatingCount\" adjust:1rankmul:#:\" _RatingCount\"";
+            //string rank_string = " AND #:\" _RatingCount\" adjust:1rankmul:#:\" _RatingCount\"";
+            string rank_string = " AND #:\" _VisitCount\" adjust:1rankmul:#:\" _VisitCount\"";
+            switch (rank_policy)
+            {
+                case "rating":
+                    rank_string = " AND #:\" _RatingCount\" adjust:1rankmul:#:\" _RatingCount\"";
+                    break;
+                case "date":
+                    rank_string = " AND #:\" _PublishDate\" adjust:1rankmul:#:\" _PublishDate\"";
+                    break;
+                case "recent":
+                    rank_string = " AND rangeconstraint:bt:20160818:20170818:#:\" _PublishDate\"" + rank_string;
+                    break;
+            }
+            string query_format = @"#:"" _DocType_ChinaEntity"" #:""filmSegments "" AND ({0})" + rank_string;
             string query = string.Format(query_format, query_filter);
 
             uint offSet = 0;
@@ -257,84 +284,5 @@ namespace MovieDialog
             return results;
         }
 
-        public static List<string> GetColumnData(EntityType topic_type, string topic, string property)
-        {
-            List<string> ret = new List<string>();
-            // filter which column
-            string query_filter = "";
-            string result_filter = "";
-
-            string[] edge_property_arr = property.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-            property = edge_property_arr[0];
-            if (topic_type == EntityType.Celebrity)
-            {
-                if ("Act".Equals(property))
-                {
-                    query_filter = $@"(#:""{topic}Artists "")";
-                }
-                else
-                {
-                    query_filter = $@"(#:""{topic}Directors "")";
-                }
-                result_filter = "Name";
-            }
-            else
-            {
-                query_filter = $@"(#:""{topic}Name "")";
-                result_filter = property;
-            }
-
-            List<SnappsEntity> res = (List<SnappsEntity>)Query(query_filter);
-            try
-            {
-                ret = ParseResult(res, result_filter);
-            }
-            catch (Exception e)
-            {
-                //Console.WriteLine($"Exception caught: {e}");
-                Utils.WriteError("Column Table has not this record!");
-            }
-            return ret;
-        }
-
-        static List<string> ParseResult(List<SnappsEntity> input, string property)
-        {
-            List<string> res = new List<string>();
-            if (input.Count() <= 0)
-            {
-                return res;
-            }
-            switch(property)
-            {
-                case "PublishDate":
-                    res.Add(input[0].PublishDate.ToString());
-                    break;
-                case "Rating":
-                    res.Add(input[0].Rating.ToString());
-                    break;
-                case "Genres":
-                    res = input[0].Entment.Genres;
-                    break;
-                case "Country":
-                    res = input[0].Geographies;
-                    break;
-                case "Description":
-                    res.Add(input[0].Description);
-                    break;
-                case "Artists":
-                    res = input[0].Entment.Artists;
-                    break;
-                case "Directors":
-                    res = input[0].Entment.Directors;
-                    break;
-                case "Name":
-                    foreach (var item in input)
-                    {
-                        res.Add(item.Name);
-                    }
-                    break;
-            }
-            return res;
-        }
     }
 }

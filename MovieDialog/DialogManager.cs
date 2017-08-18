@@ -94,9 +94,6 @@ namespace MovieDialog
 
         Parser parser = new Parser();
         Session session = new Session();
-        PatternBased pattern_qa = new PatternBased();
-        CNNBased cnn_qa = new CNNBased();
-        GraphEngineQuery graphengine_query = new GraphEngineQuery();
 
 
         public DialogManager()
@@ -193,8 +190,8 @@ namespace MovieDialog
                     // movie recommendation trigger
                     if (!parser.isAboutMovie(query))
                     {
-                        Console.WriteLine(new string('=', 24));
-                        Console.WriteLine("\n");
+                        Utils.WriteMachine(new string('=', 24));
+                        Utils.WriteMachine("\n");
                         return;
                     }
                 }
@@ -206,7 +203,7 @@ namespace MovieDialog
 
                     Query query_kbqa = new Query(query_str);
                     parser.PosTagging(ref query_kbqa);
-                    if (KBQA(query_kbqa))
+                    if (KBQA.DoKBQA(query_kbqa, parser))
                     {
                         continue;
                     }
@@ -376,7 +373,7 @@ namespace MovieDialog
                     Utils.WriteMachine("Have Fun~~~");
                     return;
                 }
-                if (KBQA(query))
+                if (KBQA.DoKBQA(query, parser))
                 {
                     jump_show_candidate_dueto_kbqa = true;
                 }
@@ -387,50 +384,6 @@ namespace MovieDialog
                 }
             }
             Utils.WriteMachine("好像找不到你喜欢看的电影...");
-        }
-
-        private bool KBQA(Query query)
-        {
-            parser.ParseAllTag(ref query);
-            PatternResponse pattern_response;
-            if (pattern_qa.QuestionClassify(query, out pattern_response) || cnn_qa.QuestionClassify(query, out pattern_response))
-            {
-                Console.WriteLine("Start to KBQA");
-                string question_topic = "";
-                try
-                {
-                    switch (pattern_response.entity_type)
-                    {
-                        case EntityType.Movie:
-                            question_topic = query.carried_movie[0];
-                            break;
-                        case EntityType.Celebrity:
-                            question_topic = (query.carried_artist.Count > 0) ? query.carried_artist[0] : query.carried_director[0];
-                            break;
-                    }
-                    //List<object> res = graphengine_query.GetGraphEngineData(question_topic, pattern_response.property, pattern_response.hop_num);
-                    List<string> res = SearchObjectStoreClient.GetColumnData(pattern_response.entity_type, question_topic, pattern_response.property);
-                    string answer = string.Join(",", res.ToArray());
-                    if (answer.Length < 2)
-                    {
-                        Utils.WriteMachine("数据库中没有相关的答案...");
-                    }
-                    else
-                    {
-                        Utils.WriteMachine(answer);
-                    }
-                    return true;
-                }
-                catch (Exception e)
-                {
-                    Utils.WriteError("It seems Neural Network makes a mistake");
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
         }
 
         private void ClarifyArtistDirector()
@@ -484,7 +437,7 @@ namespace MovieDialog
                             }
                             break;
                         }
-                        if (KBQA(query))
+                        if (KBQA.DoKBQA(query, parser))
                         {
                             continue;
                         }

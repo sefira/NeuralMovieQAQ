@@ -137,12 +137,16 @@ namespace MovieDialog
         private static string _must = "电影,影片,片子";
         private static HashSet<string> intent_word_tag;
         private static HashSet<string> must_word_tag;
+        private static readonly List<string> _is_about_movie_pattern = new List<string>(new string[] {
+            "^(?!.*不).*[想看|推荐|有什么|有没有|来一部|来部](.){0,10}[电影|影片|片|片子]",
+        });
+        private static readonly List<Regex> is_about_movie_pattern = new List<Regex>();
 
         // for isArtistOrDirector
         // int -1 for null, int 1 for artist, int 2 for director
         private static readonly List<Tuple<int, string>> _artist_director_pattern = new List<Tuple<int, string>>(new Tuple<int, string>[] {
-            new Tuple<int, string>(2,"(是)?(他|她)?(导(演)?|拍(摄)?)(的)?(啦)?"),
-            new Tuple<int, string>(1,"(是)?(他|她)?(主|扮)?演(的)?(啦)?"),
+            new Tuple<int, string>(2,"(是)?(他|她)?(导(演)?|拍(摄)?)(的)?(啦|吧)?"),
+            new Tuple<int, string>(1,"(是)?(他|她)?(主|扮)?演(的)?(啦|吧)?"),
         });
         private static readonly List<Tuple<int, Regex>> artist_director_pattern = new List<Tuple<int, Regex>>();
 
@@ -205,6 +209,10 @@ namespace MovieDialog
             intent_word_tag = new HashSet<string>(tmp);
             tmp = _must.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             must_word_tag = new HashSet<string>(tmp);
+            foreach (var item in _is_about_movie_pattern)
+            {
+                is_about_movie_pattern.Add(new Regex(item));
+            }
 
             // for isArtistOrDirector
             // int 1 for artist, int 2 for director
@@ -495,14 +503,12 @@ namespace MovieDialog
             }
 
             // I want to watch a movie / film / etc.
-            foreach (string intent_item in intent_word_tag)
+            foreach (var pattern in is_about_movie_pattern)
             {
-                foreach (string must_item in must_word_tag)
+                Match res = pattern.Match(query.raw_query);
+                if (res.Success && ((double)res.Length / query.raw_query.Length) >= confidence_ratio)
                 {
-                    if (query.raw_query.Contains(intent_item) && query.raw_query.Contains(must_item))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
             return false;

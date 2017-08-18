@@ -15,7 +15,7 @@ namespace MovieDialog
     {
         public Regex regex_pattern;
 
-        public EntityType entity_type;
+        public KBQAEntityType entity_type;
 
         public string property;
 
@@ -29,7 +29,7 @@ namespace MovieDialog
             this.regex_pattern = regex_pattern;
         }
 
-        // Can parse from line with format: EntityType \t Property type with constraint \t #hop in knowledge graph \t Pattern RegEx
+        // Can parse from line with format: KBQAEntityType \t Property type with constraint \t #hop in knowledge graph \t Pattern RegEx
         // Return a Pattern class 
         // Can be used as a Constructor 
         public static Pattern FromLine(string line)
@@ -54,7 +54,7 @@ namespace MovieDialog
 
         public string post_query = "";
 
-        public EntityType entity_type;
+        public KBQAEntityType entity_type;
 
         public string property;
 

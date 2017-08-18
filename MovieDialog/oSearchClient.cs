@@ -149,14 +149,14 @@ namespace MovieDialog
             string query_format = @"#:"" _DocType_ChinaEntity"" #:""filmSegments "" AND ({0})";
             //string query_filter = @" #:""刘德华Artists "" AND #:""王宝强Artists "" AND #:""战争Genres """;
             //string query_filter = @"rangeconstraint:bt:20160504:20170604:#:"" _PublishDate"" #:"" _PublishDate"" adjust:1rankmul:#:"" _PublishDate";
-            //string query_filter = @"rangeconstraint:bt:20160504:20170604:#:"" _PublishDate""";
+            string query_filter = @"rangeconstraint:bt:20160504:20170604:#:"" _PublishDate""";
             //string query_filter = @"((#:""刘德华Artists "") AND (#:""张艺谋Directors ""))";
             //string query_filter = @"((#:""头发Name ""))";
-            string query_filter = @"(#:""张艺谋Artists "") AND (#:""喜剧Genres "")";
+            //string query_filter = @"(#:""张艺谋Artists "") AND (#:""喜剧Genres "")";
             string query = string.Format(query_format, query_filter);
 
             uint offSet = 0;
-            uint resultsCount = 10;
+            uint resultsCount = 100;
 
             Console.WriteLine("Get oSearch results for query: {0}", query);
 

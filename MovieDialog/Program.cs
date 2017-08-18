@@ -19,7 +19,7 @@ namespace MovieDialog
 
             //TestQueryFile(@"D:\MovieDomain\MovieDialog\Resources\userquery.txt");
             //TestTranstionStatus();
-            TestSessionFile(@"D:\MovieDomain\MovieDialog\Resources\usersession.txt");
+            //TestSessionFile(@"D:\MovieDomain\MovieDialog\Resources\usersession.txt");
             //TestSession();
 
             //TestPatternBased(@"D:\MovieDomain\MovieDialog\Resources\QA_pattern_qa.txt", @"D:\MovieDomain\MovieDialog\Resources\QA_pattern_output.txt");
@@ -31,9 +31,9 @@ namespace MovieDialog
 
             //TestSearchObjectStoreClient();
             //TestColumnTableQuery();
-            //TestColumnTableQA();
+            TestColumnTableQA();
 
-            //TestDialogServer();
+            TestDialogServer();
         }
 
         #region test jieba
@@ -257,10 +257,10 @@ namespace MovieDialog
                 string question_topic = "";
                 switch (pattern_response.entity_type)
                 {
-                    case EntityType.Movie:
+                    case KBQAEntityType.Movie:
                         question_topic = query.carried_movie[0];
                         break;
-                    case EntityType.Celebrity:
+                    case KBQAEntityType.Celebrity:
                         question_topic = (query.carried_artist.Count > 0) ? query.carried_artist[0] : query.carried_director[0];
                         break;
                 }
@@ -273,10 +273,10 @@ namespace MovieDialog
         #region ColumnTable 
         struct ColumnTableQueryInfo
         {
-            public EntityType type;
+            public KBQAEntityType type;
             public string entity;
             public string property;
-            public ColumnTableQueryInfo(EntityType t, string e, string p)
+            public ColumnTableQueryInfo(KBQAEntityType t, string e, string p)
             {
                 type = t;
                 entity = e;
@@ -288,21 +288,24 @@ namespace MovieDialog
         {
             List<ColumnTableQueryInfo> info_list = new List<ColumnTableQueryInfo>
             {
-                new ColumnTableQueryInfo(EntityType.Movie, "墨攻", "PublishDate"),
-                new ColumnTableQueryInfo(EntityType.Movie, "墨攻", "Rating"),
-                new ColumnTableQueryInfo(EntityType.Movie, "墨攻", "Genres"),
-                new ColumnTableQueryInfo(EntityType.Movie, "墨攻", "Country"),
-                new ColumnTableQueryInfo(EntityType.Movie, "墨攻", "Description"),
-                new ColumnTableQueryInfo(EntityType.Movie, "墨攻", "Artists:Name"),
-                new ColumnTableQueryInfo(EntityType.Movie, "墨攻", "Directors:Name"),
-                new ColumnTableQueryInfo(EntityType.Celebrity, "刘德华", "Act:Name"),
-                new ColumnTableQueryInfo(EntityType.Celebrity, "张艺谋", "Direct:Name"),
+                new ColumnTableQueryInfo(KBQAEntityType.Movie, "墨攻", "PublishDate"),
+                new ColumnTableQueryInfo(KBQAEntityType.Movie, "墨攻", "Rating"),
+                new ColumnTableQueryInfo(KBQAEntityType.Movie, "墨攻", "Genres"),
+                new ColumnTableQueryInfo(KBQAEntityType.Movie, "墨攻", "Country"),
+                new ColumnTableQueryInfo(KBQAEntityType.Movie, "墨攻", "Description"),
+                new ColumnTableQueryInfo(KBQAEntityType.Movie, "墨攻", "Artists:Name"),
+                new ColumnTableQueryInfo(KBQAEntityType.Movie, "墨攻", "Directors:Name"),
+                new ColumnTableQueryInfo(KBQAEntityType.Celebrity, "刘德华", "Act:Name"),
+                new ColumnTableQueryInfo(KBQAEntityType.Celebrity, "张艺谋", "Direct:Name"),
+                new ColumnTableQueryInfo(KBQAEntityType.RecentMovie, "", "Name"),
+                new ColumnTableQueryInfo(KBQAEntityType.IsPublish, "美人鱼", "PublishDate"),
+                new ColumnTableQueryInfo(KBQAEntityType.IsPublish, "绝世高手", "PublishDate"),
             };
 
             List<string> res;
             foreach (var item in info_list)
             {
-                res = SearchObjectStoreClient.GetColumnData(item.type, item.entity, item.property);
+                res = KBQA.GetColumnData(item.type, item.entity, item.property);
                 Console.WriteLine(string.Join(",", res.ToArray()));
                 Console.WriteLine();
             }
@@ -314,16 +317,19 @@ namespace MovieDialog
             PatternBased pattern_qa = new PatternBased();
             List<string> questions = new List<string>
             {
-                "肯尼思·洛纳根导演过哪些电影", // 肯尼思·洛纳根 splited
-                "你的名字是哪个国家拍的", // 你的名字 in NER, but 你的名字。in CellID
-                "十二怒汉是讲什么的", // have no 十二怒汉
-                "活着是讲什么的",
-                "你的名字。是讲什么的", // the period
-                "赌神是讲什么的",
-                "天下无贼是谁导演的",
-                "林家栋拍过什么电影",  //拍 act？ direct？
-                "大话西游之大圣娶亲是什么时候拍的",
-                "有木有徐克的",
+                //"肯尼思·洛纳根导演过哪些电影", // 肯尼思·洛纳根 splited
+                //"你的名字是哪个国家拍的", // 你的名字 in NER, but 你的名字。in CellID
+                //"十二怒汉是讲什么的", // have no 十二怒汉
+                //"活着是讲什么的",
+                //"你的名字。是讲什么的", // the period
+                //"赌神是讲什么的",
+                //"天下无贼是谁导演的",
+                //"林家栋拍过什么电影",  //拍 act？ direct？
+                //"大话西游之大圣娶亲是什么时候拍的",
+                //"有木有徐克的",
+                "美人鱼上映了吗",
+                "绝世高手上映了吗",
+                "最近有什么好电影"
             };
             foreach (string question in questions)
             {
@@ -337,14 +343,20 @@ namespace MovieDialog
                     string question_topic = "";
                     switch (pattern_response.entity_type)
                     {
-                        case EntityType.Movie:
+                        case KBQAEntityType.Movie:
                             question_topic = query.carried_movie[0];
                             break;
-                        case EntityType.Celebrity:
+                        case KBQAEntityType.Celebrity:
                             question_topic = (query.carried_artist.Count > 0) ? query.carried_artist[0] : query.carried_director[0];
                             break;
+                        case KBQAEntityType.RecentMovie:
+                            question_topic = "";
+                            break;
+                        case KBQAEntityType.IsPublish:
+                            question_topic = query.carried_movie[0];
+                            break;
                     }
-                    List<string> res = SearchObjectStoreClient.GetColumnData(pattern_response.entity_type, question_topic, pattern_response.property);
+                    List<string> res = KBQA.GetColumnData(pattern_response.entity_type, question_topic, pattern_response.property);
                     Console.WriteLine("Question:" + question);
                     Console.WriteLine("Answer:" + string.Join(",", res.ToArray()));
                     Console.WriteLine();
