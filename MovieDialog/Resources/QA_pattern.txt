@@ -42,9 +42,8 @@ Movie	Description	0	(给我)?(剧透(一下)?|讲(一)?讲|说(一)?说|讲(一)
 Celebrity	Act:Name	1	<nrcelebrity>(主演|扮演|出演|演)(过)?的电影(都|还)?(有哪些)?
 Celebrity	Act:Name	1	<nrcelebrity>(都|还)?(主演|扮演|出演|演|有)(过|了)?(哪些|什么)?电影
 Celebrity	Act:Name	1	(哪些|什么)?电影是<nrcelebrity>(主演|扮演|演)(的)?
-Celebrity	Direct:Name	1	<nrcelebrity>(导|导演|拍|拍摄)(过)?的电影(都|还)?(有哪些)?
-Celebrity	Direct:Name	1	<nrcelebrity>(都|还)?(导|导演|拍|拍摄)(过|了)?(哪些|什么)?电影
-Celebrity	Direct:Name	1	(哪些|什么)?电影是<nrcelebrity>(导|导演|拍|拍摄)(的)?
-RecentMovie	Name	0	[最近|近期](.){2,6}[电影|影片|片子]
-RecentMovie	Name	0	[有什么|有没有](.){0,3}[电影|影片|片|片子]
+Celebrity	Direct:Name	1	<nrcelebrity>(导|导演|拍|拍摄)(过)?的电影(都|还)?有(哪些)?
+Celebrity	Direct:Name	1	<nrcelebrity>(都|还)?(导|导演|拍|拍摄)(过|了)?(哪些|什么)电影
+Celebrity	Direct:Name	1	(哪些|什么)电影是<nrcelebrity>(导|导演|拍|拍摄)(的)?
+RecentMovie	Name	0	[最近|近期](.){0,3}[有什么|有没有](.){0,3}[电影|影片|片子]
 IsPublish	PublishDate	0	<nmovie>(.){0,2}上映了(吗|嘛|没)

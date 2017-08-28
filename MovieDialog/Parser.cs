@@ -120,7 +120,7 @@ namespace MovieDialog
 
         // for PublishDate
         private static readonly string _old_date = "怀旧,旧,经典,老,复古,旧电影,经典电影,老电影";
-        private static readonly string _new_date = "最近,最新,新,最,热,热门";
+        private static readonly string _new_date = "最近,最新,新,热,热门";
         private static readonly string _date = "年,年代";
         private static HashSet<string> old_date_tag;
         private static HashSet<string> new_date_tag;
@@ -155,7 +155,7 @@ namespace MovieDialog
             "(那)?(就)?第(一|二|三|四|五|六|七|八|九|[1-9])(部|个)(吧)?",
             "(那)?就<nmovie>(吧)?",
             "(那)?就这样(吧)?",
-            "(那)?就这(一)?(部|个)(吧)?",
+            "(那)?就(看|选)这(一)?(部|个)(吧)?",
             "就(他|它|她)",
             "好啊",
             "可以",

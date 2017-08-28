@@ -27,15 +27,15 @@ namespace MovieDialog
         private static int cue_condidate_show_number = 3;
         private static int condidate_movie_show_number = 10;
 
-        private static double[,] transition_matrix = new double[6, 6]
+        private static List<List<double>> transition_matrix = new List<List<double>>
         {
-            ///////////// all    artist director  country      genre   publishdate
-            /* all */     { 0.0,   0.1,    0.1,    0.2,         0.3,    0.3},
-            /* artist */  { 0.0,   0.2,    0.2,    0.0,         0.3,    0.3},
-            /* director */{ 0.0,   0.3,    0.0,    0.0,         0.4,    0.3},
-            /* country */ { 0.0,   0.3,    0.3,    0.0,         0.2,    0.2},
-            /* genre */   { 0.0,   0.4,    0.3,    0.2,         0.0,    0.1},
-            /* publish */ { 0.0,   0.2,    0.1,    0.3,         0.5,    0.0}
+            /////////////////////////////// all    artist director  country     genre   publishdate
+            /* all */     new List<double> { 0.0,   0.1,    0.1,    0.2,         0.3,    0.3},
+            /* artist */  new List<double> { 0.0,   0.2,    0.2,    0.0,         0.3,    0.3},
+            /* director */new List<double> { 0.0,   0.3,    0.0,    0.0,         0.4,    0.3},
+            /* country */ new List<double> { 0.0,   0.3,    0.3,    0.0,         0.2,    0.2},
+            /* genre */   new List<double> { 0.0,   0.4,    0.3,    0.2,         0.0,    0.1},
+            /* publish */ new List<double> { 0.0,   0.2,    0.1,    0.3,         0.5,    0.0}
         };
 
         private double[,] bk = new double[15, 5]
@@ -57,9 +57,7 @@ namespace MovieDialog
             /* genre publish */ 	{ 0.1,    0.2,    0.3,      0.001,  0.001},
             /* publish publish */ 	{ 0.1,    0.2,    0.3,      0.4,    0.001}
             };
-
-        private static List<List<double>> roulette_matrix = new List<List<double>>();
-
+        
         public static Dictionary<ParseStatus, int> parsestatus2int = new Dictionary<ParseStatus, int>()
         {
             { ParseStatus.All, 0 },
@@ -98,29 +96,6 @@ namespace MovieDialog
 
         public DialogManager()
         {
-            // to build the roulette matrix
-            for (int i = 0; i < transition_matrix.GetLength(0); i++)
-            {
-                double sum = 0;
-                for (int j = 0; j < transition_matrix.GetLength(1); j++)
-                {
-                    sum += transition_matrix[i, j];
-                }
-                roulette_matrix.Add(new List<double>());
-                roulette_matrix[i].Add(transition_matrix[i, 0] / sum);
-                for (int j = 1; j < transition_matrix.GetLength(1); j++)
-                {
-                    roulette_matrix[i].Add(roulette_matrix[i][j - 1] + (transition_matrix[i, j] / sum));
-                }
-            }
-            // print for sure
-            //for (int i = 0; i < transition_matrix.GetLength(0); i++)
-            //{
-            //    for (int j = 0; j < transition_matrix.GetLength(1); j++)
-            //    {
-            //        Console.WriteLine(roulette_matrix[i][j]);
-            //    }
-            //}
             Utils.WriteMachine(" ");
             Utils.WriteMachine("=========================");
             Utils.WriteMachine("Now, you can talk to me~");
@@ -150,12 +125,15 @@ namespace MovieDialog
             // too few movies to go on, so end
             if (session.candidate_movies.Count <= end_movie_count)
             {
+                Console.WriteLine(session.candidate_movies.Count);
                 return true;
             }
 
             // enough information, so end
             if (considerd_score >= end_considerd_count || session.known_info_num >= end_known_info_count)
             {
+                Console.WriteLine(considerd_score);
+                Console.WriteLine(session.known_info_num);
                 return true;
             }
             else
@@ -188,6 +166,7 @@ namespace MovieDialog
                     query = new Query(query_str);
                     parser.PosTagging(ref query);
                     // movie recommendation trigger
+                    // don't need anymore due to Xiaoice API Connection
                     if (!parser.isAboutMovie(query))
                     {
                         Utils.WriteMachine(new string('=', 24));
@@ -383,7 +362,8 @@ namespace MovieDialog
                     Utils.WriteUnknow("数据库中没有相关的答案...", query.raw_query);
                 }
             }
-            Utils.WriteMachine("好像找不到你喜欢看的电影...");
+            Utils.WriteUnknow("好像找不到你喜欢看的电影...", "好像找不到你喜欢看的电影...");
+            Utils.WriteMachine(new string('=', 24));
         }
 
         private void ClarifyArtistDirector()
@@ -472,12 +452,13 @@ namespace MovieDialog
             parser.PosTagging(ref query);
 
             // movie recommendation trigger
-            if (!parser.isAboutMovie(query))
-            {
-                Console.WriteLine(new string('=', 24));
-                Console.WriteLine("\n");
-                return;
-            }
+            // don't need anymore due to Xiaoice API Connection
+            //if (!parser.isAboutMovie(query))
+            //{
+            //    Console.WriteLine(new string('=', 24));
+            //    Console.WriteLine("\n");
+            //    return;
+            //}
             // query parse 
             parser.ParseAllTag(ref query);
 
@@ -504,20 +485,38 @@ namespace MovieDialog
         }
 
         #region Make Transition Status Decision 
-        // using current status to compute the next status, a transition matrix requeried.
-        public ParseStatus GetTransitionStatus(Session session)
+        // to build the roulette matrix
+        public List<double> ComputeRouletteMatrix(Session session)
         {
-            ParseStatus current_parsestatus = ParseStatus.All;
+            ParseStatus current_parsestatus = session.parse_status;
+            List<double> transition_row = transition_matrix[parsestatus2int[current_parsestatus]];
             foreach (var item in session.is_considerd)
             {
                 if (item.Value)
                 {
-                    current_parsestatus = item.Key;
-                    break;
+                    ParseStatus reset_parsestatus = item.Key;
+                    transition_row[parsestatus2int[reset_parsestatus]] = 0;
                 }
             }
+            List<double> roulette_row = new List<double>();
+            double sum = 0;
+            for (int j = 0; j < transition_matrix.Count; j++)
+            {
+                sum += transition_row[j];
+            }
+            roulette_row.Add(transition_row[0] / sum);
+            for (int j = 1; j < transition_matrix.Count; j++)
+            {
+                roulette_row.Add(roulette_row[j - 1] + (transition_row[j] / sum));
+            }
+            return roulette_row;
+        }
+
+        // using current status to compute the next status, a transition matrix requeried.
+        public ParseStatus GetTransitionStatus(Session session)
+        {
+            List<double> current_type_trans = ComputeRouletteMatrix(session);
             double selecter = rand.NextDouble();
-            List<double> current_type_trans = roulette_matrix[parsestatus2int[current_parsestatus]];
             int lower_bound = 0;
             foreach (double item in current_type_trans)
             {

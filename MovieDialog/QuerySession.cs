@@ -214,6 +214,7 @@ namespace MovieDialog
 
         private void RefreshKnownInfoNum()
         {
+            known_info_num = 0;
             known_info_num += (is_considerd[ParseStatus.Artist] ?   carried_artist.Count : 0);
             known_info_num += (is_considerd[ParseStatus.Director] ? carried_director.Count : 0);
             known_info_num += (is_considerd[ParseStatus.Country] ?  carried_country.Count : 0);

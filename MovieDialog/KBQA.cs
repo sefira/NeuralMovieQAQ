@@ -18,7 +18,7 @@ namespace MovieDialog
         {
             parser.ParseAllTag(ref query);
             PatternResponse pattern_response;
-            if (pattern_qa.QuestionClassify(query, out pattern_response) || cnn_qa.QuestionClassify(query, out pattern_response))
+            if (pattern_qa.QuestionClassify(query, out pattern_response))// || cnn_qa.QuestionClassify(query, out pattern_response))
             {
                 Console.WriteLine("Start to KBQA");
                 string question_topic = "";
@@ -41,6 +41,7 @@ namespace MovieDialog
                     }
                     //List<object> res = graphengine_query.GetGraphEngineData(question_topic, pattern_response.property, pattern_response.hop_num);
                     List<string> res = GetColumnData(pattern_response.entity_type, question_topic, pattern_response.property);
+                    res = res.Distinct().ToList();
                     string answer = string.Join(",", res.ToArray());
                     if (answer.Length < 2)
                     {

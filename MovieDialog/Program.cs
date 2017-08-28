@@ -319,18 +319,22 @@ namespace MovieDialog
             PatternBased pattern_qa = new PatternBased();
             List<string> questions = new List<string>
             {
-                "肯尼思·洛纳根导演过哪些电影", // 肯尼思·洛纳根 splited
-                "你的名字是哪个国家拍的", // 你的名字 in NER, but 你的名字。in CellID
-                "十二怒汉是讲什么的", // have no 十二怒汉
-                "活着是讲什么的",
-                "你的名字。是讲什么的", // the period
-                "赌神是讲什么的",
-                "天下无贼是谁导演的",
-                "林家栋拍过什么电影",  //拍 act？ direct？
-                "大话西游之大圣娶亲是什么时候拍的",
-                "有木有徐克的",
-                "美人鱼上映了吗",
-                "绝世高手上映了吗",
+                //"肯尼思·洛纳根导演过哪些电影", // 肯尼思·洛纳根 splited
+                //"你的名字是哪个国家拍的", // 你的名字 in NER, but 你的名字。in CellID
+                //"十二怒汉是讲什么的", // have no 十二怒汉
+                //"活着是讲什么的",
+                //"你的名字。是讲什么的", // the period
+                //"赌神是讲什么的",
+                //"天下无贼是谁导演的",
+                //"林家栋拍过什么电影",  //拍 act？ direct？
+                //"大话西游之大圣娶亲是什么时候拍的",
+                //"有木有徐克的",
+                //"美人鱼上映了吗",
+                //"绝世高手上映了吗",
+                //"建军大业什么时候上映的",  //there is no 建军大业 in OSearch
+                "我想看张艺谋导演的电影",
+                "有什么类型的电影呢",
+                "战狼什么时候上映的",  //there is no 建军大业 in OSearch
                 "最近有什么好电影"
             };
             foreach (string question in questions)
